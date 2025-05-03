@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { LinkSchema } from "@/models/link";
-import { withSlugGeneration } from './post';
+import { LinkSchema } from "../schemas/link";
+import { withSlugGeneration } from '../Post';
 
-const CollaboratorSchema = new mongoose.Schema({
+const PersonSchema = new mongoose.Schema({
     name: { type: String, required: true },
     slug: { type: String, unique: true },
     description: { type: String },
@@ -11,6 +11,6 @@ const CollaboratorSchema = new mongoose.Schema({
 });
 
 // Apply common behaviors but use 'name' as the source for the slug
-withSlugGeneration(CollaboratorSchema, 'name');
+withSlugGeneration(PersonSchema, 'name');
 
-export default mongoose.models.Collaborator || mongoose.model('Collaborator', CollaboratorSchema);
+export default mongoose.models.Person || mongoose.model('Person', PersonSchema);

@@ -1,8 +1,8 @@
-import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import type { NextAuthOptions } from "next-auth";
 import credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import dbConnect from "@/lib/db/connect";
 
 export const authOptions: NextAuthOptions  = {
     providers: [
@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions  = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                await connectDB();
+                await dbConnect();
                 const user = await User.findOne({
                     email: credentials?.email,
                 }).select("+password");

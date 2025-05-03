@@ -1,6 +1,6 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
-import { withSlugGeneration } from './post';
+import { withSlugGeneration } from '../Post';
 
 const TagSchema = new mongoose.Schema({
     title: { type: String, required: true },

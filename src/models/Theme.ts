@@ -1,32 +1,38 @@
 import mongoose from 'mongoose';
 
+const Heading = {
+    size: { type: String },
+    weight: { type: String },
+    style: { type: String },
+    color: { type: String }
+}
+
 const ThemeSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String },
     colors: {
-        primary: { type: String, required: true },
-        secondary: { type: String, required: true },
+        primary: { type: String },
+        secondary: { type: String },
         tertiary: { type: String },
-        foreground: { type: String, required: true }, // Base color for border, text, etc.
-        background: { type: String, required: true }
+        foreground: { type: String }, // Base color for borders, text, etc.
+        background: { type: String }
     },
-    radius: { type: String, default: '0.5rem' }, // Default border radius
+    radius: { type: String }, // Default border radius
     typography: {
         body: {
-            font: { type: String, required: true },
-            size: { type: String, default: '16px' },
-            weight: { type: String, default: '400' },
-            style: { type: String, default: 'normal' },
+            font: { type: String },
+            size: { type: String },
+            weight: { type: String },
+            style: { type: String },
             color: { type: String }
         },
         headings: {
-            font: { type: String, required: true },
-            h1: {
-                size: { type: String, default: '2.5rem' },
-                weight: { type: String, default: '700' },
-                style: { type: String, default: 'normal' },
-                color: { type: String }
-            }
-            // Can add h2, h3, etc. as needed
+            font: { type: String },
+            h1: Heading,
+            h2: Heading,
+            h3: Heading,
+            h4: Heading,
+            h5: Heading,
+            h6: Heading,
         }
     },
     components: {

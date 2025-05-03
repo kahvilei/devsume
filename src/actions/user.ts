@@ -1,7 +1,7 @@
 "use server"
-import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import {createFailResponse, createSuccessResponse, dbOperation} from "@/lib/db/utils";
 
 export const register = async (values: {
     email: string | null;
@@ -9,13 +9,10 @@ export const register = async (values: {
     name: string | null
 }) => {
     const { email, password, name } = values;
-    try {
-        await connectDB();
+    return dbOperation(async () => {
         const userFound = await User.findOne({ email });
         if(userFound){
-            return {
-                error: 'Email already exists!'
-            }
+            return createFailResponse('Email already exists!');
         }
         const hashedPassword = await bcrypt.hash(password || '', 10);
         const user = new User({
@@ -25,7 +22,6 @@ export const register = async (values: {
             password: hashedPassword,
         });
         await user.save();
-    }catch(e){
-        console.log(e);
-    }
+        return createSuccessResponse({})
+    })
 }

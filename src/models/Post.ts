@@ -1,18 +1,35 @@
 import mongoose from 'mongoose';
-import { LinkSchema } from "@/models/link";
+import { LinkSchema } from "./schemas/link";
 import slugify from 'slugify';
 
+
 // Base Post schema that captures common fields
-export const PostSchema = {
+export const PostSchemaFields = {
     title: { type: String, required: true },
+    dates: {
+        start: { type: Date },
+        end: { type: Date }
+    },
     slug: { type: String, unique: true },
+    postType: { type: String, required: true },
     description: { type: String, required: true },
-    about: { type: String },
+    content: { type: String },
     hasPage: { type: Boolean, default: false },
+    link: { type: String },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     links: [LinkSchema],
-    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }
+    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+    published: { type: Boolean, default: true },
+    publishedAt: { type: Date },
 };
+
+const PostSchema = new mongoose.Schema(
+    PostSchemaFields,
+    {
+        discriminatorKey: 'postType', // Field that determines which model to use
+        timestamps: true // Automatically adds createdAt and updatedAt
+    }
+);
 
 // Add timestamps to schema
 export const withTimestamps = (schema: mongoose.Schema) => {
@@ -44,7 +61,7 @@ export const withPageLinkValidation = (schema: mongoose.Schema) => {
 // Add auto-slug generation
 export const withSlugGeneration = (schema: mongoose.Schema, sourceField:string = 'title') => {
     schema.pre('validate', function(next) {
-        // Only generate slug if it doesn't exist or if the source field has changed
+        // Only generate a slug if it doesn't exist or if the source field has changed
         if (!this.slug || this.isModified(sourceField)) {
             // Convert the title (or other source field) to a slug
             const baseSlug = slugify(this[sourceField] as string, {
@@ -78,3 +95,24 @@ export const applyPostBehaviors = (schema: mongoose.Schema, options: Record<stri
 
     return schema;
 };
+
+// Helper function to create new post models
+export function createPostModel(typeName: string, schema: object) {
+    // Return if model already exists
+    if (mongoose.models[typeName]) {
+        return mongoose.models[typeName];
+    }
+
+    // If Post model doesn't exist yet, create it first
+    if (!mongoose.models.Post) {
+        mongoose.model('Post', applyPostBehaviors(PostSchema));
+    }
+
+    // Create a discriminator model for this post type
+    return mongoose.models.Post.discriminator(
+        typeName,
+        new mongoose.Schema(schema)
+    );
+}
+
+export default mongoose.models.Post || mongoose.model('Post', PostSchema);
