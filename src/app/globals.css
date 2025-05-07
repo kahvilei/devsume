@@ -1,1 +1,120 @@
 @import "tailwindcss";
+
+@theme {
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    --spacing-xl: 4rem;
+
+    --spacing-content: 80rem;
+
+    /** colors **/
+    --color-primary: #0070f3;
+    --color-secondary: #d754b8;
+    --color-tertiary: #76c972;
+    --color-quaternary: #92b2e7;
+    --color-background: #ffffff;
+    --color-background-alt: #edf2f7;
+    --color-foreground: #aaaaaf;
+    --color-foreground-alt: #757886;
+
+    --color-headings: #1a202c;
+    --color-body: #2d3748;
+    --color-link: #0070f3;
+
+    /** typography **/
+    --text-h1: 2rem;
+    --font-weight-h1-w: 700;
+    --text-h2: 1.5rem;
+    --font-weight-h2-w: 400;
+    --text-h3: 1.25rem;
+    --font-weight-h3-w: 700;
+    --text-h4: 1rem;
+    --font-weight-h4-w: 400;
+    --text-h5: 0.875rem;
+    --font-weight-h5-w: 400;
+    --text-h6: 0.75rem;
+    --font-weight-h6-w: 400;
+
+    /** borders and outlines **/
+    --radius: 0.25rem;
+
+}
+
+/* input classes and rules */
+input.text, textarea.text {
+    @apply outline;
+    @apply rounded;
+    @apply px-2;
+    @apply py-1;
+    @apply outline-1;
+    @apply outline-dashed;
+    @apply outline-foreground;
+    @apply focus:outline-primary;
+    @apply focus:outline-2;
+    text-wrap: wrap;
+    overflow: auto;
+}
+
+.editable-text-wrap{
+    position: relative;
+    @apply px-2;
+    @apply py-1;
+}
+
+.text.proxy{
+    opacity: 0;
+}
+
+textarea.text {
+    @apply resize-none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* text classes and rules */
+.h1, h1 {
+    @apply text-h1;
+    @apply font-h1-w;
+    @apply text-headings;
+}
+
+.h2, h2 {
+    @apply text-h2;
+    @apply font-h2-w;
+    @apply text-headings;
+}
+
+.h3, h3 {
+    @apply text-h3;
+    @apply font-h3-w;
+    @apply text-headings;
+}
+
+.h4, h4 {
+    @apply text-h4;
+    @apply font-h4-w;
+    @apply text-headings;
+}
+
+.h5, h5 {
+    @apply text-h5;
+    @apply font-h5-w;
+    @apply text-headings;
+}
+
+.h6, h6 {
+    @apply text-h6;
+    @apply font-h6-w;
+    @apply text-headings;
+}
+
+.body, p {
+    @apply text-body;
+    @apply text-sm;
+}
+

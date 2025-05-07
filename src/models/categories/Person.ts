@@ -2,6 +2,14 @@ import mongoose from 'mongoose';
 import { LinkSchema } from "../schemas/link";
 import { withSlugGeneration } from '../Post';
 
+export interface IPerson {
+    name: string;
+    slug: string;
+    description: string;
+    img: string;
+    links: [];
+}
+
 const PersonSchema = new mongoose.Schema({
     name: { type: String, required: true },
     slug: { type: String, unique: true },

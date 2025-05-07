@@ -3,6 +3,25 @@ import { LinkSchema } from "./schemas/link";
 import slugify from 'slugify';
 
 
+export interface IPost {
+    title: string;
+    dates: {
+        start: Date;
+        end: Date;
+    };
+    slug: string;
+    postType: string;
+    description: string;
+    content: string;
+    hasPage: boolean;
+    link: string,
+    tags: [],
+    links: [],
+    image: string,
+    published: boolean;
+    publishedAt: Date;
+}
+
 // Base Post schema that captures common fields
 export const PostSchemaFields = {
     title: { type: String, required: true },
@@ -70,14 +89,7 @@ export const withSlugGeneration = (schema: mongoose.Schema, sourceField:string =
                 trim: true            // Trim leading/trailing spaces
             });
 
-            // Add a short random string to ensure uniqueness if this is a new document
-            if (!this.slug && this.isNew) {
-                const randomString = Math.random().toString(36).substring(2, 6);
-                this.slug = `${baseSlug}-${randomString}`;
-            } else if (!this.isNew) {
-                // For existing documents, just update with the new slugified title
-                this.slug = baseSlug;
-            }
+            this.slug = baseSlug;
         }
         next();
     });

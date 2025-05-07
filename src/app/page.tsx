@@ -38,9 +38,9 @@ export default function Home() {
     }
   }
   return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <h1 className="text-xl">Home</h1>
+      <section>
+        <h1 className="text-h1">Home</h1>
         {showSession()}
-      </main>
+      </section>
   );
 }

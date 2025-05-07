@@ -1,5 +1,24 @@
 import mongoose from 'mongoose';
 
+export interface IImage {
+    filename: string;
+    originalName: string;
+    path: string;
+    url: string;
+    size: number;
+    mimetype: string;
+    width: number;
+    height: number;
+    alt: string;
+    caption: string;
+    blurDataUrl: string;
+    createdAt: Date;
+    metadata: {
+        title: string;
+        description: string;
+        tags: string[];
+    };
+}
 const ImageSchema = new mongoose.Schema({
     filename: { type: String, required: true },
     originalName: { type: String, required: true },

@@ -1,29 +1,42 @@
 import mongoose, {Types} from 'mongoose';
 import {Link, LinkSchema} from './schemas/link';
+import {IUser} from "@/models/User";
+import {IImage} from "@/models/Image";
+import {ITag} from "@/models/categories/Tag";
 
 export interface IResume {
-    _id: never | this;
-    user: Types.ObjectId;
-    first: string;
-    last: string;
-    title?: string;
+    _id?: Types.ObjectId;
+    slug?: string;
+    user?: Types.ObjectId | IUser;
+    name: string;
+    title: string;
     subtitle?: string;
     links?: Link[];
-    img?: Types.ObjectId;
-    theme?: Types.ObjectId;
+    image?: Types.ObjectId | IImage;
     about?: string;
+    tags?: string[] | ITag[] | Types.ObjectId[];
+    posts?: {
+        title: string;
+        posts: Types.ObjectId[] | string | [];
+    }[];
 }
 
 const ResumeSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    first: { type: String, required: true },
-    last: { type: String, required: true },
-    title: { type: String, unique: true },
+    slug: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    title: { type: String, required: true },
     subtitle: { type: String },
     links: [LinkSchema],
-    img: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }, // Reference to the Image model
-    theme: { type: mongoose.Schema.Types.ObjectId, ref: 'Theme' },
-    about: { type: String }
+    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }, // Reference to the Image model
+    about: { type: String },
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+    posts: [
+        {
+            title: { type: String },
+            posts: {type: mongoose.Schema.Types.Mixed}
+        }
+    ]
 });
 
 export default mongoose.models.Resume || mongoose.model('Resume', ResumeSchema);

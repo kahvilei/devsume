@@ -3,7 +3,7 @@ import {MongoServerError} from "mongodb";
 
 export interface ResponseObject {
     success: boolean,
-    response?: object,
+    content?: object,
     error?: string,
     warning?: string,
 }
@@ -22,7 +22,7 @@ export const createSuccessResponse = (responseObject: object, warning = ''): Res
     return {
         success: true,
         warning: warning,
-        response: responseObject
+        content: responseObject
     }
 }
 
