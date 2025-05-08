@@ -2,9 +2,8 @@ import {IResume} from "@/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import EditableText from "@/app/_components/editor/text/EditableText";
-import TagSelector from "@/app/_components/editor/tags/TagSelector";
 import {ITag} from "@/models/categories/Tag";
-import MultiSelect from "@/app/_components/editor/common/MultiSelect";
+import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -27,31 +26,37 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                     value={resumeData?.name}
                     label="Name"
                     placeholder="Enter name"
-                    change={(value: string) => setResumeData({...resumeData, name: (value || "")})}
+                    onUpdate={(value: string) => setResumeData({...resumeData, name: (value || "")})}
                 />
                 <EditableText
                     order="h2"
                     value={resumeData?.title}
                     label="Title/position"
                     placeholder="Enter title/position"
-                    change={(value: string) => setResumeData({...resumeData, title: (value || "")})}
+                    onUpdate={(value: string) => setResumeData({...resumeData, title: (value || "")})}
                 />
                 <EditableText
                     order="body"
                     label="Subtitle/short description"
                     value={resumeData?.subtitle}
                     placeholder="Write a subtitle/short description"
-                    change={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
+                    onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                 />
-                <MultiSelect
+                <MultiSelectFromDB
                     label="Core competencies"
                     placeholder="Select tags"
                     values={resumeData?.tags as ITag[]}
                     onSelect={(value: ITag[]) => setResumeData({...resumeData, tags: (value || [])})}
-                    apiUrl={"/api/tags/"}
+                    dataKey={"tags"}
                 />
             </section>
             <section className="flex-2/3">
+                <button
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                    onClick={handleSave}
+                >
+                    Save
+                </button>
 
             </section>
         </section>

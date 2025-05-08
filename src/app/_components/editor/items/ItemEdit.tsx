@@ -1,68 +1,38 @@
 import React from "react";
-import {BaseDataModel} from "@/interfaces/api";
+import {BaseDataModel, EditProps} from "@/interfaces/data";
 
 interface ItemEditProps<T extends BaseDataModel> {
-    value?: T
-    label: string
-    onSave: (item: T) => void
-    onCancel?: () => void
+    item?: T;
+    label: string;
+    onSave: (item: T) => void;
+    onCancel?: () => void;
+    Form?: React.FC<EditProps<T>>;
 }
 
-export default function ItemEdit<T extends BaseDataModel & { title: string }>({
-                                                                                  value = {title: ""} as T,
-                                                                                  label,
-                                                                                  onSave,
-                                                                                  onCancel
-                                                                              }: ItemEditProps<T>) {
+export default function ItemEdit<T extends BaseDataModel>({
+                                                              item,
+                                                              label,
+                                                              onSave,
+                                                              onCancel = () => {},
+                                                              Form,
+                                                          }: ItemEditProps<T>) {
+    // Create a default item if none provided
+    const editItem = item || ({ title: "" } as T);
 
-    const [title, setTitle] = React.useState(value.title);
+    // Default form component
+    const DefaultForm: React.FC<EditProps<T>> = ({ item, onSaveItem, onCancel }) => (
+        <form aria-label={label}>
+            <div>{item.title}</div>
+            <button onClick={() => onSaveItem(item)}>Save</button>
+            <button onClick={onCancel}>Cancel</button>
+        </form>
+    );
 
-    const handleSave = () => {
-        onSave({...value, title} as T);
-    };
-
-    const handleCancel = () => {
-        if (onCancel) {
-            onCancel();
-        }
-    };
+    const FormComponent = Form || DefaultForm;
 
     return (
         <div>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleSave();
-            }}
-                  className="flex gap-2"
-                  aria-label={label}>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter item name"
-                    className="border rounded px-2 py-1"
-                    autoFocus
-                    required
-                />
-                <button
-                    type="submit"
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
-                >
-                    Save
-                </button>
-                <button
-                    type="button"
-                    className="bg-gray-300 px-2 py-1 rounded"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleCancel();
-                    }}
-                >
-                    Cancel
-                </button>
-            </form>
+            <FormComponent item={editItem} onSaveItem={onSave} label={label} onCancel={onCancel} />
         </div>
     );
 }

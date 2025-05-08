@@ -3,10 +3,11 @@ interface EditableTextProps {
     value?: string
     label: string
     placeholder: string
-    change: (value: string) => void
+    onUpdate: (value: string) => void
+    required?: boolean
 }
 
-export default function EditableText({order = "body", value = '', label, placeholder="Enter text", change}: EditableTextProps) {
+export default function EditableText({order = "body", value = '', label, placeholder="Enter text", onUpdate, required}: EditableTextProps) {
 
     return (
         <div className={"editable-text-wrap"}>
@@ -18,9 +19,10 @@ export default function EditableText({order = "body", value = '', label, placeho
             <textarea
                 value={value}
                 placeholder={placeholder}
-                onChange={(event) => change(event.currentTarget.value.replace(/[\r\n\v]+/g, ''))}
+                onChange={(event) => onUpdate(event.currentTarget.value.replace(/[\r\n\v]+/g, ''))}
                 aria-label={label}
                 className={`${order} text`}
+                required={required}
             />
         </div>
 
