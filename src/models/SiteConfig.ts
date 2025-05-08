@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import { LinkSchema } from './schemas/link';
 
 const SiteConfigSchema = new mongoose.Schema({
-    siteTitle: { type: String, required: true },
-    siteDescription: { type: String },
+    title: { type: String, required: true },
+    description: { type: String },
     siteLogo: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     mainResume: { type: mongoose.Schema.Types.ObjectId, ref: 'Resume' },
     navLinks: [LinkSchema], // Using the shared LinkSchema

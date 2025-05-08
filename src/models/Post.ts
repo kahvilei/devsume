@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import { LinkSchema } from "./schemas/link";
 import slugify from 'slugify';
+import {BaseDataModel} from "@/interfaces/api";
 
 
-export interface IPost {
+export interface IPost extends BaseDataModel {
     title: string;
     dates: {
         start: Date;
@@ -15,8 +16,8 @@ export interface IPost {
     content: string;
     hasPage: boolean;
     link: string,
-    tags: [],
-    links: [],
+    tags?: [],
+    links?: [],
     image: string,
     published: boolean;
     publishedAt: Date;

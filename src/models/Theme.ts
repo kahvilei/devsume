@@ -8,7 +8,7 @@ const Heading = {
 }
 
 const ThemeSchema = new mongoose.Schema({
-    name: { type: String },
+    title: { type: String },
     colors: {
         primary: { type: String },
         secondary: { type: String },

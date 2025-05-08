@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { withSlugGeneration } from '../Post';
 
 export interface ITag {
-    _id: string;
+    _id?: string;
     title: string;
     slug?: string;
     description?: string;

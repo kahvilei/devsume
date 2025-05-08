@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import {BaseDataModel} from "@/interfaces/api";
 
-export interface IImage {
+export interface IImage extends BaseDataModel{
+    _id?: string;
     filename: string;
     originalName: string;
     path: string;

@@ -4,6 +4,7 @@ import {useState} from "react";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import TagSelector from "@/app/_components/editor/tags/TagSelector";
 import {ITag} from "@/models/categories/Tag";
+import MultiSelect from "@/app/_components/editor/common/MultiSelect";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -42,11 +43,12 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                     placeholder="Write a subtitle/short description"
                     change={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                 />
-                <TagSelector
+                <MultiSelect
                     label="Core competencies"
                     placeholder="Select tags"
-                    value={resumeData?.tags as ITag[]}
-                    setTags={(value: ITag[]) => setResumeData({...resumeData, tags: (value || [])})}
+                    values={resumeData?.tags as ITag[]}
+                    onSelect={(value: ITag[]) => setResumeData({...resumeData, tags: (value || [])})}
+                    apiUrl={"/api/tags/"}
                 />
             </section>
             <section className="flex-2/3">

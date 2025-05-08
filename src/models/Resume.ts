@@ -3,9 +3,10 @@ import {Link, LinkSchema} from './schemas/link';
 import {IUser} from "@/models/User";
 import {IImage} from "@/models/Image";
 import {ITag} from "@/models/categories/Tag";
+import {BaseDataModel} from "@/interfaces/api";
 
-export interface IResume {
-    _id?: Types.ObjectId;
+export interface IResume extends BaseDataModel {
+    _id?: string;
     slug?: string;
     user?: Types.ObjectId | IUser;
     name: string;
