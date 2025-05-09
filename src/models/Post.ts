@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { LinkSchema } from "./schemas/link";
 import slugify from 'slugify';
-import {BaseDataModel} from "@/interfaces/api";
+import {BaseDataModel} from "@/interfaces/data";
 
 
 export interface IPost extends BaseDataModel {
@@ -86,7 +86,7 @@ export const withSlugGeneration = (schema: mongoose.Schema, sourceField:string =
             // Convert the title (or other source field) to a slug
             const baseSlug = slugify(this[sourceField] as string, {
                 lower: true,          // Convert to lowercase
-                strict: true,         // Remove special chars
+                strict: false,         // Remove special chars
                 trim: true            // Trim leading/trailing spaces
             });
 

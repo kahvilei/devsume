@@ -3,16 +3,21 @@ import EditTag from "@/app/tags/edit";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ITag} from "@/models/categories/Tag";
+import mongoose from "mongoose";
 
 export interface ItemManifest<T extends BaseDataModel = BaseDataModel> {
   api: string;
+  model?: mongoose.Model<T>;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
   openEditInModal?: boolean;
+  queryFields?: {
+    [key: string]: string
+  }
 }
 
 export interface ItemManifestList {
-  [key: string]: ItemManifest<any>
+  [key: string]: ItemManifest
 }
 
 const ITEMS: ItemManifestList = {
@@ -20,7 +25,11 @@ const ITEMS: ItemManifestList = {
     api: "/api/tags/",
     preview: PreviewTag as React.FC<PreviewProps<ITag>>,
     edit: EditTag as React.FC<EditProps<ITag>>,
-    openEditInModal: true
+    openEditInModal: true,
+    queryFields: {
+      title: "string",
+      description: "string"
+    }
   },
   people: {
     api: "/api/people/",

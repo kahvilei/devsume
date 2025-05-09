@@ -7,85 +7,175 @@ import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import ITEMS, {ItemManifest, ItemManifestList} from "@/config/itemManifest";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {DataQuery} from "@/interfaces/api";
+import {DataQueryEditor} from "./DataQueryEditor";
+import {formatQuerySummary} from "@/lib/db/utils";
+import EditableText from "@/app/_components/editor/text/EditableText";
+import BinaryToggle from "@/app/_components/editor/common/BinaryToggle";
 
 interface MultiSelectProps<T extends BaseDataModel> {
-    values?: T[];
+    values?: T[] | DataQuery<T>;
     label: string;
     placeholder?: string;
     dataKey: keyof ItemManifestList;
-    onSelect: (value: T[]) => void;
+    onSelect: (value: T[] | DataQuery<T>) => void;
 }
 
-export default function MultiSelectFromDB<T extends BaseDataModel>({
-                                                                       values = [],
-                                                                       label,
-                                                                       placeholder = "Add items",
-                                                                       dataKey,
-                                                                       onSelect
-                                                                   }: MultiSelectProps<T>) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
+export default function MultiSelectFromDB<T extends BaseDataModel>
+({
+     values = [],
+     label,
+     placeholder = "Add items",
+     dataKey,
+     onSelect
+ }: MultiSelectProps<T>) {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isAdding, setIsAdding] = useState<boolean>(false);
+    const [editingQuery, setEditingQuery] = useState<boolean>(false);
+    const [title, setTitle] = useState<string>(label);
 
-    // Cast the manifest to the correct type
+    // Determine if values is a DataQuery object or an array
+    const initialIsDynamic = !Array.isArray(values);
+    const [isDynamic, setIsDynamic] = useState<boolean>(initialIsDynamic);
+
+    // Initialize query from values if it's a DataQuery, or create an empty one
+    const initialQuery: DataQuery<T> = initialIsDynamic
+        ? values as DataQuery<T>
+        : {filter: {} as Record<keyof T, string>, sort: undefined, limit: undefined};
+    const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
+
+    // Get the item manifest and its queryFields (if available)
     const manifest = ITEMS[dataKey] as ItemManifest<T>;
-    const { list, error, warning, createItem, updateItem, deleteItem } = useAPI<T>(manifest.api);
+    const queryFields = manifest.queryFields || {};
 
+    // Get the list of items from the API
+    const {list, error, warning, createItem, updateItem, deleteItem, fetchItems} = useAPI<T>(
+        manifest.api,
+        isDynamic ? query : undefined
+    );
+
+    // Use the selection hook to manage selected items
     const {
         selectedItems,
         toggleItem,
         isSelected,
-    } = useSelection<T>(values, list);
+        setSelectedItems
+    } = useSelection<T>(isDynamic ? [] : (Array.isArray(values) ? values : []), list);
 
+    // Update the parent component when selection changes
     useEffect(() => {
-        onSelect(selectedItems);
-    }, [selectedItems]);
+        if (!isDynamic) {
+            onSelect(selectedItems);
+        }
+    }, [selectedItems, isDynamic]);
+
+    // Update the parent component when query changes
+    useEffect(() => {
+        if (isDynamic) {
+            onSelect(query);
+            fetchItems().then();
+        }
+    }, [query, isDynamic]);
+
+    // Update local state when the values prop changes
+    useEffect(() => {
+        const newIsDynamic = !Array.isArray(values);
+        setIsDynamic(newIsDynamic);
+
+        if (newIsDynamic) {
+            setQuery(values as DataQuery<T>);
+        } else if (Array.isArray(values)) {
+            setSelectedItems(values);
+        }
+    }, []);
 
     // Type assertions for the preview and edit components
     const PreviewComponent = manifest.preview as React.FC<PreviewProps<T>> | undefined;
     const EditComponent = manifest.edit as React.FC<EditProps<T>> | undefined;
     const openEditInModal = manifest.openEditInModal || false;
 
-    const handleAddItemSave = (item: T) => {
-        createItem(item);
+    const handleAddItemSave = (item: T): void => {
+        createItem(item).then();
         setIsAdding(false);
+    };
+
+    const handleQuerySave = (updatedQuery: DataQuery<T>): void => {
+        setQuery(updatedQuery);
+        setEditingQuery(false);
     };
 
     return (
         <div className="multi-selector-wrap">
+            <div className="multi-selector-header">
+                <div className="flex-grow">
+                    <EditableText order={'h4'} value={title} label={"title"} placeholder={"Enter a title"} onUpdate={setTitle} />
+                </div>
+                <BinaryToggle state={isDynamic} onToggle={setIsDynamic} labels={["Dynamic", "Static"]} />
+            </div>
+
             <div
                 aria-label={label}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
-                className="item-selector-button w-full cursor-pointer"
+                className="item-selector-button"
             >
-                <ul
-                    role="items"
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="item-selector-items flex gap-2"
-                    aria-label="Selected Items"
-                >
-                    {selectedItems.map((item) => (
-                        <li
-                            className="item-selector item"
-                            key={item._id}
-                            onClick={() => toggleItem(item)}
+                {isDynamic && (
+                    <div className="query-summary">
+                        <div className="text-sm">
+                            <strong>Query:</strong> {formatQuerySummary(query)}
+                        </div>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingQuery(true);
+                            }}
+                            className="btn-link text-sm"
                         >
-                            {item.title}
-                        </li>
-                    ))}
-                </ul>
-
-                {selectedItems.length === 0 && (
-                    <div
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="item-selector-placeholder"
-                    >
-                        {placeholder}
+                            Edit Query
+                        </button>
                     </div>
                 )}
 
-                {isOpen && (
-                    <ul role="listbox">
+                {/* Show selected items for both modes */}
+                <ul
+                    role="items"
+                    onClick={() => !editingQuery && setIsOpen(!isOpen)}
+                    className="item-selector-items"
+                    aria-label="Selected Items"
+                >
+                    {(isDynamic ? list : selectedItems).map((option) => (
+                        <ItemOption
+                            key={option._id}
+                            item={option}
+                            onSelect={!isDynamic ? () => toggleItem(option) : undefined}
+                            onEdit={updateItem}
+                            onDelete={deleteItem}
+                            Renderer={PreviewComponent}
+                            Form={EditComponent}
+                            openEditInModal={openEditInModal}
+                        />
+                    ))}
+                </ul>
+
+                {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
+                    <div
+                        onClick={() => !editingQuery && setIsOpen(!isOpen)}
+                        className="item-selector-placeholder"
+                    >
+                        {isDynamic ? 'No items match query' : placeholder}
+                    </div>
+                )}
+
+                {/* Different content based on mode and state */}
+                {editingQuery ? (
+                    <DataQueryEditor
+                        query={query}
+                        onSave={handleQuerySave}
+                        onCancel={() => setEditingQuery(false)}
+                        queryFields={queryFields}
+                    />
+                ) : isOpen && !isDynamic ? (
+                    <ul role="listbox" className="mt-sm divider">
                         {list.map((option: T) => (
                             <ItemOption
                                 key={option._id}
@@ -99,7 +189,12 @@ export default function MultiSelectFromDB<T extends BaseDataModel>({
                                 openEditInModal={openEditInModal}
                             />
                         ))}
+                    </ul>
+                ) : null}
 
+                {/* Add new item section - only show if not editing query */}
+                {!editingQuery && (
+                    <>
                         {isAdding && openEditInModal ? (
                             <Modal
                                 isOpen={isAdding}
@@ -114,26 +209,26 @@ export default function MultiSelectFromDB<T extends BaseDataModel>({
                                 />
                             </Modal>
                         ) : isAdding ? (
-                            <li className="p-2">
+                            <div className="p-sm divider">
                                 <ItemEdit
                                     label="Add a new item"
                                     Form={EditComponent}
                                     onSave={handleAddItemSave}
                                     onCancel={() => setIsAdding(false)}
                                 />
-                            </li>
+                            </div>
                         ) : (
-                            <li
-                                className="item-selector item cursor-pointer text-blue-500"
+                            <div
+                                className="item-action"
                                 onClick={() => setIsAdding(true)}
                             >
                                 + Add new item
-                            </li>
+                            </div>
                         )}
-                    </ul>
+                    </>
                 )}
 
-                <AlertMessage error={error} warning={warning} />
+                <AlertMessage error={error} warning={warning}/>
             </div>
         </div>
     );

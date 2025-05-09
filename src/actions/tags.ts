@@ -1,10 +1,19 @@
-import {createFailResponse, createSuccessResponse, dbOperation} from "@/lib/db/utils";
+import {createFailResponse, createSuccessResponse, dbOperation, getMongooseParams} from "@/lib/db/utils";
 import {Tag} from "@/models";
 import {ITag} from "@/models/categories/Tag";
 
 export const getAllTags = () => {
     return dbOperation(async () => {
         const tags = await Tag.find().lean();
+        return createSuccessResponse(tags);
+    });
+}
+
+export const getTags = (query: URLSearchParams) => {
+    return dbOperation(async () => {
+        const {sort, filters, limit, skip} = getMongooseParams(query);
+        console.log(filters, sort, limit, skip);
+        const tags = await Tag.find(filters).sort(sort).limit(limit).lean();
         return createSuccessResponse(tags);
     });
 }

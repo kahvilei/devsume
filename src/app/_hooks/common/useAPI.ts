@@ -3,9 +3,10 @@ import {getAndDigest} from "@/lib/http/getAndDigest";
 import {patchAndDigest} from "@/lib/http/patchAndDigest";
 import {deleteAndDigest} from "@/lib/http/deleteAndDigest";
 import {postAndDigest} from "@/lib/http/postAndDigest";
-import {BaseDataModel} from "@/interfaces/api";
+import {DataQuery} from "@/interfaces/api";
+import {BaseDataModel} from "@/interfaces/data";
 
-export function useAPI<T extends BaseDataModel>(url: string, query?: string) {
+export function useAPI<T extends BaseDataModel>(url: string, query?: DataQuery<T>) {
     const [list, setList] = useState<T[]>([]);
     const [error, setError] = useState<string>();
     const [warning, setWarning] = useState<string>();
@@ -16,9 +17,25 @@ export function useAPI<T extends BaseDataModel>(url: string, query?: string) {
         fetchItems().then();
     }, []);
 
+    const convertQueryToString = (query: DataQuery<T>) => {
+        let queryStr = "?";
+        for (const key in query) {
+            if (query.hasOwnProperty(key) && key !== "filter") {
+                const value = query[key as keyof DataQuery<T>];
+                queryStr += `${key}=${value}&`;
+            }else if (query.hasOwnProperty(key) && key === "filter") {
+                for (const key in query.filter) {
+                    const value = query.filter[key];
+                    queryStr += `${key}=${value}&`;
+                }
+            }
+        }
+        return queryStr.slice(0, -1);
+    }
+
     const fetchItems = async () => {
         setLoading(true);
-        getAndDigest<T[]>(url+(query??""), setList, setError, setWarning).then();
+        getAndDigest<T[]>(url+(convertQueryToString(query??{})), setList, setError, setWarning).then();
         setLoading(false);
     };
 
@@ -59,6 +76,7 @@ export function useAPI<T extends BaseDataModel>(url: string, query?: string) {
         createItem,
         updateItem,
         deleteItem,
+        fetchItems,
         clearError: () => setError(undefined),
         clearWarning: () => setWarning(undefined)
     };

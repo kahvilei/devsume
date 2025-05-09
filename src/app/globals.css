@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+    --spacing: .25rem;
+    --spacing-xxs: 0.125rem;
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
@@ -8,6 +10,7 @@
     --spacing-xl: 4rem;
 
     --spacing-content: 80rem;
+    --spacing-outline-width: 0.1rem;
 
     /** colors **/
     --color-primary: #0070f3;
@@ -16,15 +19,15 @@
     --color-quaternary: #92b2e7;
     --color-background: #ffffff;
     --color-background-alt: #edf2f7;
-    --color-foreground: #aaaaaf;
-    --color-foreground-alt: #757886;
+    --color-foreground: #d9d9dc;
+    --color-foreground-alt: #8a8fab;
 
     --color-headings: #1a202c;
     --color-body: #2d3748;
     --color-link: #0070f3;
 
     /** typography **/
-    --text-h1: 2rem;
+    --text-h1: 3rem;
     --font-weight-h1-w: 700;
     --text-h2: 1.5rem;
     --font-weight-h2-w: 400;
@@ -37,33 +40,114 @@
     --text-h6: 0.75rem;
     --font-weight-h6-w: 400;
 
+    --text-body: 1rem;
+    --font-weight-body-w: 400;
+
     /** borders and outlines **/
     --radius: 0.25rem;
 
 }
 
-/* input classes and rules */
-input.text, textarea.text {
+/* utility classes and rules */
+@utility input-outline {
     @apply outline;
     @apply rounded;
-    @apply px-2;
-    @apply py-1;
-    @apply outline-1;
     @apply outline-dashed;
     @apply outline-foreground;
+    @apply outline-(length:--spacing-outline-width);
     @apply focus:outline-primary;
-    @apply focus:outline-2;
+}
+
+@utility input-padding {
+    @apply px-xs;
+    @apply py-xxs;
+}
+
+@utility flex-between {
+    @apply flex;
+    @apply justify-between;
+}
+
+@utility flex-even {
+    @apply flex;
+    @apply justify-evenly;
+}
+
+@utility border-rules {
+    @apply border;
+    @apply border-foreground;
+    @apply rounded;
+}
+
+
+/* text classes and rules */
+@utility heading-styles {
+    @apply text-headings;
+}
+
+.h1, h1 {
+    @apply text-h1;
+    @apply font-h1-w;
+    @apply heading-styles;
+}
+
+.h2, h2 {
+    @apply text-h2;
+    @apply font-h2-w;
+    @apply text-headings;
+    @apply heading-styles;
+}
+
+.h3, h3 {
+    @apply text-h3;
+    @apply font-h3-w;
+    @apply text-headings;
+    @apply heading-styles;
+}
+
+.h4, h4 {
+    @apply text-h4;
+    @apply font-h4-w;
+    @apply text-headings;
+    @apply heading-styles;
+}
+
+.h5, h5 {
+    @apply text-h5;
+    @apply font-h5-w;
+    @apply text-headings;
+    @apply heading-styles;
+}
+
+.h6, h6 {
+    @apply text-h6;
+    @apply font-h6-w;
+    @apply text-headings;
+    @apply heading-styles;
+}
+
+.body, p {
+    @apply text-body;
+    @apply font-body-w;
+}
+
+/* EditableText rules */
+input.text, textarea.text {
+    @apply input-outline;
+    @apply input-padding;
+    @apply overflow-hidden;
     text-wrap: wrap;
-    overflow: auto;
+    max-width: 100%;
 }
 
 .editable-text-wrap{
     position: relative;
-    @apply px-2;
-    @apply py-1;
+    max-width: 100%;
+    @apply input-padding;
 }
 
 .text.proxy{
+    text-wrap: wrap;
     opacity: 0;
 }
 
@@ -76,45 +160,126 @@ textarea.text {
     bottom: 0;
 }
 
-/* text classes and rules */
-.h1, h1 {
-    @apply text-h1;
-    @apply font-h1-w;
-    @apply text-headings;
+/* MultiSelectFromDB rules */
+.multi-selector-wrap{
+    @apply rounded;
+
+}
+.multi-selector-header{
+    @apply flex-between;
+    @apply gap-xs;
 }
 
-.h2, h2 {
-    @apply text-h2;
-    @apply font-h2-w;
-    @apply text-headings;
+/* Binary Toggle rules */
+/*<span aria-selected={state} className="toggle-1">{labels[0]}</span>*/
+/*<span className="toggle-slider"></span>*/
+/*<span aria-selected={!state} className="toggle-2">{labels[1]}</span>*/
+
+.binary-toggle {
+    @apply p-xxs;
+    @apply bg-background-alt;
+    @apply rounded;
+    @apply text-xs;
+    @apply w-full;
 }
 
-.h3, h3 {
-    @apply text-h3;
-    @apply font-h3-w;
-    @apply text-headings;
+.binary-toggle .toggle-switch input {
+    @apply hidden;
 }
 
-.h4, h4 {
-    @apply text-h4;
-    @apply font-h4-w;
-    @apply text-headings;
+.binary-toggle .toggle-switch {
+    @apply flex;
+    @apply w-full;
+    @apply h-full;
+    @apply p-xxs;
+    @apply justify-between;
+    position: relative;
 }
 
-.h5, h5 {
-    @apply text-h5;
-    @apply font-h5-w;
-    @apply text-headings;
+.binary-toggle .toggle-switch .toggle-slider {
+    @apply bg-foreground-alt;
+    position: absolute;
+    z-index: 0;
+    top: var(--spacing-xxs);
+    width: calc(50% - var(--spacing-xxs));
+    height: calc(100% - 2* var(--spacing-xxs));
+    @apply rounded;
+    @apply cursor-pointer;
+    @apply transition-all;
+    @apply duration-200;
+    transform: translateX(0);
 }
 
-.h6, h6 {
-    @apply text-h6;
-    @apply font-h6-w;
-    @apply text-headings;
+.binary-toggle input:checked ~ .toggle-slider {
+    transform: translateX(100%);
 }
 
-.body, p {
+.binary-toggle .toggle-option{
+    @apply text-center;
+    @apply p-xxs;
+    @apply z-10;
+    @apply relative;
+    @apply cursor-pointer;
+    @apply transition-colors;
+    @apply duration-200;
+    @apply h-full;
+    @apply flex;
+    @apply items-center;
+    @apply justify-center;
+    width: 50%;
+
+}
+
+.binary-toggle .toggle-option[aria-selected="true"] {
     @apply text-body;
-    @apply text-sm;
+}
+
+.binary-toggle .toggle-option[aria-selected="false"] {
+    @apply text-background;
+}
+
+
+/* Resume page and editor page rules */
+.resume{
+    @apply flex-even;
+    @apply gap-md;
+    @apply w-full;
+}
+
+.resume .right{
+    @apply flex-3/10;
+    @apply flex;
+    @apply w-full;
+    @apply flex-col;
+    @apply gap-md;
+}
+
+.resume .left{
+    @apply flex-7/10;
+    @apply flex;
+    @apply w-full;
+    @apply flex-col;
+    @apply gap-md;
+}
+
+.resume .title-description{
+    @apply flex;
+    @apply w-full;
+    @apply flex-col;
+    @apply gap-xs;
+    line-height: 1.1;
+}
+
+.resume section{
+    @apply flex;
+    @apply w-full;
+    @apply flex-col;
+    @apply gap-xs;
+    line-height: 1.1;
+}
+
+/* Tags rules */
+.tags{
+    @apply flex-even;
 }
 

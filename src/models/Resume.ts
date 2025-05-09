@@ -3,22 +3,27 @@ import {Link, LinkSchema} from './schemas/link';
 import {IUser} from "@/models/User";
 import {IImage} from "@/models/Image";
 import {ITag} from "@/models/categories/Tag";
-import {BaseDataModel} from "@/interfaces/api";
+import {DataQuery} from "@/interfaces/api";
+import {IPost} from "@/models/Post";
+import {BaseDataModel} from "@/interfaces/data";
 
 export interface IResume extends BaseDataModel {
     _id?: string;
     slug?: string;
-    user?: Types.ObjectId | IUser;
+    user?: IUser;
     name: string;
     title: string;
     subtitle?: string;
     links?: Link[];
-    image?: Types.ObjectId | IImage;
+    image?: IImage;
     about?: string;
-    tags?: string[] | ITag[] | Types.ObjectId[];
+    tags?: [{
+        title: string;
+        tags: ITag[] | DataQuery<ITag>;
+    }]
     posts?: {
         title: string;
-        posts: Types.ObjectId[] | string | [];
+        posts: IPost[] | DataQuery<IPost>;
     }[];
 }
 
