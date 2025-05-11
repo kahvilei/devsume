@@ -1,3 +1,6 @@
+import React from 'react';
+import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+
 interface EditableTextProps {
     order?: string
     value?: string
@@ -5,16 +8,27 @@ interface EditableTextProps {
     placeholder: string
     onUpdate: (value: string) => void
     required?: boolean
+    showTooltip?: boolean
+    toolTipPosition?: TooltipPosition
 }
 
-export default function EditableText({order = "body", value = '', label, placeholder="Enter text", onUpdate, required}: EditableTextProps) {
-
-    return (
-        <div className={"editable-text-wrap"}>
+export default function EditableText(
+    {
+        order = "body",
+        value = '',
+        label,
+        placeholder = "Enter text",
+        onUpdate,
+        required,
+        showTooltip = true,
+        toolTipPosition = "left",
+    }: EditableTextProps) {
+    const content = (
+        <div className="editable-text-wrap">
             <div className="editable-text-error"></div>
             <div className="editable-text-warning"></div>
             <div aria-hidden className={`${order} text proxy`}>
-                {(value==="")?placeholder:value}
+                {(value === "") ? placeholder : value}
             </div>
             <textarea
                 value={value}
@@ -25,6 +39,16 @@ export default function EditableText({order = "body", value = '', label, placeho
                 required={required}
             />
         </div>
+    );
 
-    )
+    // Apply tooltip to the entire component if showTooltip is true
+    if (showTooltip && label) {
+        return (
+            <Tooltip text={label} position={toolTipPosition}>
+                {content}
+            </Tooltip>
+        );
+    }
+
+    return content;
 }

@@ -48,7 +48,6 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                 <section className="tags">
                     <MultiSelectFromDB
                         label="Core competencies"
-                        placeholder="Select tags"
                         values={resumeData?.tags as ITag[]}
                         onSelect={(value: ITag[] | DataQuery<ITag>) => setResumeData({
                             ...resumeData,
@@ -61,12 +60,25 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
             <section className="left">
                 <EditableText
                     order="body"
-                    label="Subtitle/short description"
+                    label="About you"
                     value={resumeData?.about}
                     placeholder="Write a subtitle/short description"
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
+                    toolTipPosition={"right"}
                 />
+                <section className="work">
+                    <MultiSelectFromDB
+                        label="Core competencies"
+                        values={resumeData?.tags as ITag[]}
+                        onSelect={(value: ITag[] | DataQuery<ITag>) => setResumeData({
+                            ...resumeData,
+                            tags: [{title: "Core", tags: (value || [])}]
+                        })}
+                        dataKey={"tags"}
+                    />
+                </section>
             </section>
+
         </section>
     )
 }

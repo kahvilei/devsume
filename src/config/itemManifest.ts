@@ -14,6 +14,10 @@ export interface ItemManifest<T extends BaseDataModel = BaseDataModel> {
   queryFields?: {
     [key: string]: string
   }
+  names?: {
+    singular: string;
+    plural: string;
+  }
 }
 
 export interface ItemManifestList {
@@ -29,6 +33,10 @@ const ITEMS: ItemManifestList = {
     queryFields: {
       title: "string",
       description: "string"
+    },
+    names: {
+      singular: "tag",
+      plural: "tags"
     }
   },
   people: {

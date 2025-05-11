@@ -1,166 +1,611 @@
 @import "tailwindcss";
 
+/*
+  Theme Configuration
+  ------------------
+  All design tokens are defined here for easy theming
+*/
 @theme {
-    --spacing: .25rem;
+    /* Spacing System */
     --spacing-xxs: 0.125rem;
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
     --spacing-lg: 3rem;
     --spacing-xl: 4rem;
+    --spacing: var(--spacing-xs); /* Base spacing unit */
 
+    /* Layout */
     --spacing-content: 75rem;
     --spacing-border-width: 0.1rem;
+    --spacing-button-height: 2.25rem;
 
-    /** colors **/
-    --color-primary: #0070f3;
-    --color-secondary: #d754b8;
+    /* Color System */
+    /* Primary palette */
+    --color-primary: #e1226b;
+    --color-secondary: #54c3d7;
     --color-tertiary: #76c972;
     --color-quaternary: #92b2e7;
+
+    /* UI colors */
     --color-background: #ffffff;
     --color-background-alt: #efeded;
-    --color-foreground: #373775;
-    --color-foreground-alt: #3e4c8f;
+    --color-foreground: #1f1f1f;
+    --color-foreground-alt: #151515;
 
-    --color-headings: #1f2e52;
-    --color-body: #2d3748;
-    --color-link: #0070f3;
+    /* Semantic colors */
+    --color-headings: #3d3d3d;
+    --color-body: #222c38;
+    --color-link: var(--color-primary);
+    --color-overlay: rgba(0, 0, 0, 0.5);
 
-    /** typography **/
+    /* Typography */
     --text-h1: 3rem;
-    --font-weight-h1-w: 700;
     --text-h2: 1.5rem;
-    --font-weight-h2-w: 400;
     --text-h3: 1.25rem;
-    --font-weight-h3-w: 700;
     --text-h4: 1rem;
-    --font-weight-h4-w: 600;
     --text-h5: 0.875rem;
-    --font-weight-h5-w: 400;
     --text-h6: 0.75rem;
-    --font-weight-h6-w: 400;
-
     --text-body: 1rem;
+
+    --font-weight-h1-w: 700;
+    --font-weight-h2-w: 400;
+    --font-weight-h3-w: 700;
+    --font-weight-h4-w: 600;
+    --font-weight-h5-w: 400;
+    --font-weight-h6-w: 400;
     --font-weight-body-w: 400;
 
-    /** borders and outlines **/
-    --radius: 0.25rem;
+    /* Borders and Radii */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.625rem;
+    --radius-xl: 0.875rem;
+    --radius: var(--radius-sm); /* Base radius */
+    --radius-circle: 50%;
+    --radius-pill: 9999px;
 
+    /* Animation */
+    --transition-duration-fast: 150ms;
+    --transition-duration-normal: 200ms;
+    --transition-duration-slow: 300ms;
+    --transition-timing: ease-in-out;
 }
 
-/*bas */
+/*
+  Global Base Styles
+  ------------------
+*/
 body {
-    @apply bg-background;
+    @apply bg-background text-body;
+    font-weight: var(--font-weight-body-w);
 }
 
-/* utility classes and rules */
+/*
+  Typography
+  ------------------
+*/
+.heading, h1, h2, h3, h4, h5, h6 , .h1, .h2, .h3, .h4, .h5, .h6 {
+    @apply text-headings;
+    line-height: 1.2;
+}
+
+.h1, h1 {
+    font-size: var(--text-h1);
+    font-weight: var(--font-weight-h1-w);
+}
+
+.h2, h2 {
+    font-size: var(--text-h2);
+    font-weight: var(--font-weight-h2-w);
+}
+
+.h3, h3 {
+    font-size: var(--text-h3);
+    font-weight: var(--font-weight-h3-w);
+}
+
+.h4, h4 {
+    font-size: var(--text-h4);
+    font-weight: var(--font-weight-h4-w);
+}
+
+.h5, h5 {
+    font-size: var(--text-h5);
+    font-weight: var(--font-weight-h5-w);
+}
+
+.h6, h6 {
+    font-size: var(--text-h6);
+    font-weight: var(--font-weight-h6-w);
+}
+
+.body, p {
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-body-w);
+}
+
+/*
+  Utility Classes
+  ------------------
+*/
+/* Layout utilities */
+@utility flex-layout {
+    @apply flex;
+}
+
+@utility flex-between {
+    @apply flex-layout justify-between;
+}
+
+@utility flex-top {
+    @apply flex-layout items-start;
+}
+
+@utility flex-even {
+    @apply flex-layout justify-evenly;
+}
+
+@utility flex-center {
+    @apply flex-layout items-center justify-center;
+}
+
+/* Border utilities */
+@utility border-rules {
+    @apply border border-foreground rounded;
+    border-width: var(--spacing-border-width);
+}
+
+@utility border-width {
+    border-width: var(--spacing-border-width);
+}
+
+@utility separator {
+    @apply border-dashed border-foreground;
+}
+
+@utility separator-top {
+    @apply separator border-t pt-xs;
+}
+
+@utility discreet-outline {
+    @apply outline rounded outline-dashed outline-foreground;
+}
+
+/* Interactive elements */
+@utility interactive {
+    @apply cursor-pointer transition-all;
+    transition-duration: var(--transition-duration-normal);
+    transition-timing-function: var(--transition-timing);
+}
+
+@utility grow-on-hover {
+    @apply interactive hover:scale-105;
+}
+
+@utility focus-visible {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+/* Input styles */
 @utility input-outline {
-    @apply outline;
-    @apply rounded;
-    @apply outline-dashed;
-    @apply outline-foreground;
-    @apply focus:outline-primary;
-@apply focus:outline-2;
-    @apply hover:outline-2;
-    @apply hover:outline-primary;
+    @apply discreet-outline;
+    @apply focus:outline-primary focus:outline-2;
+    @apply hover:outline-2 hover:outline-primary;
     @apply transition-all;
 }
 
 @utility input-padding {
-    @apply p-xs;
+    padding: var(--spacing-xs);
 }
 
-@utility flex-between {
-    @apply flex;
-    @apply justify-between;
+/* Animation utility */
+@utility transition-size {
+    transition: height var(--transition-duration-normal) var(--transition-timing),
+    width var(--transition-duration-normal) var(--transition-timing);
 }
 
-@utility flex-even {
-    @apply flex;
-    @apply justify-evenly;
+/*
+  Component Styles
+  ------------------
+*/
+
+/* Button Component */
+.btn {
+    @apply interactive border-rules rounded text-foreground
+    flex items-center justify-center transition-all;
+    height: var(--spacing-button-height);
+    width: max-content;
+    padding: var(--spacing-xs);
+    gap: var(--spacing-xxs); /* Space between icon and text */
+    line-height: 1;
 }
 
-@utility border-rules {
-    @apply border;
-    @apply border-foreground;
-    @apply rounded;
-    @apply border-(length:--spacing-border-width);
+/* Apply reduced left padding when an icon is present */
+.btn.has-icon {
+    padding-left: var(--spacing-xxs);
 }
 
-@utility seperator-top {
-    @apply border-t;
-    @apply border-dashed;
-    @apply border-foreground;
-    @apply pt-xs;
+/* Icon styling */
+.btn-icon {
+    @apply flex items-center justify-center;
+    height: 100%;
 }
 
-/* text classes and rules */
-@utility heading-styles {
-    @apply text-headings;
+.btn-icon svg {
+    height: 100%;
 }
 
-.h1, h1 {
-    @apply text-h1;
-    @apply font-h1-w;
-    @apply heading-styles;
+/* Default solid color buttons */
+.btn.reverse {
+    @apply bg-foreground text-background border-background;
 }
 
-.h2, h2 {
-    @apply text-h2;
-    @apply font-h2-w;
-    @apply text-headings;
-    @apply heading-styles;
+.btn.reverse:not(:disabled):hover {
+    @apply bg-background text-foreground;
 }
 
-.h3, h3 {
-    @apply text-h3;
-    @apply font-h3-w;
-    @apply text-headings;
-    @apply heading-styles;
+.btn.primary {
+    @apply bg-primary text-background border-primary;
 }
 
-.h4, h4 {
-    @apply text-h4;
-    @apply font-h4-w;
-    @apply text-headings;
-    @apply heading-styles;
+.btn.primary:not(:disabled):hover {
+    @apply bg-background text-primary;
 }
 
-.h5, h5 {
-    @apply text-h5;
-    @apply font-h5-w;
-    @apply text-headings;
-    @apply heading-styles;
+.btn.secondary {
+    @apply bg-secondary text-background border-secondary;
 }
 
-.h6, h6 {
-    @apply text-h6;
-    @apply font-h6-w;
-    @apply text-headings;
-    @apply heading-styles;
+.btn.secondary:not(:disabled):hover {
+    @apply bg-background text-secondary;
 }
 
-.body, p {
-    @apply text-body;
-    @apply font-body-w;
+.btn.tertiary {
+    @apply bg-tertiary text-background border-tertiary;
 }
 
-/* EditableText rules */
-input.text, textarea.text {
-    @apply input-outline;
-    @apply input-padding;
-    @apply overflow-hidden;
-    text-wrap: wrap;
-    max-width: 100%;
+.btn.tertiary:not(:disabled):hover {
+    @apply bg-background text-tertiary;
 }
 
-.editable-text-wrap{
+.btn.quaternary {
+    @apply bg-quaternary text-background border-quaternary;
+}
+
+.btn.quaternary:not(:disabled):hover {
+    @apply bg-background text-quaternary;
+}
+
+/* Outline buttons - base style */
+.btn.outline {
+    @apply bg-transparent border-foreground text-foreground;
+}
+
+/* Outline with color variants */
+.btn.outline.primary {
+    @apply border-primary text-primary;
+}
+
+.btn.outline.primary:not(:disabled):hover {
+    @apply bg-primary text-background;
+}
+
+.btn.outline.secondary {
+    @apply border-secondary text-secondary;
+}
+
+.btn.outline.secondary:not(:disabled):hover {
+    @apply bg-secondary text-background;
+}
+
+.btn.outline.tertiary {
+    @apply border-tertiary text-tertiary;
+}
+
+.btn.outline.tertiary:not(:disabled):hover {
+    @apply bg-tertiary text-background;
+}
+
+.btn.outline.quaternary {
+    @apply border-quaternary text-quaternary;
+}
+
+.btn.outline.quaternary:not(:disabled):hover {
+    @apply bg-quaternary text-background;
+}
+
+/* Button sizes */
+.btn.xs {
+    height: calc(var(--spacing-button-height) * .65);
+    @apply text-xs;
+}
+
+.btn.sm {
+    height: calc(var(--spacing-button-height) * .85);
+    @apply text-sm;
+}
+
+.btn.lg {
+    @apply text-lg;
+    height: calc(var(--spacing-button-height) * 1.25);
+}
+
+.btn.xl {
+    @apply text-xl;
+    height: calc(var(--spacing-button-height) * 1.5);
+}
+
+/* Default hover state - for buttons without specific color classes */
+.btn:not(.primary):not(.secondary):not(.tertiary):not(.quaternary):not(.reverse):not(:disabled):hover {
+    @apply bg-foreground text-background;
+    transform: scale(1.05);
+}
+
+/* Scale transform for all buttons */
+.btn:not(:disabled):hover {
+    transform: scale(1.05);
+}
+
+/* Disabled state */
+.btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    transform: none !important;
+}
+
+/* MultiSelectFromDB Component */
+.multi-selector-wrap {
+    @apply rounded flex flex-col gap-xs w-full relative;
+}
+
+.multi-selector-controls {
+    @apply transition-all relative;
+    height: min-content;
+}
+
+.multi-selector-controls textarea,
+.multi-selector-controls input {
+    @apply bg-background;
+}
+
+.multi-selector-header {
+    @apply flex-between flex-top gap-xs;
+}
+
+.multi-selector-header .editable-text-wrap {
+    height: 100%;
+}
+
+.multi-selector-selector {
+    @apply flex flex-col mt-xs border gap-xs overflow-hidden h-0 px-xs rounded w-full transition-all;
+    transition-duration: var(--transition-duration-normal);
+}
+
+.multi-selector-selector.open {
+    @apply h-auto p-xs border-rules;
+}
+
+.multi-selector-wrap ul {
+    @apply flex flex-wrap gap-xs p-0 m-0;
+    list-style: none;
+}
+
+.multi-selector-content {
+    @apply discreet-outline input-padding;
+}
+
+.multi-selector-wrap .add-new-item {
+    @apply separator-top text-sm text-link;
+}
+
+.query-summary {
+    @apply bg-foreground text-background p-xs rounded flex-between flex-center;
+}
+
+.item-selector-placeholder{
+    @apply text-foreground-alt/60 text-sm italic;
+}
+
+.connector {
+    @apply h-2;
+    @apply left-2 bottom-[calc(-1.9*var(--spacing-xs))];
+    position: absolute;
+}
+
+/* Binary Toggle Component */
+.binary-toggle {
+    @apply p-xxs border-rules rounded text-xs grow-on-hover;
+    height: var(--spacing-button-height);
+    user-focus: key;
+}
+
+.binary-toggle .toggle-switch input {
+    @apply hidden;
+}
+
+.binary-toggle .toggle-switch {
+    @apply flex w-full h-full justify-between;
+    position: relative;
+}
+
+.binary-toggle .toggle-switch .toggle-slider {
+    @apply bg-foreground rounded cursor-pointer;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    width: calc(50% - var(--spacing-xxs)/2);
+    bottom: 0;
+    transform: translateX(0) scaleX(1);
+    transform-origin: center center;
+}
+
+.binary-toggle input:checked ~ .toggle-slider {
+    animation-name: stretchRight;
+    animation-duration: var(--transition-duration-normal);
+    animation-fill-mode: forwards;
+}
+
+.binary-toggle input:not(:checked) ~ .toggle-slider {
+    animation-name: stretchLeft;
+    animation-duration: var(--transition-duration-normal);
+    animation-fill-mode: forwards;
+}
+
+@keyframes stretchRight {
+    0% {
+        transform: translateX(0) scaleX(1);
+    }
+    40% {
+        transform: translateX(calc(40% + var(--spacing-xxs))) scaleX(1.3);
+    }
+    70% {
+        transform: translateX(calc(80% + 1.5 * var(--spacing-xxs))) scaleX(1.1);
+    }
+    100% {
+        transform: translateX(calc(100% + var(--spacing-xxs))) scaleX(1);
+    }
+}
+
+@keyframes stretchLeft {
+    0% {
+        transform: translateX(calc(100% + var(--spacing-xxs))) scaleX(1);
+    }
+    40% {
+        transform: translateX(calc(60% + var(--spacing-xxs))) scaleX(1.3);
+    }
+    70% {
+        transform: translateX(calc(20% + 0.5 * var(--spacing-xxs))) scaleX(1.1);
+    }
+    100% {
+        transform: translateX(0) scaleX(1);
+    }
+}
+
+.binary-toggle .toggle-option {
+    @apply text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
+    transition-duration: var(--transition-duration-normal);
+    width: 50%;
+}
+
+.binary-toggle .toggle-option[aria-selected="true"] {
+    @apply text-foreground;
+}
+
+.binary-toggle .toggle-option[aria-selected="false"] {
+    @apply text-background;
+}
+
+/* Resume Component */
+.resume {
+    @apply flex-even gap-xl w-full flex-col sm:flex-row;
+}
+
+.resume .right {
+    @apply flex-2/5 flex w-full flex-col gap-md;
+}
+
+.resume .left {
+    @apply flex-3/5 flex w-full flex-col gap-md;
+}
+
+.resume .title-description,
+.resume section {
+    @apply flex w-full flex-col gap-xs;
+    line-height: 1.1;
+}
+
+/* ActionIcon Component */
+.action-icon {
+    @apply grow-on-hover flex-center rounded cursor-pointer transition-all relative text-foreground focus-visible;
+    @apply hover:bg-background-alt hover:text-foreground-alt;
+    width: var(--spacing-button-height);
+    height: var(--spacing-button-height);
+}
+
+/*
+  Tooltip Component
+  ------------------
+*/
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+    position: absolute;
+    @apply bg-foreground text-background text-xs py-xxs px-xs rounded opacity-0 transition-all;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    transition-duration: var(--transition-duration-normal);
+}
+
+/* Tooltip position variants */
+.tooltip-below {
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(0.5rem);
+}
+
+.tooltip-above {
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.tooltip-left {
+    top: 50%;
+    right: calc(100% + 0.5rem);
+    transform: translateY(-50%) translateX(-0.5rem);
+}
+
+.tooltip-right {
+    top: 50%;
+    left: calc(100% + 0.5rem);
+    transform: translateY(-50%) translateX(0.5rem);
+}
+
+/* Tooltip hover effects */
+.tooltip-container:hover > .tooltip {
+    @apply opacity-100;
+}
+
+.tooltip-container:hover > .tooltip-below {
+    transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-container:hover > .tooltip-above {
+    transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-container:hover > .tooltip-left {
+    transform: translateY(-50%) translateX(0);
+}
+
+.tooltip-container:hover > .tooltip-right {
+    transform: translateY(-50%) translateX(0);
+}
+
+/*
+  EditableText Component - Updated with pencil icon
+  ------------------
+*/
+.editable-text-wrap {
     position: relative;
     max-width: 100%;
     @apply input-padding;
 }
 
-.text.proxy{
+
+
+/* Keep the existing EditableText styles */
+input, textarea.text {
+    @apply input-outline input-padding overflow-hidden;
+    text-wrap: wrap;
+    max-width: 100%;
+}
+
+.text.proxy {
     @apply h-full;
     text-wrap: wrap;
     opacity: 0;
@@ -175,206 +620,361 @@ textarea.text {
     bottom: 0;
 }
 
-/* MultiSelectFromDB rules */
-.multi-selector-wrap{
-    @apply rounded;
-    @apply flex;
-    @apply flex-col;
-    @apply gap-xs;
-    @apply w-full;
+/*
+  Modal Component
+  ------------------
+*/
+.modal-overlay {
+    @apply fixed inset-0 z-50 flex-center;
+}
+
+.modal-backdrop {
+    @apply fixed inset-0 bg-foreground opacity-50;
+}
+
+.modal-container {
+    @apply bg-background rounded-lg border-rules z-10 max-w-content mx-auto p-sm;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+.modal-header {
+    @apply flex-between p-sm border-b border-background-alt;
+}
+
+.modal-close {
+    @apply interactive focus-visible rounded-full p-1;
+    @apply hover:bg-background-alt;
+}
+
+.modal-body {
+    @apply p-sm;
+}
+
+.modal-footer {
+    @apply flex-between p-sm border-t border-background-alt;
+}
+
+/* Query Editor Component Utilities */
+@utility query-pill-layout {
+    @apply flex items-center gap-xxs px-xs py-xxs rounded-pill;
+    border: 1px solid var(--color-background-alt);
+}
+
+@utility pill-active {
+    @apply bg-background-alt;
+    border-color: var(--color-foreground);
+}
+
+@utility pill-badge {
+    @apply flex-center text-xs min-w-[1.25rem] h-[1.25rem] rounded-pill;
+}
+
+@utility discreet-dashed {
+    border-style: dashed;
+    border-width: 1px;
+}
+
+@utility editor-panel {
+    @apply border-t w-full mt-xs pt-xs border-background-alt;
+}
+
+/* Pill Component Utilities */
+@utility pill-layout {
+    @apply flex items-center gap-xxs px-xs py-xxs rounded-pill;
+    border: 1px solid var(--color-background-alt);
+}
+
+@utility pill-active {
+    @apply bg-background-alt;
+    border-color: var(--color-foreground);
+}
+
+@utility pill-badge {
+    @apply flex-center text-xs min-w-[1.25rem] h-[1.25rem] rounded-pill;
+}
+
+@utility discreet-dashed {
+    border-style: dashed;
+    border-width: 1px;
+}
+
+@utility editor-panel {
+    @apply border-t w-full mt-xs pt-xs;
+    border-color: var(--color-background-alt);
+}
+
+/*
+  Pill Component
+  ------------------
+*/
+.pill {
+    @apply pill-layout interactive;
+    background: none;
+    transition: all var(--transition-duration-fast) var(--transition-timing);
+}
+
+.pill:hover {
+    @apply bg-background-alt;
+}
+
+.pill.active {
+    @apply pill-active;
+}
+
+.pill-label {
+    @apply font-medium text-sm;
+}
+
+.pill-badge {
+    @apply pill-badge;
+    background-color: var(--color-background-alt);
+    color: var(--color-foreground-alt);
+}
+
+.pill-badge.has-value {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+/*
+  DataQueryEditor Component Styles
+  --------------------------------
+  These styles can be added to globals.css or as a separate module
+*/
+
+/* Query Editor Base Container */
+.query-editor {
+    @apply flex flex-col w-full rounded relative;
+    transition: box-shadow var(--transition-duration-normal) var(--transition-timing);
+}
+
+.query-editor:focus-within {
+    @apply shadow-sm;
+}
+
+/* Pills row - improved alignment and spacing */
+.query-pills {
+    @apply flex-between items-center p-xs rounded;
+    background-color: var(--color-background);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.query-pills-group {
+    @apply flex flex-wrap gap-xs;
+}
+
+/* Editor panel - smoother transitions */
+.query-editor-panel {
+    @apply bg-background rounded-b border-background-alt transition-all;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--color-background-alt);
+    overflow: hidden;
+    max-height: 80vh;
+}
+
+/* Section styling with smooth animations */
+.query-section {
+    @apply p-xs transition-all;
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.query-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeIn var(--transition-duration-normal) var(--transition-timing) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.query-section-content {
+    @apply flex flex-col gap-sm;
+}
+
+/* Filter card styling - improved visual feedback */
+.filter-card {
+    @apply p-xs rounded transition-all interactive;
+    border: 1px solid var(--color-background-alt);
+    transform-origin: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-card:hover {
+    border-color: var(--color-foreground-alt);
+}
+
+.filter-card-active {
+    border-left: 3px solid var(--color-primary);
+    padding-left: calc(var(--spacing-xs) - 2px);
+}
+
+.filter-card-header {
+    @apply flex-between mb-xs;
+}
+
+.filter-number {
+    @apply flex-center rounded-pill text-xs font-medium;
+    background-color: var(--color-background-alt);
+    color: var(--color-foreground-alt);
+    min-width: 1.5rem;
+    height: 1.5rem;
+    transition: all var(--transition-duration-normal) var(--transition-timing);
+}
+
+.filter-card-active .filter-number {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+/* Improved responsive layout for filter rows */
+.filter-row {
+    @apply flex flex-col sm:flex-row gap-xs;
+}
+
+.filter-group {
+    @apply flex-1 flex flex-col;
+}
+
+.filter-label {
+    @apply text-xs font-medium mb-xxs text-foreground-alt;
+}
+
+/* Improved field styling */
+.filter-field {
+    @apply flex-1 transition-all;
+    border-radius: var(--radius);
+}
+
+.input.filter-field {
+    @apply input-outline;
+}
+
+.filter-field:focus {
+    @apply ring-1 ring-primary;
+    outline: none;
+}
+
+.disabled {
+    @apply opacity-50 cursor-not-allowed bg-background-alt;
+}
+
+.value-input-wrapper {
     @apply relative;
 }
 
-.multi-selector-controls{
-    @apply border-rules;
-    @apply rounded;
-    @apply p-xs;
+.filter-chip {
+    @apply text-xs mb-xxs px-xxs py-xxs rounded;
+    background-color: var(--color-secondary);
+    color: var(--color-background);
+    width: fit-content;
+    font-weight: 500;
 }
 
-.multi-selector-controls textarea, .multi-selector-controls input{
-    @apply bg-white;
+.operator-preview {
+    @apply flex-center absolute right-xs text-primary font-medium;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
-.multi-selector-header{
-    @apply flex-between;
-    @apply gap-xs;
+/* Remove button - improved hover states */
+.filter-remove {
+    @apply rounded-full text-sm flex-center transition-all;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-foreground-alt);
 }
 
-.multi-selector-selector {
-    @apply p-xs;
-    @apply rounded;
-    @apply flex;
-    @apply flex-col;
-    @apply gap-xs;
+.filter-remove:hover {
+    @apply bg-background-alt text-foreground;
 }
 
-.multi-selector-wrap ul{
-    @apply flex;
-    @apply flex-wrap;
-    @apply gap-xs;
-    @apply p-0;
-    @apply m-0;
-    list-style: none;
+/* Add filter button - improved alignment and styling */
+.btn-add-filter {
+    @apply mt-sm self-start transition-all;
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
 }
 
-.multi-selector-wrap .add-new-item{
-    @apply seperator-top;
-    @apply text-sm;
-    @apply text-link;
+.btn-add-filter:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-background);
 }
 
-/* Binary Toggle rules */
-/*<span aria-selected={state} className="toggle-1">{labels[0]}</span>*/
-/*<span className="toggle-slider"></span>*/
-/*<span aria-selected={!state} className="toggle-2">{labels[1]}</span>*/
-
-.binary-toggle {
-    @apply p-xxs;
-    @apply border-rules;
-    @apply rounded;
-    @apply text-xs;
+/* Sort section styling - improved container */
+.sort-container, .limit-container {
+    @apply p-sm rounded transition-all;
+    border: 1px solid var(--color-background-alt);
+    background-color: var(--color-background);
 }
 
-
-.binary-toggle .toggle-switch input {
-    @apply hidden;
+.sort-container:focus-within,
+.limit-container:focus-within {
+    border-color: var(--color-foreground-alt);
 }
 
-.binary-toggle .toggle-switch {
-    @apply flex;
-    @apply w-full;
-    @apply h-full;
-    @apply justify-between;
-    position: relative;
-    user-select: none;
+.sort-select {
+    @apply mb-sm w-full input-outline;
 }
 
-.binary-toggle .toggle-switch .toggle-slider {
-    @apply bg-foreground;
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    width: calc(50% - var(--spacing-xxs));
-    bottom: 0;
-    @apply rounded;
-    @apply cursor-pointer;
-    transform: translateX(0) scaleX(1);
-    transform-origin: center center;
+.sort-preview {
+    @apply flex-between p-xs;
+    border: 1px dashed var(--color-background-alt);
+    border-radius: var(--radius);
+    background-color: var(--color-background-alt);
+    opacity: 0.9;
 }
 
-/* For unchecked to checked transition */
-.binary-toggle input:checked ~ .toggle-slider {
-    animation-name: stretchRight;
-    animation-duration: 200ms; /* Slightly longer for smoother effect */
-    animation-fill-mode: forwards;
+.sort-icon {
+    @apply text-primary text-lg font-bold;
 }
 
-/* For checked to unchecked transition */
-.binary-toggle input:not(:checked) ~ .toggle-slider {
-    animation-name: stretchLeft;
-    animation-duration: 200ms;
-    animation-fill-mode: forwards;
+/* Limit section styling - improved controls */
+.limit-input-group {
+    @apply flex items-center gap-xs mb-sm;
 }
 
-/* Keyframes for stretching animation */
-@keyframes stretchRight {
-    0% {
-        transform: translateX(0) scaleX(1);
-    }
-    40% { /* Adjust timing for smoother stretch */
-        transform: translateX(calc(40% + var(--spacing-xxs))) scaleX(1.3);
-    }
-    70% { /* Add intermediate step for more natural movement */
-        transform: translateX(calc(80% + 1.5 * var(--spacing-xxs))) scaleX(1.1);
-    }
-    100% {
-        transform: translateX(calc(100% + 2 * var(--spacing-xxs))) scaleX(1);
-    }
+.limit-input {
+    @apply input-outline;
+    max-width: 8rem;
 }
 
-@keyframes stretchLeft {
-    0% {
-        transform: translateX(calc(100% + 2 * var(--spacing-xxs))) scaleX(1);
-    }
-    40% {
-        transform: translateX(calc(60% + var(--spacing-xxs))) scaleX(1.3);
-    }
-    70% {
-        transform: translateX(calc(20% + 0.5 * var(--spacing-xxs))) scaleX(1.1);
-    }
-    100% {
-        transform: translateX(0) scaleX(1);
-    }
+.limit-buttons {
+    @apply flex flex-wrap gap-xs;
 }
 
-
-.binary-toggle .toggle-option{
-    @apply text-center;
-    @apply p-xxs;
-    @apply px-xs;
-    @apply z-10;
-    @apply relative;
-    @apply cursor-pointer;
-    @apply transition-colors;
-    @apply duration-200;
-    @apply h-full;
-    @apply flex;
-    @apply items-center;
-    @apply justify-center;
-    width: 50%;
-
+.limit-button {
+    @apply rounded py-xxs px-xs text-center interactive;
+    min-width: 2.5rem;
+    transition: all var(--transition-duration-normal) var(--transition-timing);
 }
 
-.binary-toggle .toggle-option[aria-selected="true"] {
-    @apply text-body;
+.limit-button-active {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    font-weight: 500;
 }
 
-.binary-toggle .toggle-option[aria-selected="false"] {
-    @apply text-background;
+.limit-button-inactive {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-background-alt);
 }
 
-
-/* Resume page and editor page rules */
-.resume{
-    @apply flex-even;
-    @apply gap-xl;
-    @apply w-full;
+.limit-button-inactive:hover {
+    background-color: var(--color-background-alt);
+    border-color: var(--color-foreground-alt);
 }
-
-.resume .right{
-    @apply flex-2/5;
-    @apply flex;
-    @apply w-full;
-    @apply flex-col;
-    @apply gap-md;
-}
-
-.resume .left{
-    @apply flex-3/5;
-    @apply flex;
-    @apply w-full;
-    @apply flex-col;
-    @apply gap-md;
-}
-
-.resume .title-description{
-    @apply flex;
-    @apply w-full;
-    @apply flex-col;
-    @apply gap-xs;
-    line-height: 1.1;
-}
-
-.resume section{
-    @apply flex;
-    @apply w-full;
-    @apply flex-col;
-    @apply gap-xs;
-    line-height: 1.1;
-}
-
-/* Tags rules */
-.tags{
-    @apply flex-even;
-}
-
