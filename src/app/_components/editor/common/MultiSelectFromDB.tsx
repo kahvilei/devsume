@@ -106,19 +106,23 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
 
     return (
         <div className="multi-selector-wrap">
+            <div className="multi-selector-controls">
             <div className="multi-selector-header">
                 <div className="flex-grow">
                     <EditableText order={'h4'} value={title} label={"title"} placeholder={"Enter a title"} onUpdate={setTitle} />
                 </div>
-                <BinaryToggle state={isDynamic} onToggle={setIsDynamic} labels={["Dynamic", "Static"]} />
+                <BinaryToggle state={isDynamic} onToggle={setIsDynamic} labels={["Static", "Dynamic"]} />
             </div>
+            <div className="multi-selector-selector" >
+                {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
+                    <div
+                        onClick={() => !editingQuery && setIsOpen(!isOpen)}
+                        className="item-selector-placeholder"
+                    >
+                        {isDynamic ? 'No items match query' : placeholder}
+                    </div>
+                )}
 
-            <div
-                aria-label={label}
-                aria-haspopup="listbox"
-                aria-expanded={isOpen}
-                className="item-selector-button"
-            >
                 {isDynamic && (
                     <div className="query-summary">
                         <div className="text-sm">
@@ -136,36 +140,6 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     </div>
                 )}
 
-                {/* Show selected items for both modes */}
-                <ul
-                    role="items"
-                    onClick={() => !editingQuery && setIsOpen(!isOpen)}
-                    className="item-selector-items"
-                    aria-label="Selected Items"
-                >
-                    {(isDynamic ? list : selectedItems).map((option) => (
-                        <ItemOption
-                            key={option._id}
-                            item={option}
-                            onSelect={!isDynamic ? () => toggleItem(option) : undefined}
-                            onEdit={updateItem}
-                            onDelete={deleteItem}
-                            Renderer={PreviewComponent}
-                            Form={EditComponent}
-                            openEditInModal={openEditInModal}
-                        />
-                    ))}
-                </ul>
-
-                {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
-                    <div
-                        onClick={() => !editingQuery && setIsOpen(!isOpen)}
-                        className="item-selector-placeholder"
-                    >
-                        {isDynamic ? 'No items match query' : placeholder}
-                    </div>
-                )}
-
                 {/* Different content based on mode and state */}
                 {editingQuery ? (
                     <DataQueryEditor
@@ -175,7 +149,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                         queryFields={queryFields}
                     />
                 ) : isOpen && !isDynamic ? (
-                    <ul role="listbox" className="mt-sm divider">
+                    <ul role="listbox" className="divider">
                         {list.map((option: T) => (
                             <ItemOption
                                 key={option._id}
@@ -219,7 +193,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                             </div>
                         ) : (
                             <div
-                                className="item-action"
+                                className="add-new-item cursor-pointer"
                                 onClick={() => setIsAdding(true)}
                             >
                                 + Add new item
@@ -227,8 +201,36 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                         )}
                     </>
                 )}
+            </div>
+            <AlertMessage error={error} warning={warning}/>
+            </div>
+            <div
+                aria-label={label}
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
+                className="multi-selector-content"
+            >
 
-                <AlertMessage error={error} warning={warning}/>
+                {/* Show selected items for both modes */}
+                <ul
+                    role="items"
+                    onClick={() => !editingQuery && setIsOpen(!isOpen)}
+                    className="multi-selector-selected-items"
+                    aria-label="Selected Items"
+                >
+                    {(isDynamic ? list : selectedItems).map((option) => (
+                        <ItemOption
+                            key={option._id}
+                            item={option}
+                            onSelect={!isDynamic ? () => toggleItem(option) : undefined}
+                            onEdit={updateItem}
+                            onDelete={deleteItem}
+                            Renderer={PreviewComponent}
+                            Form={EditComponent}
+                            openEditInModal={openEditInModal}
+                        />
+                    ))}
+                </ul>
             </div>
         </div>
     );

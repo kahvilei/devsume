@@ -59,6 +59,13 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                 </section>
             </section>
             <section className="left">
+                <EditableText
+                    order="body"
+                    label="Subtitle/short description"
+                    value={resumeData?.about}
+                    placeholder="Write a subtitle/short description"
+                    onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
+                />
             </section>
         </section>
     )

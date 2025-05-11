@@ -9,8 +9,8 @@
     --spacing-lg: 3rem;
     --spacing-xl: 4rem;
 
-    --spacing-content: 80rem;
-    --spacing-outline-width: 0.1rem;
+    --spacing-content: 75rem;
+    --spacing-border-width: 0.1rem;
 
     /** colors **/
     --color-primary: #0070f3;
@@ -18,11 +18,11 @@
     --color-tertiary: #76c972;
     --color-quaternary: #92b2e7;
     --color-background: #ffffff;
-    --color-background-alt: #edf2f7;
-    --color-foreground: #d9d9dc;
-    --color-foreground-alt: #8a8fab;
+    --color-background-alt: #efeded;
+    --color-foreground: #373775;
+    --color-foreground-alt: #3e4c8f;
 
-    --color-headings: #1a202c;
+    --color-headings: #1f2e52;
     --color-body: #2d3748;
     --color-link: #0070f3;
 
@@ -34,7 +34,7 @@
     --text-h3: 1.25rem;
     --font-weight-h3-w: 700;
     --text-h4: 1rem;
-    --font-weight-h4-w: 400;
+    --font-weight-h4-w: 600;
     --text-h5: 0.875rem;
     --font-weight-h5-w: 400;
     --text-h6: 0.75rem;
@@ -48,19 +48,26 @@
 
 }
 
+/*bas */
+body {
+    @apply bg-background;
+}
+
 /* utility classes and rules */
 @utility input-outline {
     @apply outline;
     @apply rounded;
     @apply outline-dashed;
     @apply outline-foreground;
-    @apply outline-(length:--spacing-outline-width);
     @apply focus:outline-primary;
+@apply focus:outline-2;
+    @apply hover:outline-2;
+    @apply hover:outline-primary;
+    @apply transition-all;
 }
 
 @utility input-padding {
-    @apply px-xs;
-    @apply py-xxs;
+    @apply p-xs;
 }
 
 @utility flex-between {
@@ -77,8 +84,15 @@
     @apply border;
     @apply border-foreground;
     @apply rounded;
+    @apply border-(length:--spacing-border-width);
 }
 
+@utility seperator-top {
+    @apply border-t;
+    @apply border-dashed;
+    @apply border-foreground;
+    @apply pt-xs;
+}
 
 /* text classes and rules */
 @utility heading-styles {
@@ -147,6 +161,7 @@ input.text, textarea.text {
 }
 
 .text.proxy{
+    @apply h-full;
     text-wrap: wrap;
     opacity: 0;
 }
@@ -163,11 +178,49 @@ textarea.text {
 /* MultiSelectFromDB rules */
 .multi-selector-wrap{
     @apply rounded;
-
+    @apply flex;
+    @apply flex-col;
+    @apply gap-xs;
+    @apply w-full;
+    @apply relative;
 }
+
+.multi-selector-controls{
+    @apply border-rules;
+    @apply rounded;
+    @apply p-xs;
+}
+
+.multi-selector-controls textarea, .multi-selector-controls input{
+    @apply bg-white;
+}
+
 .multi-selector-header{
     @apply flex-between;
     @apply gap-xs;
+}
+
+.multi-selector-selector {
+    @apply p-xs;
+    @apply rounded;
+    @apply flex;
+    @apply flex-col;
+    @apply gap-xs;
+}
+
+.multi-selector-wrap ul{
+    @apply flex;
+    @apply flex-wrap;
+    @apply gap-xs;
+    @apply p-0;
+    @apply m-0;
+    list-style: none;
+}
+
+.multi-selector-wrap .add-new-item{
+    @apply seperator-top;
+    @apply text-sm;
+    @apply text-link;
 }
 
 /* Binary Toggle rules */
@@ -177,11 +230,11 @@ textarea.text {
 
 .binary-toggle {
     @apply p-xxs;
-    @apply bg-background-alt;
+    @apply border-rules;
     @apply rounded;
     @apply text-xs;
-    @apply w-full;
 }
+
 
 .binary-toggle .toggle-switch input {
     @apply hidden;
@@ -191,32 +244,74 @@ textarea.text {
     @apply flex;
     @apply w-full;
     @apply h-full;
-    @apply p-xxs;
     @apply justify-between;
     position: relative;
+    user-select: none;
 }
 
 .binary-toggle .toggle-switch .toggle-slider {
-    @apply bg-foreground-alt;
+    @apply bg-foreground;
     position: absolute;
     z-index: 0;
-    top: var(--spacing-xxs);
+    top: 0;
     width: calc(50% - var(--spacing-xxs));
-    height: calc(100% - 2* var(--spacing-xxs));
+    bottom: 0;
     @apply rounded;
     @apply cursor-pointer;
-    @apply transition-all;
-    @apply duration-200;
-    transform: translateX(0);
+    transform: translateX(0) scaleX(1);
+    transform-origin: center center;
 }
 
+/* For unchecked to checked transition */
 .binary-toggle input:checked ~ .toggle-slider {
-    transform: translateX(100%);
+    animation-name: stretchRight;
+    animation-duration: 200ms; /* Slightly longer for smoother effect */
+    animation-fill-mode: forwards;
 }
+
+/* For checked to unchecked transition */
+.binary-toggle input:not(:checked) ~ .toggle-slider {
+    animation-name: stretchLeft;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+}
+
+/* Keyframes for stretching animation */
+@keyframes stretchRight {
+    0% {
+        transform: translateX(0) scaleX(1);
+    }
+    40% { /* Adjust timing for smoother stretch */
+        transform: translateX(calc(40% + var(--spacing-xxs))) scaleX(1.3);
+    }
+    70% { /* Add intermediate step for more natural movement */
+        transform: translateX(calc(80% + 1.5 * var(--spacing-xxs))) scaleX(1.1);
+    }
+    100% {
+        transform: translateX(calc(100% + 2 * var(--spacing-xxs))) scaleX(1);
+    }
+}
+
+@keyframes stretchLeft {
+    0% {
+        transform: translateX(calc(100% + 2 * var(--spacing-xxs))) scaleX(1);
+    }
+    40% {
+        transform: translateX(calc(60% + var(--spacing-xxs))) scaleX(1.3);
+    }
+    70% {
+        transform: translateX(calc(20% + 0.5 * var(--spacing-xxs))) scaleX(1.1);
+    }
+    100% {
+        transform: translateX(0) scaleX(1);
+    }
+}
+
 
 .binary-toggle .toggle-option{
     @apply text-center;
     @apply p-xxs;
+    @apply px-xs;
     @apply z-10;
     @apply relative;
     @apply cursor-pointer;
@@ -242,12 +337,12 @@ textarea.text {
 /* Resume page and editor page rules */
 .resume{
     @apply flex-even;
-    @apply gap-md;
+    @apply gap-xl;
     @apply w-full;
 }
 
 .resume .right{
-    @apply flex-3/10;
+    @apply flex-2/5;
     @apply flex;
     @apply w-full;
     @apply flex-col;
@@ -255,7 +350,7 @@ textarea.text {
 }
 
 .resume .left{
-    @apply flex-7/10;
+    @apply flex-3/5;
     @apply flex;
     @apply w-full;
     @apply flex-col;
