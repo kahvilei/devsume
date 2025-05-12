@@ -1,22 +1,33 @@
+// @/app/_components/editor/DataQueryEditor.tsx
+import React, {useCallback, useEffect, useState} from "react";
 import {BaseDataModel} from "@/interfaces/data";
 import {DataQuery} from "@/interfaces/api";
-import {useCallback, useEffect, useState} from "react";
-import {Pencil} from "lucide-react";
+import {Pencil, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Pill} from "@/app/_components/common/Pill";
+import SelectField, {DropdownOption} from "@/app/_components/editor/common/SelectField";
+import NumberField from "@/app/_components/editor/common/NumberField";
+import DateField from "@/app/_components/editor/common/DateField";
+import TextField from "@/app/_components/editor/text/TextField";
+import {Chip} from "@/app/_components/common/Chip";
 
 // MongoDB operators supported by the backend
 type MongoOperator = 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'nin' | 'regex';
+
+// Field types for specialized inputs
+type FieldType = 'text' | 'number' | 'date' | 'select';
+
+// Clarity design variants
+type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
+
+// Component sizes
+type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 interface FilterField {
     key: string;
     operator: MongoOperator;
     value: string;
-}
-
-interface DropdownOption {
-    value: string;
-    label: string;
+    fieldType?: FieldType;
 }
 
 interface OperatorOption {
@@ -28,28 +39,29 @@ interface OperatorOption {
 interface DataQueryEditorProps<T extends BaseDataModel> {
     query: DataQuery<T>;
     onSave: (query: DataQuery<T>) => void;
-    onCancel?: () => void; // Now optional
-    // Use queryFields from item manifest
+    onCancel?: () => void;
     queryFields: { [key: string]: string };
-    // Optional props
+    fieldTypes?: { [key: string]: FieldType };
     showEditToggle?: boolean;
     defaultOpen?: boolean;
     className?: string;
-    debounceTime?: number; // Added debounce time prop
+    debounceTime?: number;
+    variant?: ClarityVariant;
+    size?: Size;
 }
 
 export function DataQueryEditor<T extends BaseDataModel>
-(
-    {
-        query,
-        onSave,
-        onCancel,
-        queryFields,
-        showEditToggle = true,
-        defaultOpen = false,
-        className = '',
-        debounceTime = 500 // Default debounce time is 500ms
-    }: DataQueryEditorProps<T>) {
+({
+     query,
+     onSave,
+     queryFields,
+     fieldTypes = {},
+     showEditToggle = true,
+     defaultOpen = false,
+     className = '',
+     debounceTime = 500,
+     size = "md"
+ }: DataQueryEditorProps<T>) {
     const [localQuery, setLocalQuery] = useState<DataQuery<T>>({...query});
     const [filterFields, setFilterFields] = useState<FilterField[]>([]);
     const [activeSection, setActiveSection] = useState<string>('filters');
@@ -89,16 +101,13 @@ export function DataQueryEditor<T extends BaseDataModel>
 
             // Process filter object to extract fields, operators and values
             Object.entries(query.filter).forEach(([key, value]) => {
-                // Extract the operator name without the $ prefix
-                const operatorName = key.split(".")[1] as MongoOperator;
-                const fieldName = key.split(".")[0];
+                // Check if key contains an operator (e.g., "fieldName.$gt")
+                const keyParts = key.split(".");
+                const fieldName = keyParts[0];
+                const operatorPart = keyParts.length > 1 ? keyParts[1] : "eq";
 
-                // Convert operator name to our internal format
-                const operator = ({
-                    'eq': 'eq', 'ne': 'ne', 'gt': 'gt', 'lt': 'lt',
-                    'gte': 'gte', 'lte': 'lte', 'in': 'in', 'nin': 'nin',
-                    'regex': 'regex'
-                } as const)[operatorName];
+                // Convert operator name to our internal format or default to 'eq'
+                const operator = operatorPart as MongoOperator || 'eq';
 
                 // Handle array values for $in and $nin operators
                 let strValue = '';
@@ -110,13 +119,15 @@ export function DataQueryEditor<T extends BaseDataModel>
                     strValue = String(value);
                 }
 
-                if (operator) {
-                    fields.push({
-                        key: fieldName,
-                        operator,
-                        value: strValue
-                    });
-                }
+                // Determine field type from configuration or default to 'text'
+                const fieldType = fieldTypes[fieldName] || 'text';
+
+                fields.push({
+                    key: fieldName,
+                    operator,
+                    value: strValue,
+                    fieldType
+                });
             });
 
             setFilterFields(fields.length > 0 ? fields : [{key: '', operator: 'eq', value: ''}]);
@@ -131,7 +142,7 @@ export function DataQueryEditor<T extends BaseDataModel>
         if (JSON.stringify(localQuery) !== JSON.stringify(query)) {
             debouncedSave(localQuery);
         }
-    }, [localQuery, query]);
+    }, [localQuery]);
 
     // Clean up timeout on unmount
     useEffect(() => {
@@ -145,8 +156,13 @@ export function DataQueryEditor<T extends BaseDataModel>
     const handleFilterKeyChange = (index: number, value: string): void => {
         const updatedFields = [...filterFields];
         updatedFields[index].key = value;
+
+        // Set field type based on configuration or default to text
+        updatedFields[index].fieldType = fieldTypes[value] || 'text';
+
         // Reset the value when field changes, but keep the operator
         updatedFields[index].value = '';
+
         setFilterFields(updatedFields);
         updateFilterInQuery(updatedFields);
     };
@@ -172,13 +188,19 @@ export function DataQueryEditor<T extends BaseDataModel>
     const removeFilterField = (index: number): void => {
         const updatedFields = [...filterFields];
         updatedFields.splice(index, 1);
+
+        // Always keep at least one filter field
+        if (updatedFields.length === 0) {
+            updatedFields.push({key: '', operator: 'eq', value: ''});
+        }
+
         setFilterFields(updatedFields);
         updateFilterInQuery(updatedFields);
     };
 
     const updateFilterInQuery = (fields: FilterField[]): void => {
         // Build the filter object in the format expected by the backend
-        const newFilter: Record<string, object | string> = {};
+        const newFilter: Record<string, string | number | object> = {};
 
         fields.forEach(field => {
             if (field.key && field.value) {
@@ -187,14 +209,31 @@ export function DataQueryEditor<T extends BaseDataModel>
                     ? field.key
                     : `${field.key}.${field.operator}`;
 
-                // Process the value based on operator
-                let queryValue = field.value;
+                // Process the value based on operator and field type
+                let queryValue: string | number | object | undefined = field.value;
 
-                // For numeric operators, try to convert to number if possible
-                if (['gt', 'lt', 'gte', 'lte', 'eq', 'ne'].includes(field.operator)) {
-                    const numValue = Number(field.value);
-                    if (!isNaN(numValue)) {
-                        queryValue = String(numValue);
+                // For numeric operators and number fields, convert to number if possible
+                if ((field.fieldType === 'number' ||
+                        ['gt', 'lt', 'gte', 'lte', 'eq', 'ne'].includes(field.operator)) &&
+                    !isNaN(Number(field.value))) {
+                    queryValue = Number(field.value);
+                }
+
+                // For date fields, ensure proper date format
+                if (field.fieldType === 'date' && field.value) {
+                    const date = new Date(field.value);
+                    if (!isNaN(date.getTime())) {
+                        queryValue = date.toISOString();
+                    }
+                }
+
+                // For 'in' and 'nin' operators, convert comma-separated string to array
+                if ((field.operator === 'in' || field.operator === 'nin') && typeof queryValue === 'string') {
+                    queryValue = field.value.split(',').map(v => v.trim());
+
+                    // Convert numeric values in arrays if applicable
+                    if (field.fieldType === 'number') {
+                        queryValue = (queryValue as []).map((v: never) => !isNaN(Number(v)) ? Number(v) : v);
                     }
                 }
 
@@ -205,8 +244,8 @@ export function DataQueryEditor<T extends BaseDataModel>
 
         setLocalQuery(prev => ({
             ...prev,
-            filter: Object.keys(newFilter).length > 0 ? newFilter as object : undefined
-        }));
+            filter: Object.keys(newFilter).length > 0 ? newFilter : undefined
+        } as DataQuery<T>));
     };
 
     const handleSortChange = (value: string): void => {
@@ -243,11 +282,6 @@ export function DataQueryEditor<T extends BaseDataModel>
         return name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1');
     }
 
-    // Get the operator object for a given value
-    const getOperator = (value: MongoOperator) => {
-        return operatorOptions.find(op => op.value === value);
-    };
-
     // Count the active filters
     const activeFilterCount = filterFields.filter(f => f.key && f.value).length;
 
@@ -269,29 +303,95 @@ export function DataQueryEditor<T extends BaseDataModel>
         setIsEditorOpen(!isEditorOpen);
     };
 
+    // Render the appropriate field input based on field type
+    const renderValueField = (field: FilterField, index: number) => {
+        const fieldType = field.fieldType || 'text';
+
+        switch (fieldType) {
+            case 'number':
+                return (
+                    <NumberField
+                        label="Value"
+                        value={field.value}
+                        onChange={(value) => handleFilterValueChange(index, value)}
+                        placeholder="Enter number"
+                        size={size}
+                    />
+                );
+            case 'date':
+                return (
+                    <DateField
+                        label="Value"
+                        value={field.value}
+                        onChange={(value) => handleFilterValueChange(index, value)}
+                        placeholder="Select date"
+                        size={size}
+                    />
+                );
+            case 'select':
+                // For select fields, we'd need options from somewhere
+                // This is just a placeholder implementation
+                const fieldName = field.key;
+                const selectOptions: DropdownOption[] =
+                    // You would need to provide actual options for select fields
+                    [{value: "option1", label: "Option 1"}, {value: "option2", label: "Option 2"}];
+
+                return (
+                    <SelectField
+                        label={`${fieldName} value`}
+                        value={field.value}
+                        options={selectOptions}
+                        onChange={(value) => handleFilterValueChange(index, value)}
+                        placeholder="Select a value"
+                        size={size}
+                    />
+                );
+            default:
+                return (
+                    <TextField
+                        label="Value"
+                        value={field.value}
+                        onChange={(value) => handleFilterValueChange(index, value)}
+                        placeholder={field.operator === 'in' || field.operator === 'nin'
+                            ? "e.g. apple, orange"
+                            : field.operator === 'regex'
+                                ? "Regular expression"
+                                : "Enter value"}
+                        size={size}
+                    />
+                );
+        }
+    };
+
     return (
         <div className={`query-editor ${className}`}>
             <div className="query-pills">
                 <div className="query-pills-group">
                     <Pill
                         label="Filters"
-                        value={activeFilterCount}
+                        chip={activeFilterCount}
                         isActive={activeSection === 'filters' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('filters')}
+                        variant={"ghost"}
+                        size={size}
                     />
 
                     <Pill
                         label="Sort"
-                        value={sortDirectionIcon}
+                        chip={sortDirectionIcon}
                         isActive={activeSection === 'sorting' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('sorting')}
+                        variant={"ghost"}
+                        size={size}
                     />
 
                     <Pill
                         label="Limit"
-                        value={localQuery.limit}
+                        chip={localQuery.limit}
                         isActive={activeSection === 'limits' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('limits')}
+                        variant={"ghost"}
+                        size={size}
                     />
                 </div>
 
@@ -300,7 +400,7 @@ export function DataQueryEditor<T extends BaseDataModel>
                         icon={<Pencil size={16}/>}
                         action={toggleEditor}
                         tooltip={isEditorOpen ? "Close editor" : "Edit query"}
-                        className={isEditorOpen ? "active" : ""}
+                        size={size}
                     />
                 )}
             </div>
@@ -312,101 +412,50 @@ export function DataQueryEditor<T extends BaseDataModel>
                         <div className="query-section-content">
                             {filterFields.map((field, index) => (
                                 <div key={index}
-                                     className={`filter-card ${field.key && field.value ? 'filter-card-active' : ''}`}>
-                                    <div className="filter-card-header">
-                                        <span className="filter-number">{index + 1}</span>
-                                        <button
-                                            type="button"
-                                            className="filter-remove action-icon"
-                                            onClick={() => removeFilterField(index)}
-                                            aria-label="Remove filter"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                    <div className="filter-row">
-                                        {/* Field Name Dropdown */}
-                                        <div className="filter-group">
-                                            <label className="filter-label">Field</label>
-                                            <select
-                                                className="input filter-field"
-                                                value={field.key}
-                                                onChange={(e) => handleFilterKeyChange(index, e.target.value)}
-                                            >
-                                                <option value="">Select field</option>
-                                                {Object.entries(queryFields).map(([fieldName]) => (
-                                                    <option key={fieldName} value={fieldName}>
-                                                        {formatFieldName(fieldName)}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                     className={`filter-row ${field.key && field.value ? 'filter-row-active' : ''}`}>
+                                    <Chip color={`${field.key && field.value ? 'primary' : 'disabled'}`} text={(index + 1).toString()}/>
+                                    <div className="filter-fields">
+                                        <SelectField
+                                            label="Field"
+                                            value={field.key}
+                                            options={Object.entries(queryFields).map(([fieldName]) => ({
+                                                value: fieldName,
+                                                label: formatFieldName(fieldName)
+                                            }))}
+                                            onChange={(value) => handleFilterKeyChange(index, value)}
+                                            placeholder="Select field"
+                                            variant={"subtle"}
+                                            size={size}
+                                        />
 
-                                        {/* Operator Dropdown */}
-                                        <div className="filter-group">
-                                            <label className="filter-label">Operator</label>
-                                            {field.key ? (
-                                                <select
-                                                    className="input filter-field"
-                                                    value={field.operator}
-                                                    onChange={(e) => handleFilterOperatorChange(index, e.target.value as MongoOperator)}
-                                                >
-                                                    {operatorOptions.map((option) => (
-                                                        <option key={option.value} value={option.value}>
-                                                            {option.icon && `${option.icon} `}{option.label}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <select
-                                                    disabled
-                                                    className="input filter-field disabled"
-                                                >
-                                                    <option>Select a field first</option>
-                                                </select>
-                                            )}
-                                        </div>
+                                        <SelectField
+                                            label="Operator"
+                                            value={field.operator}
+                                            options={operatorOptions.map((option) => ({
+                                                value: option.value,
+                                                label: `${option.icon ? option.icon + ' ' : ''}${option.label}`
+                                            }))}
+                                            onChange={(value) => handleFilterOperatorChange(index, value as MongoOperator)}
+                                            placeholder="Select operator"
+                                            size={size}
+                                        />
 
-                                        {/* Value Input */}
-                                        <div className="filter-group">
-                                            <label className="filter-label">Value</label>
-                                            {field.key ? (
-                                                <div className="value-input-wrapper">
-                                                    {field.operator === 'in' || field.operator === 'nin' ? (
-                                                        <div className="filter-chip">Comma-separated values</div>
-                                                    ) : null}
-                                                    <input
-                                                        type="text"
-                                                        placeholder={field.operator === 'in' || field.operator === 'nin'
-                                                            ? "e.g. apple, orange"
-                                                            : field.operator === 'regex'
-                                                                ? "Regular expression"
-                                                                : "Enter value"}
-                                                        className="input filter-field"
-                                                        value={field.value}
-                                                        onChange={(e) => handleFilterValueChange(index, e.target.value)}
-                                                    />
-                                                    {field.operator && field.value && (
-                                                        <div className="operator-preview">
-                                                            {getOperator(field.operator)?.icon}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    disabled
-                                                    placeholder="Select a field first"
-                                                    className="input filter-field disabled"
-                                                />
-                                            )}
-                                        </div>
+                                        {renderValueField(field, index)}
                                     </div>
+
+                                    <ActionIcon
+                                        icon={<X size={16}/>}
+                                        action={() => removeFilterField(index)}
+                                        tooltip="Remove filter"
+                                        variant="ghost"
+                                        size={size}
+                                    />
                                 </div>
                             ))}
+
                             <button
                                 type="button"
-                                className="btn outline secondary btn-add-filter"
+                                className={`btn outline secondary btn-add-filter ${size}`}
                                 onClick={addFilterField}
                             >
                                 <span className="btn-icon">+</span>
@@ -419,18 +468,18 @@ export function DataQueryEditor<T extends BaseDataModel>
                     <div className={`query-section ${activeSection === 'sorting' ? 'active' : ''}`}>
                         <div className="query-section-content">
                             <div className="sort-container">
-                                <select
-                                    className="input sort-select"
+                                <SelectField
+                                    label="Sort by"
                                     value={localQuery.sort || ''}
-                                    onChange={(e) => handleSortChange(e.target.value)}
-                                >
-                                    <option value="">No sorting</option>
-                                    {sortOptions.map((option, i) => (
-                                        <option key={i} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={[
+                                        {value: '', label: 'No sorting'},
+                                        ...sortOptions
+                                    ]}
+                                    onChange={handleSortChange}
+                                    placeholder="Select sorting"
+                                    variant={"subtle"}
+                                    size={size}
+                                />
 
                                 {sortInfo && (
                                     <div className="sort-preview">
@@ -454,13 +503,14 @@ export function DataQueryEditor<T extends BaseDataModel>
                         <div className="query-section-content">
                             <div className="limit-container">
                                 <div className="limit-input-group">
-                                    <input
-                                        type="number"
-                                        className="input limit-input"
+                                    <NumberField
+                                        label="Limit"
+                                        value={localQuery.limit?.toString() || ''}
+                                        onChange={handleLimitChange}
                                         placeholder="No limit"
-                                        value={localQuery.limit || ''}
-                                        onChange={(e) => handleLimitChange(e.target.value)}
-                                        min="1"
+                                        variant={"subtle"}
+                                        size={size}
+                                        min={1}
                                     />
                                     <span className="text-sm">items</span>
                                 </div>
@@ -470,7 +520,11 @@ export function DataQueryEditor<T extends BaseDataModel>
                                         <button
                                             key={limit}
                                             type="button"
-                                            className={`limit-button ${localQuery.limit === limit ? 'limit-button-active' : 'limit-button-inactive'}`}
+                                            className={`btn limit-button ${size} ${
+                                                localQuery.limit === limit
+                                                    ? 'primary'
+                                                    : 'outline primary'
+                                            }`}
                                             onClick={() => setQuickLimit(limit)}
                                         >
                                             {limit}

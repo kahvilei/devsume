@@ -15,7 +15,6 @@ export default function BinaryToggle(
         onToggle,
         label = ["On", "Off"],
         elements = ["On", "Off"],
-        id = `toggle-${Math.random().toString(36).substring(2, 11)}`
     }: BinaryToggleProps
 ) {
 
@@ -25,22 +24,13 @@ export default function BinaryToggle(
     };
 
     return (
-            <div className="binary-toggle">
-                <label htmlFor={id} className="toggle-switch">
-                    <input
-                        id={id}
-                        aria-label={"Toggle " + label[0] + "/" + label[1]}
-                        type="checkbox"
-                        checked={state}
-                        tabIndex={0}
-                    />
-                    <span className="toggle-slider"></span>
-
+            <div className="binary-toggle" role="radiogroup">
+                <label className="toggle-switch">
                     <span
-                        aria-selected={state}
+                        aria-checked={state}
                         className="toggle-1 toggle-option"
                         onClick={() => handleOptionClick(false)}
-                        role="button"
+                        role="radio"
                         tabIndex={0}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -53,13 +43,11 @@ export default function BinaryToggle(
                         {elements[0]}
                         </Tooltip>
                     </span>
-
-
                     <span
-                        aria-selected={!state}
+                        aria-checked={!state}
                         className="toggle-2 toggle-option"
                         onClick={() => handleOptionClick(true)}
-                        role="button"
+                        role="radio"
                         tabIndex={0}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -72,7 +60,7 @@ export default function BinaryToggle(
                         {elements[1]}
                         </Tooltip>
                     </span>
-
+                    <span className="toggle-slider"></span>
                 </label>
             </div>
     );

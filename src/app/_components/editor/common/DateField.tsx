@@ -1,0 +1,84 @@
+// @/app/_components/editor/common/DateField.tsx
+import React from 'react';
+import Tooltip from "@/app/_components/common/Tooltip";
+import {Calendar} from "lucide-react";
+import {TooltipPosition} from './SelectField';
+
+type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
+type Size = "xs" | "sm" | "md" | "lg" | "xl";
+
+export interface DateFieldProps {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    variant?: ClarityVariant;
+    size?: Size;
+    showTooltip?: boolean;
+    tooltipPosition?: TooltipPosition;
+    disabled?: boolean;
+    className?: string;
+    id?: string;
+    min?: string; // ISO date string for min date
+    max?: string; // ISO date string for max date
+}
+
+/**
+ * DateField component - A styled date input with icon and tooltip support
+ *
+ * Provides a consistent interface for date inputs with validation.
+ */
+const DateField: React.FC<DateFieldProps> =
+    ({
+         label,
+         value,
+         onChange,
+         placeholder = "Select date",
+         variant = "subtle",
+         size = "md",
+         showTooltip = true,
+         tooltipPosition = "left",
+         disabled = false,
+         className = "",
+         id,
+         min,
+         max
+     }) => {
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (!disabled) {
+                onChange(e.target.value);
+            }
+        };
+
+        const dateContent = (
+            <div className={`date-field-wrap ${size} ${className}`}>
+                <div className="date-field-container clarity-ghost">
+                    <Calendar size={16} className="field-icon"/>
+                    <input
+                        id={id}
+                        type="date"
+                        value={value}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        className={`clarity-${variant} input date-field ${size}`}
+                        disabled={disabled}
+                        aria-label={label}
+                        min={min}
+                        max={max}
+                    />
+                </div>
+            </div>
+        );
+
+        if (showTooltip && label) {
+            return (
+                <Tooltip text={label} position={tooltipPosition}>
+                    {dateContent}
+                </Tooltip>
+            );
+        }
+
+        return dateContent;
+    };
+
+export default DateField;

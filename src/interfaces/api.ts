@@ -5,7 +5,7 @@ export interface PageProps {
 
 export interface DataQuery<T> {
     filter?: {
-        [K in keyof T]?: string;
+        [K in keyof T]?: string | number | string[] | number[];
     }
     sort?: string;
     limit?: number;
