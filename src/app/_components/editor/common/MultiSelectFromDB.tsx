@@ -103,9 +103,9 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
     };
 
     return (
-        <div className="multi-selector-wrap">
-            <div className="multi-selector-controls">
-                <div className="multi-selector-header">
+        <div className="multi-selector">
+            <div className="controls">
+                <div className="header">
                     <div className="flex-grow">
                         <EditableText order={'h4'} value={title}
                                       label={(manifest.names?.singular ?? dataKey) + " section title"}
@@ -116,7 +116,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     <ActionIcon icon={<SettingsIcon/>} action={() => setControlsOpen(!controlsOpen)}
                                 tooltip={controlsOpen ? "Hide controls" : "Show controls"}/>
                 </div>
-                <div className={"multi-selector-selector " + (controlsOpen ? "open" : "closed")}>
+                <div className={"selector " + (controlsOpen ? "open" : "closed")}>
 
                     {isDynamic && (
                         <DataQueryEditor
@@ -186,7 +186,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
             <div
                 aria-label={label}
                 aria-haspopup="listbox"
-                className="multi-selector-content"
+                className="content"
             >
                 {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
                     <div
@@ -200,7 +200,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                 {/* Show selected items for both modes */}
                 <ul
                     role="items"
-                    className="multi-selector-selected-items"
+                    className="selected-items"
                     aria-label="Selected Items"
                 >
                     {(isDynamic ? list : selectedItems).map((option) => (

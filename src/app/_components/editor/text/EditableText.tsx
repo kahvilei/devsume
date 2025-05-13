@@ -28,7 +28,7 @@ export default function EditableText(
         variant = "ghost"
     }: EditableTextProps) {
     const content = (
-        <div className="editable-text-wrap">
+        <div className="editable-text">
             <div className="editable-text-error"></div>
             <div className="editable-text-warning"></div>
             <div aria-hidden className={`${order} text proxy`}>

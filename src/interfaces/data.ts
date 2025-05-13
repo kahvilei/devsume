@@ -7,6 +7,12 @@ export interface BaseDataModel {
 
 export interface PreviewProps<T extends BaseDataModel> {
     item: T;
+    onClick?: () => void;
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    className?: string;
+    disabled?: boolean;
+    onDelete?: (item: T) => void;
+    setIsEditing?: (bool: boolean) => void;
 }
 
 export interface EditProps<T extends BaseDataModel> {

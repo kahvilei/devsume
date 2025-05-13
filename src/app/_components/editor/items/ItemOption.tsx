@@ -14,16 +14,20 @@ interface ItemOptionProps<T extends BaseDataModel> {
     openEditInModal?: boolean;
 }
 
-export default function ItemOption<T extends BaseDataModel>({
-                                                                item,
-                                                                isSelected,
-                                                                onSelect = () => {},
-                                                                onDelete = () => {},
-                                                                onEdit = () => {},
-                                                                Renderer,
-                                                                Form,
-                                                                openEditInModal = false,
-                                                            }: ItemOptionProps<T>) {
+export default function ItemOption<T extends BaseDataModel>(
+    {
+        item,
+        isSelected,
+        onSelect = () => {
+        },
+        onDelete = () => {
+        },
+        onEdit = () => {
+        },
+        Renderer,
+        Form,
+        openEditInModal = false,
+    }: ItemOptionProps<T>) {
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
     const handleEdit = (updatedItem: T) => {
@@ -32,7 +36,7 @@ export default function ItemOption<T extends BaseDataModel>({
     };
 
     // Default renderer component
-    const DefaultRenderer: React.FC<PreviewProps<T>> = ({ item }) => <>{item.title}</>;
+    const DefaultRenderer: React.FC<PreviewProps<T>> = ({item}) => <>{item.title}</>;
 
     // Use provided Renderer or default
     const ItemRenderer = Renderer || DefaultRenderer;
@@ -51,27 +55,15 @@ export default function ItemOption<T extends BaseDataModel>({
             aria-selected={isSelected}
         >
             <div className="flex items-center">
-                <ItemRenderer item={item} />
+                <ItemRenderer
+                    item={item}
+                    onDelete={onDelete}
+                    setIsEditing={setIsEditing}
+                    onClick={() => {
+                        onSelect(item);
+                    }}
+                />
                 {isSelected && <span className="text-xs text-gray-500">Selected</span>}
-            </div>
-            <div className="flex items-center">
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsEditing(true);
-                    }}
-                    className="mr-2"
-                >
-                    Edit
-                </button>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(item);
-                    }}
-                >
-                    Delete
-                </button>
             </div>
 
             {/* Render edit form based on modal preference */}

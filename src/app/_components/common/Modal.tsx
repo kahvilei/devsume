@@ -11,7 +11,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
   if (!isOpen) return null;
 
   return (
-      <div className="modal-overlay">
+      <div className="modal">
         <div className="modal-backdrop" onClick={onClose}></div>
         <div className="modal-container">
           <div className="modal-header">

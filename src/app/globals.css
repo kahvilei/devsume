@@ -1,11 +1,165 @@
 @import "tailwindcss";
 
+/** actual theme config - need to use these as a base for quick live updates**/
+:root{
+
+
+}
+
 /*
-  Theme Configuration
-  ------------------
-  All design tokens are defined here for easy theming
+  Tailwind Theme Configuration
 */
 @theme {
+    --devsume-colors-primary: #cc4675;
+    --devsume-colors-secondary: #54c3d7;
+    --devsume-colors-tertiary: #76c972;
+    --devsume-colors-quaternary: #92b2e7;
+    --devsume-colors-success: #28a745;
+    --devsume-colors-info: #17a2b8;
+    --devsume-colors-warning: #ffc107;
+    --devsume-colors-danger: #dc3545;
+
+    --devsume-colors-disabled: #6c757d;
+
+    --devsume-colors-background: #ffffff;
+    --devsume-colors-background-alt: #efeded;
+    --devsume-colors-foreground: #1f1f1f;
+    --devsume-colors-foreground-alt: #151515;
+
+    --devsume-colors-headings: #3d3d3d;
+    --devsume-colors-link: var(--devsume-colors-primary);
+    --devsume-colors-overlay: rgba(0, 0, 0, 0.5);
+
+    --devsume-typography-h1-size: 3rem;
+    --devsume-typography-h2-size: 1.5rem;
+    --devsume-typography-h3-size: 1.25rem;
+    --devsume-typography-h4-size: 1rem;
+    --devsume-typography-h5-size: 0.875rem;
+    --devsume-typography-h6-size: 0.75rem;
+    --devsume-typography-body-size: 1rem;
+
+    --devsume-typography-h1-weight: 700;
+    --devsume-typography-h2-weight: 400;
+    --devsume-typography-h3-weight: 700;
+    --devsume-typography-h4-weight: 600;
+    --devsume-typography-h5-weight: 400;
+    --devsume-typography-h6-weight: 400;
+
+    --devsume-typography-body-weight: 400;
+
+    --devsume-borders-border-width: 0.1rem;
+    --devsume-borders-border-color: var(--devsume-colors-foreground);
+    --devsume-borders-border-radius: 0.375rem;
+
+    --devsume-spacing-xxs: 0.125rem;
+    --devsume-spacing-xs: 0.5rem;
+    --devsume-spacing-sm: 1rem;
+    --devsume-spacing-md: 2rem;
+    --devsume-spacing-lg: 3rem;
+    --devsume-spacing-xl: 4rem;
+
+    --devsume-sizes-content: 75rem;
+
+    /* Ghost style - discreet dashed outline */
+    --devsume-content-style-bg-color-1: transparent;
+    --devsume-content-style-fg-color-1: var(--devsume-colors-foreground);
+    --devsume-content-style-border-color-1: var(--devsume-colors-foreground);
+    --devsume-content-style-border-radius-1: 0.375rem;
+    --devsume-content-style-border-width-1: 0.05rem;
+    --devsume-contnet-style-border-style-1: dashed;
+    --devsume-content-style-padding-1: inherit;
+    --devsume-content-style-box-shadow-1: inherit;
+    --devsume-content-style-hover-bg-color-1: inherit;
+    --devsume-content-style-hover-fg-color-1: inherit;
+    --devsume-content-style-hover-border-color-1: var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-width-1: 0.2rem;
+    --devsume-content-style-hover-border-style-1: dashed;
+    --devsume-content-style-active-bg-color-1: inherit;
+    --devsume-content-style-active-fg-color-1: inherit;
+    --devsume-content-style-active-border-color-1: inherit;
+    --devsume-content-style-active-border-width-1: inherit;
+    --devsume-content-style-active-border-style-1: dashed;
+
+    /* Subtle style - light background */
+    --devsume-content-style-bg-color-2: var(--devsume-colors-background-alt);
+    --devsume-content-style-fg-color-2: var(--devsume-colors-foreground-alt);
+    --devsume-content-style-border-color-2: var(--devsume-colors-foreground-alt);
+    --devsume-content-style-border-radius-2: 0.375rem;
+    --devsume-content-style-border-width-2: 0.1rem;
+    --devsume-content-style-border-style-2: solid;
+    --devsume-content-style-padding-2: inherit;
+    --devsume-content-style-box-shadow-2: inherit;
+    --devsume-content-style-hover-bg-color-2: inherit;
+    --devsume-content-style-hover-fg-color-2: inherit;
+    --devsume-content-style-hover-border-color-2: var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-width-2: 0.1rem;
+    --devsume-content-style-hover-border-style-2: solid;
+    --devsume-content-style-active-bg-color-2: inherit;
+    --devsume-content-style-active-fg-color-2: inherit;
+    --devsume-content-style-active-border-color-2: inherit;
+    --devsume-content-style-active-border-width-2: inherit;
+    --devsume-content-style-active-border-style-2: solid;
+
+    /* Default style - solid outline */
+    --devsume-content-style-bg-color-3: transparent;
+    --devsume-content-style-fg-color-3: var(--devsume-colors-foreground);
+    --devsume-content-style-border-color-3: var(--devsume-colors-foreground);
+    --devsume-content-style-border-radius-3: 0.375rem;
+    --devsume-content-style-border-width-3: 0.1rem;
+    --devsume-content-style-border-style-3: solid;
+    --devsume-content-style-padding-3: inherit;
+    --devsume-content-style-box-shadow-3: inherit;
+    --devsume-content-style-hover-bg-color-3: inherit;
+    --devsume-content-style-hover-fg-color-3: inherit;
+    --devsume-content-style-hover-border-color-3: var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-width-3: 0.1rem;
+    --devsume-content-style-hover-border-style-3: solid;
+    --devsume-content-style-active-bg-color-3: inherit;
+    --devsume-content-style-active-fg-color-3: inherit;
+    --devsume-content-style-active-border-color-3: inherit;
+    --devsume-content-style-active-border-width-3: inherit;
+    --devsume-content-style-active-border-style-3: solid;
+
+    /* Emphasis style - dark background */
+    --devsume-content-style-bg-color-4: var(--devsume-colors-foreground-alt);
+    --devsume-content-style-fg-color-4: var(--devsume-colors-background-alt);
+    --devsume-content-style-border-color-4: var(--devsume-colors-background-alt);
+    --devsume-content-style-border-radius-4: 0.375rem;
+    --devsume-content-style-border-width-4: inherit;
+    --devsume-content-style-border-style-4: inherit;
+    --devsume-content-style-padding-4: inherit;
+    --devsume-content-style-box-shadow-4: inherit;
+    --devsume-content-style-hover-bg-color-4: inherit;
+    --devsume-content-style-hover-fg-color-4: inherit;
+    --devsume-content-style-hover-border-color-4: var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-width-4: inherit;
+    --devsume-content-style-hover-border-style-4: inherit;
+    --devsume-content-style-active-bg-color-4: inherit;
+    --devsume-content-style-active-fg-color-4: inherit;
+    --devsume-content-style-active-border-color-4: inherit;
+    --devsume-content-style-active-border-width-4: inherit;
+    --devsume-content-style-active-border-style-4: inherit;
+
+    /* Prominent style - inverted colors */
+    --devsume-content-style-bg-color-5: var(--devsume-colors-foreground);
+    --devsume-content-style-fg-color-5: var(--devsume-colors-background);
+    --devsume-content-style-border-color-5: var(--devsume-colors-background);
+    --devsume-content-style-border-radius-5: 0.375rem;
+    --devsume-content-style-border-width-5: inherit;
+    --devsume-content-style-border-style-5: inherit;
+    --devsume-content-style-padding-5: inherit;
+    --devsume-content-style-box-shadow-5: inherit;
+    --devsume-content-style-hover-bg-color-5: inherit;
+    --devsume-content-style-hover-fg-color-5: inherit;
+    --devsume-content-style-hover-border-color-5: var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-width-5: 0.1rem;
+    --devsume-content-style-hover-border-style-5: inherit;
+    --devsume-content-style-active-bg-color-5: inherit;
+    --devsume-content-style-active-fg-color-5: inherit;
+    --devsume-content-style-active-border-color-5: inherit;
+    --devsume-content-style-active-border-width-5: inherit;
+    --devsume-content-style-active-border-style-5: inherit;
+
     /* Spacing System */
     --spacing-xxs: 0.125rem;
     --spacing-xs: 0.5rem;
@@ -22,7 +176,7 @@
 
     /* Color System */
     /* Primary palette */
-    --color-primary: #e1226b;
+    --color-primary: #cc4675;
     --color-secondary: #54c3d7;
     --color-tertiary: #76c972;
     --color-quaternary: #92b2e7;
@@ -135,10 +289,7 @@ body {
   Utility Classes
   ------------------
 */
-/* Layout utilities */
-@utility flex-layout {
-    @apply flex;
-}
+/* Extra flex utilities */
 
 @utility flex-center {
     @apply flex items-center justify-center;
@@ -165,6 +316,8 @@ body {
 }
 
 
+
+
 /* Border utilities */
 
 @utility border-rules {
@@ -176,12 +329,8 @@ body {
     border-width: var(--spacing-border-width);
 }
 
-@utility separator {
-    @apply border-dashed;
-}
-
-@utility separator-top {
-    @apply separator border-t pt-xs;
+@utility separator-* {
+    @apply border-dashed pt-xs border-t;
 }
 
 @utility discreet-outline {
@@ -189,7 +338,7 @@ body {
 }
 
 @utility discreet-border {
-    @apply outline rounded outline-dashed outline-offset-[-1px];
+    @apply discreet-outline;
 }
 
 /* Interactive elements */
@@ -203,11 +352,10 @@ body {
     @apply interactive hover:scale-105;
 }
 
-@utility focus-visible {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary;
-}
+/*
+    Input styles
+*/
 
-/* Input styles */
 @utility input-outline {
     @apply discreet-outline;
     @apply focus:outline-primary focus:outline-2;
@@ -267,9 +415,10 @@ body {
 }
 
 /*
-   Clarity Styles
-   -----------------
+    Content Styles
 */
+
+
 
 @utility background-bg {
     @apply bg-background;
@@ -320,78 +469,94 @@ body {
     @apply opacity-50;
 }
 
-@utility clarity-ghost {
-    @apply discreet-border rounded;
+@utility content-style-* {
+    background-color: --value(--devsume-content-style-bg-color-*);
+    color: --value(--devsume-content-style-fg-color-*);
+    border-color: --value(--devsume-content-style-border-color-*);
+    border-radius: --value(--devsume-content-style-border-radius-*);
+    border-width: --value(--devsume-content-style-border-width-*);
+    border-style: --value(--devsume-content-style-border-style-*);
+    padding: --value(--devsume-content-style-padding-*);
+    box-shadow: --value(--devsume-content-style-box-shadow-*);
+    transition-duration: --value(--devsume-transition-duration-normal-*);
+
+    &.with-hover:hover {
+        background-color: --value(--devsume-content-style-hover-bg-color-*);
+        color: --value(--devsume-content-style-hover-fg-color-*);
+        border-color: --value(--devsume-content-style-hover-border-color-*);
+        border-width: --value(--devsume-content-style-hover-border-width-*);
+        border-style: --value(--devsume-content-style-hover-border-style-*);
+    }
+
+    &.with-active:active {
+        background-color: --value(--devsume-content-style-active-bg-color-*);
+        color: --value(--devsume-content-style-active-fg-color-*);
+        border-color: --value(--devsume-content-style-active-border-color-*);
+        border-width: --value(--devsume-content-style-active-border-width-*);
+        border-style: --value(--devsume-content-style-active-border-style-*);
+    }
+
+    &.with-focus:focus {
+        background-color: --value(--devsume-content-style-active-bg-color-*);
+        color: --value(--devsume-content-style-active-fg-color-*);
+        border-color: --value(--devsume-content-style-active-border-color-*);
+        border-width: --value(--devsume-content-style-active-border-width-*);
+        border-style: --value(--devsume-content-style-active-border-style-*);
+    }
 }
 
-.clarity-ghost {
-    @apply clarity-ghost;
+@utility clarity-ghost {
+    @apply discreet-border rounded;
 }
 
 @utility clarity-subtle {
     @apply background-bg-alt rounded;
 }
 
-.clarity-subtle {
-    @apply clarity-subtle;
-}
-
 @utility clarity-default {
     @apply border-rules rounded;
-}
-
-.clarity-default {
-    @apply clarity-default;
 }
 
 @utility clarity-emphasis {
     @apply background-fg-alt rounded;
 }
 
-.clarity-emphasis {
-    @apply clarity-emphasis;
-}
-
 @utility clarity-prominent {
     @apply background-fg rounded;
 }
 
-.clarity-prominent {
-    @apply clarity-prominent;
-}
-
 @utility clarity-hover {
-    +.clarity-ghost {
+    &.clarity-ghost {
         @apply hover:outline-primary hover:outline-2;
     }
-    +.clarity-subtle {
+    &.clarity-subtle {
         @apply hover:outline-primary;
     }
-    +.clarity-default {
+    &.clarity-default {
         @apply hover:outline-primary;
     }
-    +.clarity-emphasis {
+    &.clarity-emphasis {
         @apply hover:outline-primary;
     }
-    +.clarity-prominent {
+    &.clarity-prominent {
         @apply hover:outline-primary;
     }
 }
 
 @utility clarity-focus {
-    +.clarity-ghost {
+    &.clarity-ghost {
         @apply focus:outline-primary focus:outline-2;
     }
-    +.clarity-subtle {
+    &.clarity-subtle {
         @apply focus:outline-primary;
     }
-    +.clarity-default {
+    &.clarity-default {
         @apply focus:outline-primary;
     }
-    +.clarity-emphasis {
+    &.clarity-emphasis {
         @apply focus:outline-primary;
     }
-    +.clarity-prominent {
+    &.clarity-prominent {
         @apply focus:outline-primary;
     }
 }
@@ -401,617 +566,639 @@ body {
 }
 
 @utility clarity-active {
-    +.active.clarity-ghost {
+    &.active.clarity-ghost {
         @apply border-rules;
     }
 }
 
-/*
-  Component Styles
-  ------------------
-*/
-
-/* Button Component */
-.btn {
-    @apply border border-solid border-foreground rounded;
-    border-width: var(--spacing-border-width);
-    @apply interactive rounded
-    flex items-center justify-center transition-all;
-    height: var(--spacing-button-height);
-    width: max-content;
-    padding: var(--spacing-xs);
-    gap: var(--spacing-xxs); /* Space between icon and text */
-    line-height: 1;
-}
-
-/* Apply reduced left padding when an icon is present */
-.btn.has-icon {
-    padding-left: var(--spacing-xxs);
-}
-
-/* Icon styling */
-.btn-icon {
-    @apply flex items-center justify-center;
-    height: 100%;
-}
-
-.btn-icon svg {
-    height: 100%;
-}
-
-/* Default solid color buttons */
-.btn.reverse {
-    @apply bg-foreground text-background border-background;
-}
-
-.btn.reverse:not(:disabled):hover {
-    @apply bg-background text-foreground;
-}
-
-.btn.primary {
-    @apply bg-primary text-background border-primary;
-}
-
-.btn.primary:not(:disabled):hover {
-    @apply bg-background text-primary;
-}
-
-.btn.secondary {
-    @apply bg-secondary text-background border-secondary;
-}
-
-.btn.secondary:not(:disabled):hover {
-    @apply bg-background text-secondary;
-}
-
-.btn.tertiary {
-    @apply bg-tertiary text-background border-tertiary;
-}
-
-.btn.tertiary:not(:disabled):hover {
-    @apply bg-background text-tertiary;
-}
-
-.btn.quaternary {
-    @apply bg-quaternary text-background border-quaternary;
-}
-
-.btn.quaternary:not(:disabled):hover {
-    @apply bg-background text-quaternary;
-}
-
-/* Outline buttons - base style */
-.btn.outline {
-    @apply bg-transparent border-foreground text-foreground;
-}
-
-/* Outline with color variants */
-.btn.outline.primary {
-    @apply border-primary text-primary;
-}
-
-.btn.outline.primary:not(:disabled):hover {
-    @apply bg-primary text-background;
-}
-
-.btn.outline.secondary {
-    @apply border-secondary text-secondary;
-}
-
-.btn.outline.secondary:not(:disabled):hover {
-    @apply bg-secondary text-background;
-}
-
-.btn.outline.tertiary {
-    @apply border-tertiary text-tertiary;
-}
-
-.btn.outline.tertiary:not(:disabled):hover {
-    @apply bg-tertiary text-background;
-}
-
-.btn.outline.quaternary {
-    @apply border-quaternary text-quaternary;
-}
-
-.btn.outline.quaternary:not(:disabled):hover {
-    @apply bg-quaternary text-background;
-}
-
-/* Button sizes */
-.btn.xs {
-    height: calc(var(--spacing-button-height) * .65);
-    @apply text-xs;
-}
-
-.btn.sm {
-    height: calc(var(--spacing-button-height) * .85);
-    @apply text-sm;
-}
-
-.btn.lg {
-    @apply text-lg;
-    height: calc(var(--spacing-button-height) * 1.25);
-}
-
-.btn.xl {
-    @apply text-xl;
-    height: calc(var(--spacing-button-height) * 1.5);
-}
-
-/* Default hover state - for buttons without specific color classes */
-.btn:not(.primary):not(.secondary):not(.tertiary):not(.quaternary):not(.reverse):not(:disabled):hover {
-    @apply bg-foreground text-background;
-    transform: scale(1.05);
-}
-
-/* Scale transform for all buttons */
-.btn:not(:disabled):hover {
-    transform: scale(1.05);
-}
-
-/* Disabled state */
-.btn:disabled {
-    @apply opacity-50 cursor-not-allowed;
-    transform: none !important;
-}
-
-/* MultiSelectFromDB Component */
-.multi-selector-wrap {
-    @apply rounded flex flex-col gap-xs w-full relative;
-}
-
-.multi-selector-controls {
-    @apply transition-all relative ;
-    height: min-content;
-}
-
-.multi-selector-header {
-    @apply flex-between flex-top gap-xs;
-}
-
-.multi-selector-header .editable-text-wrap {
-    height: 100%;
-}
-
-.multi-selector-selector {
-    @apply flex flex-col mt-xs gap-xs overflow-hidden h-0 px-xs w-full transition-all outline-1;
-    transition-duration: var(--transition-duration-normal);
-}
-
-.multi-selector-selector.open {
-    @apply h-auto p-xs clarity-default;
-}
-
-.multi-selector-wrap ul {
-    @apply flex flex-wrap gap-xs p-0 m-0;
-    list-style: none;
-}
-
-.multi-selector-content {
-    @apply clarity-ghost p-xs;
-}
-
-.multi-selector-wrap .buttons {
-    @apply separator-top w-full flex-right;
-}
-
-.item-selector-placeholder{
-    @apply dimmed text-sm italic;
-}
-
-.connector {
-    @apply h-2;
-    @apply left-2 bottom-[calc(-1.9*var(--spacing-xs))];
-    position: absolute;
-}
-
-/* Binary Toggle Component */
-.binary-toggle {
-    @apply p-xxs clarity-default text-xs grow-on-hover;
-    height: var(--spacing-button-height);
-    user-focus: key;
-}
-
-.binary-toggle .toggle-switch {
-    @apply flex w-full h-full justify-between;
-    position: relative;
-}
-
-.binary-toggle .toggle-switch .toggle-slider {
-    @apply clarity-prominent interactive;
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    width: calc(50% - var(--spacing-xxs)/2);
-    bottom: 0;
-    transform: translateX(0);
-}
-
-.binary-toggle .toggle-1[aria-checked="true"] ~ .toggle-slider {
-    animation-name: stretchXRight;
-    animation-duration: var(--transition-duration-normal);
-    animation-fill-mode: forwards;
-}
-
-.binary-toggle .toggle-2[aria-checked="true"] ~ .toggle-slider {
-    animation-name: stretchXLeft;
-    animation-duration: var(--transition-duration-normal);
-    animation-fill-mode: forwards;
-}
-
-.binary-toggle .toggle-option {
-    @apply text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
-    transition-duration: var(--transition-duration-normal);
-    width: 50%;
-}
-
-.binary-toggle .toggle-option[aria-checked="true"] {
-    @apply text-foreground;
-}
-
-.binary-toggle .toggle-option[aria-checked="false"] {
-    @apply text-background;
-}
-
-/* Resume Component */
-.resume {
-    @apply flex-even gap-xl w-full flex-col sm:flex-row;
-}
-
-.resume .right {
-    @apply flex-2/5 flex w-full flex-col gap-md;
-}
-
-.resume .left {
-    @apply flex-3/5 flex w-full flex-col gap-md;
-}
-
-.resume .title-description,
-.resume section {
-    @apply flex w-full flex-col gap-xs;
-    line-height: 1.1;
-}
-
-/* ActionIcon Component */
-.action-icon {
-    @apply grow-on-hover flex-center rounded cursor-pointer transition-all relative focus-visible;
-    @apply hover:background-bg-alt;
-    width: var(--spacing-button-height);
-    height: var(--spacing-button-height);
-}
-
-/* Size variants */
-.action-icon.xs {
-    @apply h-2 w-2;
-}
-
-.action-icon.sm {
-    @apply h-3 w-3;
-}
+@layer components {
+    /*
+        Button Component
+    */
+    .btn {
+        @apply border border-solid border-foreground rounded;
+        @apply interactive rounded flex items-center justify-center transition-all;
+        border-width: var(--spacing-border-width);
+        height: var(--spacing-button-height);
+        width: max-content;
+        padding: var(--spacing-xs);
+        gap: var(--spacing-xxs);
+        line-height: 1;
+
+        /* Icon handling */
+
+        &.has-icon {
+            padding-left: var(--spacing-xxs);
+        }
+
+        .btn-icon {
+            @apply flex items-center justify-center;
+            height: 100%;
+
+            svg {
+                height: 100%;
+            }
+        }
+
+        /* Size variants */
+
+        &.xs {
+            @apply text-xs;
+            height: calc(var(--spacing-button-height) * .65);
+        }
+
+        &.sm {
+            @apply text-sm;
+            height: calc(var(--spacing-button-height) * .85);
+        }
+
+        &.lg {
+            @apply text-lg;
+            height: calc(var(--spacing-button-height) * 1.25);
+        }
+
+        &.xl {
+            @apply text-xl;
+            height: calc(var(--spacing-button-height) * 1.5);
+        }
+
+        /* Color variants */
+
+        &.reverse {
+            @apply bg-foreground text-background border-background;
+
+            &:not(:disabled):hover {
+                @apply bg-background text-foreground;
+            }
+        }
+
+        &.primary {
+            @apply bg-primary text-background border-primary;
+
+            &:not(:disabled):hover {
+                @apply bg-background text-primary;
+            }
+        }
+
+        &.secondary {
+            @apply bg-secondary text-background border-secondary;
+
+            &:not(:disabled):hover {
+                @apply bg-background text-secondary;
+            }
+        }
+
+        &.tertiary {
+            @apply bg-tertiary text-background border-tertiary;
+
+            &:not(:disabled):hover {
+                @apply bg-background text-tertiary;
+            }
+        }
+
+        &.quaternary {
+            @apply bg-quaternary text-background border-quaternary;
+
+            &:not(:disabled):hover {
+                @apply bg-background text-quaternary;
+            }
+        }
+
+        /* Outline variants */
+
+        &.outline {
+            @apply bg-transparent border-foreground text-foreground;
+
+            &.primary {
+                @apply border-primary text-primary;
+
+                &:not(:disabled):hover {
+                    @apply bg-primary text-background;
+                }
+            }
 
-.action-icon.lg {
-    @apply h-4 w-4;
-}
-
-.action-icon.xl {
-    @apply h-5 w-5;
-}
-
-.action-icon.disabled {
-    @apply opacity-50 cursor-not-allowed;
-    transform: none !important;
-}
-
-/*
-  Tooltip Component
-  ------------------
-*/
-.tooltip-container {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip {
-    position: absolute;
-    @apply clarity-prominent p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 10;
-    transition-duration: var(--transition-duration-normal);
-}
-
-/* Tooltip position variants */
-.tooltip-below {
-    bottom: -2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(0.5rem);
-}
-
-.tooltip-above {
-    top: -2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(-0.5rem);
-}
-
-.tooltip-left {
-    top: 50%;
-    right: calc(100% + 0.5rem);
-    transform: translateY(-50%) translateX(-0.5rem);
-}
-
-.tooltip-right {
-    top: 50%;
-    left: calc(100% + 0.5rem);
-    transform: translateY(-50%) translateX(0.5rem);
-}
-
-/* Tooltip hover effects */
-.tooltip-container:hover > .tooltip {
-    @apply opacity-100;
-}
-
-.tooltip-container:hover > .tooltip-below {
-    transform: translateX(-50%) translateY(0);
-}
-
-.tooltip-container:hover > .tooltip-above {
-    transform: translateX(-50%) translateY(0);
-}
-
-.tooltip-container:hover > .tooltip-left {
-    transform: translateY(-50%) translateX(0);
-}
-
-.tooltip-container:hover > .tooltip-right {
-    transform: translateY(-50%) translateX(0);
-}
-
-/*
-  EditableText Component - Updated with pencil icon
-  ------------------
-*/
-.editable-text-wrap {
-    position: relative;
-    max-width: 100%;
-    @apply input-padding;
-}
-
-/* Keep the existing EditableText styles */
-input, textarea.text {
-    @apply input-outline input-padding overflow-hidden;
-    text-wrap: wrap;
-    max-width: 100%;
-}
-
-.text.proxy {
-    @apply h-full;
-    text-wrap: wrap;
-    opacity: 0;
-}
-
-textarea.text {
-    @apply resize-none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-/*
-  Modal Component
-  ------------------
-*/
-.modal-overlay {
-    @apply fixed inset-0 z-50 flex-center;
-}
-
-.modal-backdrop {
-    @apply fixed inset-0 background-fg;
-}
-
-.modal-container {
-    @apply background-bg rounded-lg clarity-default z-10 max-w-content mx-auto p-sm;
-    max-height: calc(100vh - 2rem);
-    overflow-y: auto;
-}
-
-.modal-header {
-    @apply flex-between p-sm;
-}
-
-.modal-close {
-    @apply interactive focus-visible rounded-full p-1;
-    @apply hover:background-bg-alt;
-}
-
-.modal-body {
-    @apply p-sm;
-}
-
-.modal-footer {
-    @apply flex-between p-sm;
-}
-
-/*
-  Pill Component
-  ------------------
-*/
-.pill {
-    @apply interactive flex items-center gap-xs p-xs rounded-pill;
-    transition: all var(--transition-duration-fast) var(--transition-timing);
-}
-
-/* Size variants */
-.pill.xs {
-    @apply text-xs p-xxs;
-    height: calc(var(--spacing-button-height) * .65);
-}
-
-.pill.sm {
-    @apply text-sm;
-    height: calc(var(--spacing-button-height) * .85);
-}
+            &.secondary {
+                @apply border-secondary text-secondary;
 
-.pill.md {
-    height: var(--spacing-button-height);
-}
-
-.pill.lg {
-    @apply text-lg;
-    height: calc(var(--spacing-button-height) * 1.25);
-}
-
-.pill.xl {
-    @apply text-xl;
-    height: calc(var(--spacing-button-height) * 1.5);
-}
-
-.pill.disabled {
-    @apply opacity-50 cursor-not-allowed;
-    transform: none !important;
-}
-
-/*
-   Chip
- */
-
-.chip {
-    @apply flex items-center gap-xs p-xs text-xs rounded-pill min-w-3 h-3 text-background;
-}
-
-/*
-  DataQueryEditor Component Styles
-  --------------------------------
-  These styles can be added to globals.css or as a separate module
-*/
-
-/* Query Editor Base Container */
-.query-editor {
-    @apply flex flex-col w-full rounded relative;
-}
-
-
-/* Pills row - improved alignment and spacing */
-.query-pills {
-    @apply flex-between items-center p-xs rounded clarity-prominent;
-}
-
-.query-pills-group {
-    @apply flex flex-wrap gap-xs;
-}
-
-/* Editor panel - smoother transitions */
-.query-editor-panel {
-    @apply background-bg transition-all;
-    overflow: hidden;
-    max-height: 80vh;
-}
-
-/* Section styling with smooth animations */
-.query-section {
-    @apply transition-all;
-    display: none;
-    opacity: 0;
-    transform: translateY(-8px);
-}
-
-.query-section.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-    animation: fadeIn var(--transition-duration-normal) var(--transition-timing) forwards;
-}
-
-.query-section-content {
-    @apply flex flex-col gap-xs py-xs;
-}
-
-/* Filter card styling */
-.filter-card {
-    @apply p-xs rounded transition-all interactive clarity-ghost;
-    transform-origin: top;
-}
-
-.filter-card-header {
-    @apply flex-between mb-xs;
-}
-
-.filter-number {
-    @apply flex-center rounded-pill text-xs font-medium;
-    background-color: var(--color-background-alt);
-    color: var(--color-foreground-alt);
-    min-width: 1.5rem;
-    height: 1.5rem;
-    transition: all var(--transition-duration-normal) var(--transition-timing);
-}
-
-.filter-card-active .filter-number {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-}
-
-/* Improved responsive layout for filter rows */
-.filter-row {
-    @apply flex flex-col flex-between sm:flex-row gap-xs clarity-ghost p-xs;
-}
-
-.filter-group {
-    @apply flex-1 flex flex-col gap-xs;
-}
-
-/* Improved field styling */
-
-.filter-fields {
-    @apply flex items-center flex-1 gap-xs;
-}
-
-.filter-field {
-    @apply flex-1 transition-all;
-}
+                &:not(:disabled):hover {
+                    @apply bg-secondary text-background;
+                }
+            }
 
-.input.filter-field {
-    @apply input-outline;
-}
-
-.value-input-wrapper {
-    @apply relative;
-}
-
-/* Remove button - improved hover states */
-
-.filter-remove:hover {
-    @apply background-bg-alt;
-}
-
-/* Sort section styling - improved container */
-.sort-container, .limit-container {
-    @apply p-sm rounded transition-all;
-}
-
-.sort-select {
-    @apply mb-sm w-full input-outline;
-}
+            &.tertiary {
+                @apply border-tertiary text-tertiary;
 
-.sort-preview {
-    @apply flex-between p-xs;
-}
+                &:not(:disabled):hover {
+                    @apply bg-tertiary text-background;
+                }
+            }
+
+            &.quaternary {
+                @apply border-quaternary text-quaternary;
 
-.sort-icon {
-    @apply text-primary text-lg font-bold;
-}
+                &:not(:disabled):hover {
+                    @apply bg-quaternary text-background;
+                }
+            }
+        }
+
+        /* Hover states */
+
+        &:not(.primary):not(.secondary):not(.tertiary):not(.quaternary):not(.reverse):not(:disabled):hover {
+            @apply bg-foreground text-background;
+            transform: scale(1.05);
+        }
+
+        &:not(:disabled):hover {
+            transform: scale(1.05);
+        }
+
+        /* Disabled state */
+
+        &:disabled {
+            @apply opacity-50 cursor-not-allowed;
+            transform: none !important;
+        }
+    }
+
+    /*
+        MultiSelectFromDB Component
+    */
+    .multi-selector {
+        @apply rounded flex flex-col gap-xs w-full relative;
+
+        ul {
+            @apply flex flex-wrap gap-xs p-0 m-0;
+            list-style: none;
+        }
+
+        /* Controls section */
+
+        .controls {
+            @apply transition-all relative;
+            height: min-content;
+        }
+
+        /* Header area */
+
+        .header {
+            @apply flex-between flex-top gap-xs;
+
+            .editable-text-wrap {
+                height: 100%;
+            }
+        }
+
+        /* Selector dropdown */
+
+        .selector {
+            @apply flex flex-col mt-xs gap-xs h-0 px-xs w-full overflow-hidden transition-all outline-1;
+            transition-duration: var(--transition-duration-normal);
+
+            &.open {
+                @apply h-auto p-xs content-style-3 overflow-visible;
+            }
+        }
+
+        /* Content area */
+
+        .content {
+            @apply content-style-1 p-xs;
+        }
+
+        /* Button container */
+
+        .buttons {
+            @apply separator-t w-full flex-right;
+        }
+
+        .item-selector-placeholder {
+            @apply dimmed text-sm italic;
+        }
+
+        .connector {
+            @apply h-2;
+            @apply left-2 bottom-[calc(-1.9*var(--spacing-xs))];
+            position: absolute;
+        }
+    }
+
+    /*
+        Binary Toggle Component
+    */
+    .binary-toggle {
+        @apply p-xxs content-style-3 text-xs grow-on-hover;
+        height: var(--spacing-button-height);
+        user-focus: key;
+
+        .toggle-switch {
+            @apply flex w-full h-full justify-between;
+            position: relative;
+
+            .toggle-slider {
+                @apply clarity-prominent interactive;
+                position: absolute;
+                z-index: 0;
+                top: 0;
+                width: calc(50% - var(--spacing-xxs) / 2);
+                bottom: 0;
+                transform: translateX(0);
+            }
+        }
+
+        .toggle-option {
+            @apply text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
+            transition-duration: var(--transition-duration-normal);
+            width: 50%;
+
+            &[aria-checked="true"] {
+                @apply text-foreground;
+            }
+
+            &[aria-checked="false"] {
+                @apply text-background;
+            }
+        }
+
+        /* Animation states */
+
+        .toggle-1[aria-checked="true"] ~ .toggle-slider {
+            animation-name: stretchXRight;
+            animation-duration: var(--transition-duration-normal);
+            animation-fill-mode: forwards;
+        }
+
+        .toggle-2[aria-checked="true"] ~ .toggle-slider {
+            animation-name: stretchXLeft;
+            animation-duration: var(--transition-duration-normal);
+            animation-fill-mode: forwards;
+        }
+    }
+
+    /*
+        Resume Component
+    */
+    .resume {
+        @apply flex-even gap-xl w-full flex-col sm:flex-row;
+
+        & .right {
+            @apply flex-2/5 flex w-full flex-col gap-md;
+        }
+
+        & .left {
+            @apply flex-3/5 flex w-full flex-col gap-md;
+        }
+
+        & .left .title-description, & section {
+            @apply flex w-full flex-col gap-xs;
+            line-height: 1.1;
+        }
+    }
+
+    /*
+        ActionIcon Component
+    */
+    .action-icon {
+        @apply grow-on-hover flex-center rounded cursor-pointer transition-all relative;
+        @apply hover:background-bg-alt;
+        width: var(--spacing-button-height);
+        height: var(--spacing-button-height);
+
+        &.xs {
+            @apply h-2 w-2;
+        }
+
+        &.sm {
+            @apply h-3 w-3;
+        }
+
+        &.lg {
+            @apply h-4 w-4;
+        }
+
+        &.xl {
+            @apply h-5 w-5;
+        }
+
+        &.disabled {
+            @apply opacity-50 cursor-not-allowed;
+            transform: none !important;
+        }
+    }
+
+    /*
+        Tooltip Component
+    */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        overflow: visible;
+
+        .tooltip {
+            position: absolute;
+            @apply clarity-prominent p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 80;
+            transition-duration: var(--transition-duration-normal);
+        }
+
+        /* Tooltip position variants */
+
+        .tooltip-below {
+            bottom: -2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(0.5rem);
+        }
+
+        .tooltip-above {
+            top: -2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-0.5rem);
+        }
+
+        .tooltip-left {
+            top: 50%;
+            right: calc(100% + 0.5rem);
+            transform: translateY(-50%) translateX(-0.5rem);
+        }
+
+        .tooltip-right {
+            top: 50%;
+            left: calc(100% + 0.5rem);
+            transform: translateY(-50%) translateX(0.5rem);
+        }
+
+        /* Tooltip hover effects */
+
+        &:hover > .tooltip {
+            @apply opacity-100;
+        }
+
+        &:hover > .tooltip-below {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        &:hover > .tooltip-above {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        &:hover > .tooltip-left {
+            transform: translateY(-50%) translateX(0);
+        }
+
+        &:hover > .tooltip-right {
+            transform: translateY(-50%) translateX(0);
+        }
+    }
+
+    /*
+        EditableText Component
+    */
+    .editable-text {
+        position: relative;
+        max-width: 100%;
+        @apply input-padding;
+
+        input, textarea.text {
+            @apply input-outline input-padding;
+            text-wrap: wrap;
+            max-width: 100%;
+        }
+
+        .text.proxy {
+            @apply h-full;
+            text-wrap: wrap;
+            opacity: 0;
+        }
+
+        textarea.text {
+            @apply resize-none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    }
+
+    /*
+        Modal Component
+    */
+    .modal {
+        @apply fixed inset-0 z-50 flex-center;
+
+        .modal-backdrop {
+            @apply fixed inset-0 background-fg opacity-50;
+        }
+
+        .modal-container {
+            @apply background-bg rounded-lg content-style-3 z-10 max-w-content mx-auto p-sm;
+            max-height: calc(100vh - 2rem);
+            overflow-x: visible;
+            overflow-y: auto;
+
+            .modal-header {
+                @apply flex-between p-sm;
+            }
+
+            .modal-close {
+                @apply interactive rounded-full p-1;
+                @apply hover:background-bg-alt;
+            }
+
+            .modal-body {
+                @apply p-sm;
+            }
+
+            .modal-footer {
+                @apply flex-between p-sm;
+            }
+        }
+    }
+
+    /*
+        Pill Component
+    */
+    .pill {
+        @apply interactive flex items-center gap-xs p-xs rounded-pill;
+        transition: all var(--transition-duration-fast) var(--transition-timing);
+
+        &.xs {
+            @apply text-xs p-xxs;
+            height: calc(var(--spacing-button-height) * .65);
+        }
+
+        &.sm {
+            @apply text-sm;
+            height: calc(var(--spacing-button-height) * .85);
+        }
+
+        &.md {
+            height: var(--spacing-button-height);
+        }
+
+        &.lg {
+            @apply text-lg;
+            height: calc(var(--spacing-button-height) * 1.25);
+        }
+
+        &.xl {
+            @apply text-xl;
+            height: calc(var(--spacing-button-height) * 1.5);
+        }
+
+        &.disabled {
+            @apply opacity-50 cursor-not-allowed;
+            transform: none !important;
+        }
+    }
+
+    /*
+        Chip
+    */
+    .chip {
+        @apply flex items-center gap-xs p-xs text-xs rounded-pill min-w-3 h-3 text-background;
+    }
+
+    /*
+        DataQueryEditor Component Styles
+    */
+    .query-editor {
+        @apply flex flex-col w-full rounded relative;
+
+        /* Pills row - improved alignment and spacing */
+
+        .query-pills {
+            @apply flex-between items-center p-xs rounded clarity-prominent;
+        }
+
+        .query-pills-group {
+            @apply flex flex-wrap gap-xs;
+        }
+
+        /* Editor panel - smoother transitions */
+
+        .query-editor-panel {
+            @apply background-bg transition-all;
+            overflow: visible;
+            max-height: 80vh;
+        }
+
+        /* Section styling with smooth animations */
+
+        .query-section {
+            @apply transition-all;
+            display: none;
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .query-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn var(--transition-duration-normal) var(--transition-timing) forwards;
+        }
+
+        .query-section-content {
+            @apply flex flex-col gap-xs py-xs;
+        }
+
+        /* Filter card styling */
+
+        .filter-card {
+            @apply p-xs rounded transition-all interactive content-style-1;
+            transform-origin: top;
+        }
+
+        .filter-card-header {
+            @apply flex-between mb-xs;
+        }
+
+        .filter-number {
+            @apply flex-center rounded-pill text-xs font-medium;
+            background-color: var(--color-background-alt);
+            color: var(--color-foreground-alt);
+            min-width: 1.5rem;
+            height: 1.5rem;
+            transition: all var(--transition-duration-normal) var(--transition-timing);
+        }
+
+        .filter-card-active .filter-number {
+            background-color: var(--color-primary);
+            color: var(--color-background);
+        }
+
+        /* Improved responsive layout for filter rows */
+
+        .filter-row {
+            @apply flex flex-col flex-between sm:flex-row gap-xs content-style-1 p-xs;
+        }
+
+        .filter-group {
+            @apply flex-1 flex flex-col gap-xs;
+        }
+
+        /* Improved field styling */
+
+        .filter-fields {
+            @apply flex items-center flex-1 gap-xs;
+        }
+
+        .filter-field {
+            @apply flex-1 transition-all;
+        }
+
+        .input.filter-field {
+            @apply input-outline;
+        }
+
+        .value-input-wrapper {
+            @apply relative;
+        }
+
+        /* Remove button - improved hover states */
+
+        .filter-remove:hover {
+            @apply background-bg-alt;
+        }
+
+        /* Sort section styling - improved container */
+
+        .sort-container, .limit-container {
+            @apply p-sm rounded transition-all;
+        }
+
+        .sort-select {
+            @apply mb-sm w-full input-outline;
+        }
+
+        .sort-preview {
+            @apply flex-between p-xs;
+        }
+
+        .sort-icon {
+            @apply text-primary text-lg font-bold;
+        }
+
+        /* Limit section styling - improved controls */
+
+        .limit-input-group {
+            @apply flex items-center gap-xs mb-sm;
+        }
+
+        .limit-input {
+            @apply input-outline;
+        }
+
+        /* select field */
+
+        select {
+            @apply p-xs;
+        }
+    }
 
-/* Limit section styling - improved controls */
-.limit-input-group {
-    @apply flex items-center gap-xs mb-sm;
 }
 
-.limit-input {
-    @apply input-outline;
-}
 
-/* select field */
-select {
-    @apply p-xs;
-}

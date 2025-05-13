@@ -19,7 +19,7 @@ export const Tooltip: React.FC<TooltipProps> = (
     if (!text) return <>{children}</>;
 
     return (
-        <div className={`tooltip-container ${className}`}>
+        <div className={`tooltip ${className}`}>
             {children}
             <span className={`tooltip tooltip-${position}`}>
         {text}

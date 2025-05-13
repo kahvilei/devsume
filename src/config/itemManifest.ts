@@ -1,5 +1,5 @@
-import PreviewTag from "@/app/tags/preview";
-import EditTag from "@/app/tags/edit";
+import PreviewTag from "@/app/(posts)/(categories)/tags/preview";
+import EditTag from "@/app/(posts)/(categories)/tags/edit";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ITag} from "@/models/categories/Tag";

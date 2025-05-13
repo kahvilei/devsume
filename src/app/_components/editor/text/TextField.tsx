@@ -32,7 +32,6 @@ const TextField: React.FC<TextFieldProps> =
          value,
          onChange,
          placeholder = "Enter text",
-         variant = "subtle",
          size = "md",
          showTooltip = true,
          tooltipPosition = "left",
@@ -49,7 +48,7 @@ const TextField: React.FC<TextFieldProps> =
         };
 
         const textContent = (
-            <div className={`text-field-wrap ${size} ${className}`}>
+            <div className={`text-field ${size} ${className}`}>
                 <input
                     id={id}
                     type="text"
@@ -57,7 +56,7 @@ const TextField: React.FC<TextFieldProps> =
                     onChange={handleChange}
                     placeholder={placeholder}
                     aria-label={label}
-                    className={`clarity-${variant} input text-field ${size}`}
+                    className={`input ${size}`}
                     disabled={disabled}
                     maxLength={maxLength}
                     pattern={pattern}
