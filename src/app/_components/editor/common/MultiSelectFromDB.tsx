@@ -9,7 +9,7 @@ import ITEMS, {ItemManifest, ItemManifestList} from "@/config/itemManifest";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import {DataQuery} from "@/interfaces/api";
 import EditableText from "@/app/_components/editor/text/EditableText";
-import BinaryToggle from "@/app/_components/editor/common/BinaryToggle";
+import BinaryToggle from "@/app/_components/common/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Button} from "@/app/_components/common/Button";

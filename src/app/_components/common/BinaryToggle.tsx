@@ -27,7 +27,7 @@ export default function BinaryToggle(
             <div className="binary-toggle" role="radiogroup">
                 <label className="toggle-switch">
                     <span
-                        aria-checked={state}
+                        aria-checked={!state}
                         className="toggle-1 toggle-option"
                         onClick={() => handleOptionClick(false)}
                         role="radio"
@@ -44,7 +44,7 @@ export default function BinaryToggle(
                         </Tooltip>
                     </span>
                     <span
-                        aria-checked={!state}
+                        aria-checked={state}
                         className="toggle-2 toggle-option"
                         onClick={() => handleOptionClick(true)}
                         role="radio"

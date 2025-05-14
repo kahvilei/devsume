@@ -1,24 +1,22 @@
 // @/app/_components/common/ActionIcon.tsx
 import React from "react";
-import Tooltip from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import {ColorVariant, ButtonVariant, Size, RadiusSize} from "@/types/designTypes";
 
-
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
-type TooltipPosition = "left" | "right" | "above" | "below";
 
 interface ActionIconProps {
     icon: React.ReactNode;
     action: () => void;
     tooltip: string;
     className?: string;
-    variant?: ClarityVariant;
+    variant?: ButtonVariant;
+    color?: ColorVariant;
+    radius?: RadiusSize;
     size?: Size;
     tooltipPosition?: TooltipPosition;
     disabled?: boolean;
     ariaLabel?: string;
 }
-
 /**
  * ActionIcon Component - A versatile button with an icon that supports tooltips
  *
@@ -30,12 +28,14 @@ export const ActionIcon: React.FC<ActionIconProps> =
          icon,
          action,
          tooltip,
-         className = "",
-         variant = "ghost",
-         size = "md",
          tooltipPosition = "above",
+         className = "",
          disabled = false,
-         ariaLabel
+         ariaLabel,
+         size = "md",
+         radius = "rounded",
+         variant = "outline",
+         color = "",
      }) => {
         const handleClick = (e: React.MouseEvent) => {
             e.preventDefault();
@@ -46,7 +46,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
 
         const buttonContent = (
             <button
-                className={`action-icon clarity-${variant} ${size} ${className} ${disabled ? 'disabled' : ''}`}
+                className={`action-icon ${variant} ${color} ${radius} ${size} ${className} ${disabled ? 'disabled' : ''}`}
                 onClick={handleClick}
                 disabled={disabled}
                 aria-label={ariaLabel || tooltip}

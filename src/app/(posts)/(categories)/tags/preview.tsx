@@ -27,8 +27,11 @@ export default function PreviewTag(
                 onClick();
             }}
             onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick();
+                }
                 e.stopPropagation();
-                onClick();
             }}
         >
             <span className="tag-label">{tag.title}</span>
@@ -37,13 +40,21 @@ export default function PreviewTag(
                     action={() => setIsEditing(true)}
                     icon={<Pencil/>}
                     tooltip={"Edit tag"}
+                    size="xs"
+                    variant="subtle"
+                    color="background"
+                    radius="rounded-full"
                 />
             }
             {onDelete &&
                 <ActionIcon
                     action={() => onDelete(tag)}
                     icon={<Trash/>}
-                    tooltip={"Delete tag"}
+                    tooltip="Delete tag"
+                    size="xs"
+                    variant="subtle"
+                    color="background"
+                    radius="rounded-full"
                 />
             }
         </div>

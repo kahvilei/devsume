@@ -1,18 +1,16 @@
 // @/app/_components/editor/common/DateField.tsx
 import React from 'react';
-import Tooltip from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
 import {Calendar} from "lucide-react";
-import {TooltipPosition} from './SelectField';
+import {ContentVariant, Size} from "@/types/designTypes";
 
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 export interface DateFieldProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
-    variant?: ClarityVariant;
+    variant?: ContentVariant;
     size?: Size;
     showTooltip?: boolean;
     tooltipPosition?: TooltipPosition;

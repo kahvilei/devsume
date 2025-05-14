@@ -10,7 +10,7 @@
   Tailwind Theme Configuration
 */
 @theme {
-    --devsume-colors-primary: #cc4675;
+    --devsume-colors-primary: #191c1f;
     --devsume-colors-secondary: #54c3d7;
     --devsume-colors-tertiary: #76c972;
     --devsume-colors-quaternary: #92b2e7;
@@ -49,7 +49,6 @@
 
     --devsume-borders-border-width: 0.1rem;
     --devsume-borders-border-color: var(--devsume-colors-foreground);
-    --devsume-borders-border-radius: 0.375rem;
 
     --devsume-spacing-xxs: 0.125rem;
     --devsume-spacing-xs: 0.5rem;
@@ -60,105 +59,66 @@
 
     --devsume-sizes-content: 75rem;
 
-    /* Ghost style - discreet dashed outline */
+    --devsume-radius-xs: 0.125rem;
+    --devsume-radius-sm: 0.375rem;
+    --devsume-radius-md: 0.625rem;
+    --devsume-radius-lg: 0.625rem;
+    --devsume-radius-xl: 0.875rem;
+
+    --devsume-radius-default: var(--devsume-radius-sm);
+
+    /* Style 1: Ghost style - discreet dashed outline */
     --devsume-content-style-bg-color-1: transparent;
     --devsume-content-style-fg-color-1: var(--devsume-colors-foreground);
-    --devsume-content-style-border-color-1: var(--devsume-colors-foreground);
-    --devsume-content-style-border-radius-1: 0.375rem;
-    --devsume-content-style-border-width-1: 0.05rem;
-    --devsume-contnet-style-border-style-1: dashed;
-    --devsume-content-style-padding-1: inherit;
-    --devsume-content-style-box-shadow-1: inherit;
-    --devsume-content-style-hover-bg-color-1: inherit;
-    --devsume-content-style-hover-fg-color-1: inherit;
-    --devsume-content-style-hover-border-color-1: var(--devsume-colors-primary);
-    --devsume-content-style-hover-border-width-1: 0.2rem;
-    --devsume-content-style-hover-border-style-1: dashed;
-    --devsume-content-style-active-bg-color-1: inherit;
-    --devsume-content-style-active-fg-color-1: inherit;
-    --devsume-content-style-active-border-color-1: inherit;
-    --devsume-content-style-active-border-width-1: inherit;
-    --devsume-content-style-active-border-style-1: dashed;
+    --devsume-content-style-border-1: none;
+    --devsume-content-style-outline-1: 0.05rem dashed var(--devsume-colors-foreground);
+    --devsume-content-style-border-radius-1: var(--devsume-radius-default);
+    --devsume-content-style-padding-1: var(--devsume-spacing-xs);
+    --devsume-content-style-hover-border-1: none;
+    --devsume-content-style-hover-outline-1: 0.2rem dashed var(--devsume-colors-primary);
+    --devsume-content-style-active-border-1: none;
+    --devsume-content-style-active-outline-1: 0.2rem dashed var(--devsume-colors-primary);
 
-    /* Subtle style - light background */
-    --devsume-content-style-bg-color-2: var(--devsume-colors-background-alt);
-    --devsume-content-style-fg-color-2: var(--devsume-colors-foreground-alt);
-    --devsume-content-style-border-color-2: var(--devsume-colors-foreground-alt);
-    --devsume-content-style-border-radius-2: 0.375rem;
-    --devsume-content-style-border-width-2: 0.1rem;
-    --devsume-content-style-border-style-2: solid;
-    --devsume-content-style-padding-2: inherit;
-    --devsume-content-style-box-shadow-2: inherit;
-    --devsume-content-style-hover-bg-color-2: inherit;
-    --devsume-content-style-hover-fg-color-2: inherit;
-    --devsume-content-style-hover-border-color-2: var(--devsume-colors-primary);
-    --devsume-content-style-hover-border-width-2: 0.1rem;
-    --devsume-content-style-hover-border-style-2: solid;
-    --devsume-content-style-active-bg-color-2: inherit;
-    --devsume-content-style-active-fg-color-2: inherit;
-    --devsume-content-style-active-border-color-2: inherit;
-    --devsume-content-style-active-border-width-2: inherit;
-    --devsume-content-style-active-border-style-2: solid;
+    /* Style 2: Style that uses (hopefully) dynamic border */
+    --devsume-content-style-border-2: 0.1rem solid;
+    --devsume-content-style-outline-2: none;
+    --devsume-content-style-border-radius-2: var(--devsume-radius-default);
+    --devsume-content-style-hover-border-2: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-hover-fg-color-2: var(--devsume-colors-primary);
+    --devsume-content-style-hover-outline-2: none;
+    --devsume-content-style-active-border-2: solid;
+    --devsume-content-style-active-outline-2: none;
 
-    /* Default style - solid outline */
+    /* Style 3: Default style - solid border with focus outline */
     --devsume-content-style-bg-color-3: transparent;
     --devsume-content-style-fg-color-3: var(--devsume-colors-foreground);
-    --devsume-content-style-border-color-3: var(--devsume-colors-foreground);
+    --devsume-content-style-border-3: 0.1rem solid var(--devsume-colors-foreground);
+    --devsume-content-style-outline-3: none;
     --devsume-content-style-border-radius-3: 0.375rem;
-    --devsume-content-style-border-width-3: 0.1rem;
-    --devsume-content-style-border-style-3: solid;
-    --devsume-content-style-padding-3: inherit;
-    --devsume-content-style-box-shadow-3: inherit;
-    --devsume-content-style-hover-bg-color-3: inherit;
-    --devsume-content-style-hover-fg-color-3: inherit;
-    --devsume-content-style-hover-border-color-3: var(--devsume-colors-primary);
-    --devsume-content-style-hover-border-width-3: 0.1rem;
-    --devsume-content-style-hover-border-style-3: solid;
-    --devsume-content-style-active-bg-color-3: inherit;
-    --devsume-content-style-active-fg-color-3: inherit;
-    --devsume-content-style-active-border-color-3: inherit;
-    --devsume-content-style-active-border-width-3: inherit;
-    --devsume-content-style-active-border-style-3: solid;
+    --devsume-content-style-hover-border-3: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-hover-outline-3: none;
+    --devsume-content-style-active-border-3: solid;
+    --devsume-content-style-active-outline-3: none;
 
-    /* Emphasis style - dark background */
+    /* Style 4: Emphasis style - dark background with outline */
     --devsume-content-style-bg-color-4: var(--devsume-colors-foreground-alt);
     --devsume-content-style-fg-color-4: var(--devsume-colors-background-alt);
-    --devsume-content-style-border-color-4: var(--devsume-colors-background-alt);
+    --devsume-content-style-border-4: none;
     --devsume-content-style-border-radius-4: 0.375rem;
-    --devsume-content-style-border-width-4: inherit;
-    --devsume-content-style-border-style-4: inherit;
-    --devsume-content-style-padding-4: inherit;
-    --devsume-content-style-box-shadow-4: inherit;
-    --devsume-content-style-hover-bg-color-4: inherit;
-    --devsume-content-style-hover-fg-color-4: inherit;
-    --devsume-content-style-hover-border-color-4: var(--devsume-colors-primary);
-    --devsume-content-style-hover-border-width-4: inherit;
-    --devsume-content-style-hover-border-style-4: inherit;
-    --devsume-content-style-active-bg-color-4: inherit;
-    --devsume-content-style-active-fg-color-4: inherit;
-    --devsume-content-style-active-border-color-4: inherit;
-    --devsume-content-style-active-border-width-4: inherit;
-    --devsume-content-style-active-border-style-4: inherit;
+    --devsume-content-style-hover-border-4: none;
+    --devsume-content-style-hover-outline-4: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-active-border-4: none;
+    --devsume-content-style-active-outline-4: solid;
 
-    /* Prominent style - inverted colors */
+
+    /* Style 5: Prominent style - inverted colors with double styling */
     --devsume-content-style-bg-color-5: var(--devsume-colors-foreground);
     --devsume-content-style-fg-color-5: var(--devsume-colors-background);
-    --devsume-content-style-border-color-5: var(--devsume-colors-background);
     --devsume-content-style-border-radius-5: 0.375rem;
-    --devsume-content-style-border-width-5: inherit;
-    --devsume-content-style-border-style-5: inherit;
-    --devsume-content-style-padding-5: inherit;
-    --devsume-content-style-box-shadow-5: inherit;
-    --devsume-content-style-hover-bg-color-5: inherit;
-    --devsume-content-style-hover-fg-color-5: inherit;
-    --devsume-content-style-hover-border-color-5: var(--devsume-colors-primary);
-    --devsume-content-style-hover-border-width-5: 0.1rem;
-    --devsume-content-style-hover-border-style-5: inherit;
-    --devsume-content-style-active-bg-color-5: inherit;
-    --devsume-content-style-active-fg-color-5: inherit;
-    --devsume-content-style-active-border-color-5: inherit;
-    --devsume-content-style-active-border-width-5: inherit;
-    --devsume-content-style-active-border-style-5: inherit;
+    --devsume-content-style-hover-border-5: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-hover-outline-5: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-active-border-5: solid;
+    --devsume-content-style-active-outline-5: solid;
 
     /* Spacing System */
     --spacing-xxs: 0.125rem;
@@ -171,15 +131,15 @@
 
     /* Layout */
     --spacing-content: 75rem;
+
     --spacing-border-width: 0.1rem;
-    --spacing-button-height: 2.25rem;
 
     /* Color System */
     /* Primary palette */
-    --color-primary: #cc4675;
-    --color-secondary: #54c3d7;
-    --color-tertiary: #76c972;
-    --color-quaternary: #92b2e7;
+    --color-primary: var(--devsume-colors-primary);
+    --color-secondary: var(--devsume-colors-secondary);
+    --color-tertiary: var(--devsume-colors-tertiary);
+    --color-quaternary: var(--devsume-colors-quaternary);
 
     --color-success: #28a745;
     --color-info: #17a2b8;
@@ -217,13 +177,12 @@
     --font-weight-body-w: 400;
 
     /* Borders and Radii */
+    --radius-xs: 0.125rem;
     --radius-sm: 0.375rem;
     --radius-md: 0.625rem;
     --radius-lg: 0.625rem;
     --radius-xl: 0.875rem;
     --radius: var(--radius-sm); /* Base radius */
-    --radius-circle: 50%;
-    --radius-pill: 9999px;
 
     /* Animation */
     --transition-duration-fast: 150ms;
@@ -239,6 +198,12 @@
 body {
     @apply background-bg;
     font-weight: var(--font-weight-body-w);
+
+}
+
+:focus-visible {
+    @apply ring-primary/50 ring-4;
+    @apply outline-none;
 }
 
 /*
@@ -472,117 +437,51 @@ body {
 @utility content-style-* {
     background-color: --value(--devsume-content-style-bg-color-*);
     color: --value(--devsume-content-style-fg-color-*);
-    border-color: --value(--devsume-content-style-border-color-*);
     border-radius: --value(--devsume-content-style-border-radius-*);
-    border-width: --value(--devsume-content-style-border-width-*);
-    border-style: --value(--devsume-content-style-border-style-*);
+    border: --value(--devsume-content-style-border-*);
+    outline: --value(--devsume-content-style-outline-*);
     padding: --value(--devsume-content-style-padding-*);
     box-shadow: --value(--devsume-content-style-box-shadow-*);
     transition-duration: --value(--devsume-transition-duration-normal-*);
 
+    &.with-active, &.with-focus, &.with-hover {
+        @apply interactive;
+    }
+
     &.with-hover:hover {
         background-color: --value(--devsume-content-style-hover-bg-color-*);
         color: --value(--devsume-content-style-hover-fg-color-*);
-        border-color: --value(--devsume-content-style-hover-border-color-*);
-        border-width: --value(--devsume-content-style-hover-border-width-*);
-        border-style: --value(--devsume-content-style-hover-border-style-*);
+        border: --value(--devsume-content-style-hover-border-*);
+        outline: --value(--devsume-content-style-hover-outline-*);
     }
 
     &.with-active:active {
         background-color: --value(--devsume-content-style-active-bg-color-*);
         color: --value(--devsume-content-style-active-fg-color-*);
-        border-color: --value(--devsume-content-style-active-border-color-*);
-        border-width: --value(--devsume-content-style-active-border-width-*);
-        border-style: --value(--devsume-content-style-active-border-style-*);
+        border: --value(--devsume-content-style-active-border-*);
+        outline: --value(--devsume-content-style-active-outline-*);
     }
 
     &.with-focus:focus {
         background-color: --value(--devsume-content-style-active-bg-color-*);
         color: --value(--devsume-content-style-active-fg-color-*);
-        border-color: --value(--devsume-content-style-active-border-color-*);
-        border-width: --value(--devsume-content-style-active-border-width-*);
-        border-style: --value(--devsume-content-style-active-border-style-*);
-    }
-}
-
-@utility clarity-ghost {
-    @apply discreet-border rounded;
-}
-
-@utility clarity-subtle {
-    @apply background-bg-alt rounded;
-}
-
-@utility clarity-default {
-    @apply border-rules rounded;
-}
-
-@utility clarity-emphasis {
-    @apply background-fg-alt rounded;
-}
-
-@utility clarity-prominent {
-    @apply background-fg rounded;
-}
-
-@utility clarity-hover {
-    &.clarity-ghost {
-        @apply hover:outline-primary hover:outline-2;
-    }
-    &.clarity-subtle {
-        @apply hover:outline-primary;
-    }
-    &.clarity-default {
-        @apply hover:outline-primary;
-    }
-    &.clarity-emphasis {
-        @apply hover:outline-primary;
-    }
-    &.clarity-prominent {
-        @apply hover:outline-primary;
-    }
-}
-
-@utility clarity-focus {
-    &.clarity-ghost {
-        @apply focus:outline-primary focus:outline-2;
-    }
-    &.clarity-subtle {
-        @apply focus:outline-primary;
-    }
-    &.clarity-default {
-        @apply focus:outline-primary;
-    }
-    &.clarity-emphasis {
-        @apply focus:outline-primary;
-    }
-    &.clarity-prominent {
-        @apply focus:outline-primary;
-    }
-}
-
-@utility clarity-disabled {
-    @apply opacity-50 cursor-not-allowed;
-}
-
-@utility clarity-active {
-    &.active.clarity-ghost {
-        @apply border-rules;
+        border: --value(--devsume-content-style-active-border-*);
+        outline: --value(--devsume-content-style-active-outline-*);
     }
 }
 
 @layer components {
     /*
-        Button Component
+        Button Component + button-type components
     */
-    .btn {
-        @apply border border-solid border-foreground rounded;
-        @apply interactive rounded flex items-center justify-center transition-all;
+    .btn, .action-icon, .binary-toggle, .tag, .pill {
+        @apply border border-solid rounded;
+        @apply interactive rounded flex items-center justify-center transition-all p-xs;
+        @apply h-5;
+
         border-width: var(--spacing-border-width);
-        height: var(--spacing-button-height);
         width: max-content;
-        padding: var(--spacing-xs);
-        gap: var(--spacing-xxs);
+        gap: var(--spacing-xs);
         line-height: 1;
 
         /* Icon handling */
@@ -604,29 +503,28 @@ body {
 
         &.xs {
             @apply text-xs;
-            height: calc(var(--spacing-button-height) * .65);
+            @apply h-3;
         }
 
         &.sm {
             @apply text-sm;
-            height: calc(var(--spacing-button-height) * .85);
+            @apply h-4;
         }
 
         &.lg {
             @apply text-lg;
-            height: calc(var(--spacing-button-height) * 1.25);
+            @apply h-6;
         }
 
         &.xl {
             @apply text-xl;
-            height: calc(var(--spacing-button-height) * 1.5);
+            @apply h-8;
         }
 
-        /* Color variants */
+        /* Color variants - for default filled state */
 
-        &.reverse {
+        &.foreground {
             @apply bg-foreground text-background border-background;
-
             &:not(:disabled):hover {
                 @apply bg-background text-foreground;
             }
@@ -634,7 +532,6 @@ body {
 
         &.primary {
             @apply bg-primary text-background border-primary;
-
             &:not(:disabled):hover {
                 @apply bg-background text-primary;
             }
@@ -642,7 +539,6 @@ body {
 
         &.secondary {
             @apply bg-secondary text-background border-secondary;
-
             &:not(:disabled):hover {
                 @apply bg-background text-secondary;
             }
@@ -650,7 +546,6 @@ body {
 
         &.tertiary {
             @apply bg-tertiary text-background border-tertiary;
-
             &:not(:disabled):hover {
                 @apply bg-background text-tertiary;
             }
@@ -658,17 +553,191 @@ body {
 
         &.quaternary {
             @apply bg-quaternary text-background border-quaternary;
-
             &:not(:disabled):hover {
                 @apply bg-background text-quaternary;
+            }
+        }
+
+        &.info{
+            @apply bg-info text-background border-info;
+            &:not(:disabled):hover {
+                @apply bg-background text-info;
+            }
+        }
+
+        &.success{
+            @apply bg-success text-background border-success;
+            &:not(:disabled):hover {
+                @apply bg-background text-success;
+            }
+        }
+
+        &.danger{
+            @apply bg-danger text-background border-danger;
+            &:not(:disabled):hover {
+                @apply bg-background text-danger;
+            }
+        }
+
+        &.warning{
+            @apply bg-warning text-background border-warning;
+            &:not(:disabled):hover {
+                @apply bg-background text-warning;
+            }
+        }
+
+        /* Subtle variants */
+
+        &.subtle {
+            @apply bg-transparent border-transparent;
+            &:not(:disabled):hover {
+                @apply bg-primary/20
+            }
+
+            &.background {
+                @apply text-background border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-background/20
+                }
+            }
+
+            &.primary {
+                @apply text-primary border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-primary/20
+                }
+            }
+            &.secondary {
+                @apply text-secondary border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-secondary/20
+                }
+            }
+            &.tertiary {
+                @apply text-tertiary border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-tertiary/20
+                }
+            }
+            &.quaternary {
+                @apply text-quaternary border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-quaternary/20
+                }
+            }
+            &.info{
+                @apply text-info border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-info/20
+                }
+            }
+            &.success{
+                @apply text-success border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-success/20
+                }
+            }
+            &.danger{
+                @apply text-danger border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-danger/20
+                }
+            }
+            &.warning{
+                @apply text-warning border-transparent;
+                &:not(:disabled):hover {
+                    @apply bg-warning/20
+                }
+            }
+        }
+
+        /* Light variants */
+
+        &.light {
+            @apply bg-foreground/30 text-foreground border-foreground/30;
+            &:not(:disabled):hover {
+                @apply border-foreground
+            }
+
+            &.background {
+                @apply bg-background/30 text-background border-background/30;
+                &:not(:disabled):hover {
+                    @apply border-background
+                }
+            }
+
+            &.primary {
+                @apply bg-primary/30 text-primary border-primary/30;
+                &:not(:disabled):hover {
+                    @apply border-primary
+                }
+            }
+
+            &.secondary {
+                @apply bg-secondary/30 text-secondary border-secondary/30;
+                &:not(:disabled):hover {
+                    @apply border-secondary
+                }
+            }
+
+            &.tertiary {
+                @apply bg-tertiary/30 text-tertiary border-tertiary/30;
+                &:not(:disabled):hover {
+                    @apply border-tertiary
+                }
+            }
+
+            &.quaternary {
+                @apply bg-quaternary/30 text-quaternary border-quaternary/30;
+                &:not(:disabled):hover {
+                    @apply border-quaternary
+                }
+            }
+
+            &.info{
+                @apply bg-info/30 text-info border-info/30;
+                &:not(:disabled):hover {
+                    @apply border-info
+                }
+            }
+
+            &.success{
+                @apply bg-success/30 text-success border-success/30;
+                &:not(:disabled):hover {
+                    @apply border-success
+                }
+            }
+
+            &.danger{
+                @apply bg-danger/30 text-danger border-danger/30;
+                &:not(:disabled):hover {
+                    @apply border-danger
+                }
+            }
+
+            &.warning{
+                @apply bg-warning/30 text-warning border-warning/30;
+                &:not(:disabled):hover {
+                    @apply border-warning
+                }
             }
         }
 
         /* Outline variants */
 
         &.outline {
-            @apply bg-transparent border-foreground text-foreground;
+            @apply bg-transparent;
 
+            &:not(:disabled):hover {
+                @apply bg-foreground text-background;
+            }
+
+            &.foreground {
+                @apply border-foreground text-foreground;
+                &:not(:disabled):hover {
+                    @apply bg-foreground text-background;
+                }
+            }
             &.primary {
                 @apply border-primary text-primary;
 
@@ -676,7 +745,6 @@ body {
                     @apply bg-primary text-background;
                 }
             }
-
             &.secondary {
                 @apply border-secondary text-secondary;
 
@@ -684,7 +752,6 @@ body {
                     @apply bg-secondary text-background;
                 }
             }
-
             &.tertiary {
                 @apply border-tertiary text-tertiary;
 
@@ -692,12 +759,35 @@ body {
                     @apply bg-tertiary text-background;
                 }
             }
-
             &.quaternary {
                 @apply border-quaternary text-quaternary;
 
                 &:not(:disabled):hover {
                     @apply bg-quaternary text-background;
+                }
+            }
+            &.info{
+                @apply border-info text-info;
+                &:not(:disabled):hover {
+                    @apply bg-info text-background;
+                }
+            }
+            &.danger{
+                @apply border-danger text-danger;
+                &:not(:disabled):hover {
+                    @apply bg-danger text-background;
+                }
+            }
+            &.warning{
+                @apply border-warning text-warning;
+                &:not(:disabled):hover {
+                    @apply bg-warning text-background;
+                }
+            }
+            &.success{
+                @apply border-success text-success;
+                &:not(:disabled):hover {
+                    @apply bg-success text-background;
                 }
             }
         }
@@ -719,6 +809,90 @@ body {
             @apply opacity-50 cursor-not-allowed;
             transform: none !important;
         }
+    }
+
+    /*
+        Action Icon only rules
+     */
+
+    .action-icon {
+        @apply p-xxs;
+        @apply h-5 w-5;
+
+        &.xs {
+            @apply h-3 w-3;
+        }
+        &.sm {
+            @apply h-4 w-4;
+        }
+        &.lg {
+            @apply h-6 w-6;
+        }
+        &.xl {
+            @apply h-8 w-8;
+        }
+    }
+
+    /*
+       Binary Toggle Component only rules
+   */
+    .binary-toggle {
+        @apply p-xxs text-xs grow-on-hover;
+        user-focus: key;
+
+        .toggle-switch {
+            @apply flex w-full h-full justify-between;
+            border-radius: inherit;
+            position: relative;
+
+            .toggle-slider {
+                border-radius: inherit;
+                background-color: currentColor;
+                position: absolute;
+                z-index: 0;
+                top: 0;
+                width: calc(50% - var(--spacing-xxs) / 2);
+                bottom: 0;
+                transform: translateX(0);
+            }
+        }
+
+        .toggle-option {
+            @apply interactive text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
+            width: calc(50% - var(--spacing-xxs) / 2);
+            border-radius: inherit;
+
+            &[aria-checked="true"] {
+                color: var(--color-background);
+            }
+        }
+
+        &:hover .toggle-option {
+            &[aria-checked="true"] {
+                color: var(--color-foreground);
+            }
+        }
+
+        /* Animation states */
+
+        .toggle-2[aria-checked="true"] ~ .toggle-slider {
+            animation-name: stretchXRight;
+            animation-duration: var(--transition-duration-normal);
+            animation-fill-mode: forwards;
+        }
+
+        .toggle-1[aria-checked="true"] ~ .toggle-slider {
+            animation-name: stretchXLeft;
+            animation-duration: var(--transition-duration-normal);
+            animation-fill-mode: forwards;
+        }
+    }
+
+    /*
+        Pill Component
+    */
+    .pill {
+        @apply rounded-full;
     }
 
     /*
@@ -784,58 +958,6 @@ body {
     }
 
     /*
-        Binary Toggle Component
-    */
-    .binary-toggle {
-        @apply p-xxs content-style-3 text-xs grow-on-hover;
-        height: var(--spacing-button-height);
-        user-focus: key;
-
-        .toggle-switch {
-            @apply flex w-full h-full justify-between;
-            position: relative;
-
-            .toggle-slider {
-                @apply clarity-prominent interactive;
-                position: absolute;
-                z-index: 0;
-                top: 0;
-                width: calc(50% - var(--spacing-xxs) / 2);
-                bottom: 0;
-                transform: translateX(0);
-            }
-        }
-
-        .toggle-option {
-            @apply text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
-            transition-duration: var(--transition-duration-normal);
-            width: 50%;
-
-            &[aria-checked="true"] {
-                @apply text-foreground;
-            }
-
-            &[aria-checked="false"] {
-                @apply text-background;
-            }
-        }
-
-        /* Animation states */
-
-        .toggle-1[aria-checked="true"] ~ .toggle-slider {
-            animation-name: stretchXRight;
-            animation-duration: var(--transition-duration-normal);
-            animation-fill-mode: forwards;
-        }
-
-        .toggle-2[aria-checked="true"] ~ .toggle-slider {
-            animation-name: stretchXLeft;
-            animation-duration: var(--transition-duration-normal);
-            animation-fill-mode: forwards;
-        }
-    }
-
-    /*
         Resume Component
     */
     .resume {
@@ -856,37 +978,6 @@ body {
     }
 
     /*
-        ActionIcon Component
-    */
-    .action-icon {
-        @apply grow-on-hover flex-center rounded cursor-pointer transition-all relative;
-        @apply hover:background-bg-alt;
-        width: var(--spacing-button-height);
-        height: var(--spacing-button-height);
-
-        &.xs {
-            @apply h-2 w-2;
-        }
-
-        &.sm {
-            @apply h-3 w-3;
-        }
-
-        &.lg {
-            @apply h-4 w-4;
-        }
-
-        &.xl {
-            @apply h-5 w-5;
-        }
-
-        &.disabled {
-            @apply opacity-50 cursor-not-allowed;
-            transform: none !important;
-        }
-    }
-
-    /*
         Tooltip Component
     */
     .tooltip {
@@ -896,7 +987,7 @@ body {
 
         .tooltip {
             position: absolute;
-            @apply clarity-prominent p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
+            @apply content-style-5 p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
             white-space: nowrap;
             pointer-events: none;
             z-index: 80;
@@ -961,7 +1052,7 @@ body {
         @apply input-padding;
 
         input, textarea.text {
-            @apply input-outline input-padding;
+            @apply input-padding;
             text-wrap: wrap;
             max-width: 100%;
         }
@@ -1018,47 +1109,10 @@ body {
     }
 
     /*
-        Pill Component
-    */
-    .pill {
-        @apply interactive flex items-center gap-xs p-xs rounded-pill;
-        transition: all var(--transition-duration-fast) var(--transition-timing);
-
-        &.xs {
-            @apply text-xs p-xxs;
-            height: calc(var(--spacing-button-height) * .65);
-        }
-
-        &.sm {
-            @apply text-sm;
-            height: calc(var(--spacing-button-height) * .85);
-        }
-
-        &.md {
-            height: var(--spacing-button-height);
-        }
-
-        &.lg {
-            @apply text-lg;
-            height: calc(var(--spacing-button-height) * 1.25);
-        }
-
-        &.xl {
-            @apply text-xl;
-            height: calc(var(--spacing-button-height) * 1.5);
-        }
-
-        &.disabled {
-            @apply opacity-50 cursor-not-allowed;
-            transform: none !important;
-        }
-    }
-
-    /*
         Chip
     */
     .chip {
-        @apply flex items-center gap-xs p-xs text-xs rounded-pill min-w-3 h-3 text-background;
+        @apply flex items-center gap-xs p-xs text-xs rounded-full min-w-3 h-3 text-background;
     }
 
     /*
@@ -1070,7 +1124,7 @@ body {
         /* Pills row - improved alignment and spacing */
 
         .query-pills {
-            @apply flex-between items-center p-xs rounded clarity-prominent;
+            @apply flex-between items-center p-xs rounded content-style-5;
         }
 
         .query-pills-group {
@@ -1117,7 +1171,7 @@ body {
         }
 
         .filter-number {
-            @apply flex-center rounded-pill text-xs font-medium;
+            @apply flex-center rounded-full text-xs font-medium;
             background-color: var(--color-background-alt);
             color: var(--color-foreground-alt);
             min-width: 1.5rem;

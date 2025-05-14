@@ -63,7 +63,6 @@ export default function ItemOption<T extends BaseDataModel>(
                         onSelect(item);
                     }}
                 />
-                {isSelected && <span className="text-xs text-gray-500">Selected</span>}
             </div>
 
             {/* Render edit form based on modal preference */}

@@ -1,16 +1,16 @@
 // @/app/_components/editor/common/TextField.tsx
 import React from 'react';
 import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import {ContentVariant,Size} from "@/types/designTypes";
 
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
+
 
 export interface TextFieldProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
-    variant?: ClarityVariant;
+    variant?: ContentVariant;
     size?: Size;
     showTooltip?: boolean;
     tooltipPosition?: TooltipPosition;
