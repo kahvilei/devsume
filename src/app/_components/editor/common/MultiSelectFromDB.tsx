@@ -175,7 +175,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                         </div>
                     )}
                     <div className={'buttons'}>
-                        <Button className={"primary"} onClick={() => setIsAdding(true)} icon={<Plus/>}
+                        <Button onClick={() => setIsAdding(true)} icon={<Plus/>}
                             text={"Create a new " + (manifest.names?.singular ?? dataKey)}></Button>
                     </div>
                 </div>

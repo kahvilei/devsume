@@ -34,10 +34,11 @@ export const ActionIcon: React.FC<ActionIconProps> =
          ariaLabel,
          size = "md",
          radius = "rounded",
-         variant = "outline",
+         variant = "btn-shadow-spread",
          color = "",
      }) => {
         const handleClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
             e.preventDefault();
             if (!disabled) {
                 action();

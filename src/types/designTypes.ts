@@ -30,7 +30,12 @@ export type ColorVariant =
     | "background";
 
 export type ButtonVariant =
-    "outline"
-    | "light"
-    | "subtle"
-    | "filled"
+    "btn-swipe"
+    | "btn-shadow-drop"
+    | "btn-shadow-spread"
+    | "btn-shadow-filled"
+    | "btn-simple-grow"
+    | "btn-border-grow"
+    | "btn-discreet"
+    | "btn-light";
+

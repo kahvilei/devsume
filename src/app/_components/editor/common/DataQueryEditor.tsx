@@ -10,6 +10,7 @@ import NumberField from "@/app/_components/editor/common/NumberField";
 import DateField from "@/app/_components/editor/common/DateField";
 import TextField from "@/app/_components/editor/text/TextField";
 import {Chip} from "@/app/_components/common/Chip";
+import {ContentVariant, Size} from "@/types/designTypes";
 
 // MongoDB operators supported by the backend
 type MongoOperator = 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'nin' | 'regex';
@@ -17,11 +18,6 @@ type MongoOperator = 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'nin' | 
 // Field types for specialized inputs
 type FieldType = 'text' | 'number' | 'date' | 'select';
 
-// Clarity design variants
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-
-// Component sizes
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 interface FilterField {
     key: string;
@@ -46,7 +42,7 @@ interface DataQueryEditorProps<T extends BaseDataModel> {
     defaultOpen?: boolean;
     className?: string;
     debounceTime?: number;
-    variant?: ClarityVariant;
+    variant?: ContentVariant;
     size?: Size;
 }
 
@@ -372,7 +368,6 @@ export function DataQueryEditor<T extends BaseDataModel>
                         chip={activeFilterCount}
                         isActive={activeSection === 'filters' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('filters')}
-                        variant={"ghost"}
                         size={size}
                     />
 
@@ -381,7 +376,6 @@ export function DataQueryEditor<T extends BaseDataModel>
                         chip={sortDirectionIcon}
                         isActive={activeSection === 'sorting' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('sorting')}
-                        variant={"ghost"}
                         size={size}
                     />
 
@@ -390,7 +384,6 @@ export function DataQueryEditor<T extends BaseDataModel>
                         chip={localQuery.limit}
                         isActive={activeSection === 'limits' && isEditorOpen}
                         onClick={() => handleSummaryItemClick('limits')}
-                        variant={"ghost"}
                         size={size}
                     />
                 </div>
@@ -447,7 +440,6 @@ export function DataQueryEditor<T extends BaseDataModel>
                                         icon={<X size={16}/>}
                                         action={() => removeFilterField(index)}
                                         tooltip="Remove filter"
-                                        variant="ghost"
                                         size={size}
                                     />
                                 </div>

@@ -11,7 +11,7 @@ export default function PreviewTag(
             window.location.href = `/tags/${tag.slug}`
         },
         size = "md",
-        className = '',
+        className = 'rounded-full primary btn-shadow-filled',
         disabled = false,
         onDelete,
         setIsEditing,
@@ -21,7 +21,7 @@ export default function PreviewTag(
         <div
             role="button"
             tabIndex={0}
-            className={`tag bg-primary ${size} ${className} ${disabled ? 'disabled' : ''}`}
+            className={`tag ${size} ${className} ${disabled ? 'disabled' : ''}`}
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
@@ -35,13 +35,14 @@ export default function PreviewTag(
             }}
         >
             <span className="tag-label">{tag.title}</span>
+            <span className={"flex gap-xxs"}>
             {setIsEditing &&
                 <ActionIcon
                     action={() => setIsEditing(true)}
                     icon={<Pencil/>}
                     tooltip={"Edit tag"}
                     size="xs"
-                    variant="subtle"
+                    variant="btn-light"
                     color="background"
                     radius="rounded-full"
                 />
@@ -52,11 +53,12 @@ export default function PreviewTag(
                     icon={<Trash/>}
                     tooltip="Delete tag"
                     size="xs"
-                    variant="subtle"
+                    variant="btn-light"
                     color="background"
                     radius="rounded-full"
                 />
             }
+            </span>
         </div>
     );
 }

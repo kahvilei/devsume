@@ -1,9 +1,7 @@
 // @/app/_components/common/Pill.tsx
 import React from 'react';
 import {Chip} from "@/app/_components/common/Chip";
-
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
+import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface PillProps {
     label: string;
@@ -12,8 +10,10 @@ interface PillProps {
     isActive?: boolean;
     icon?: React.ReactNode;
     className?: string;
-    variant?: ClarityVariant;
+    variant?: ButtonVariant;
     size?: Size;
+    color?: ColorVariant;
+    radius?: RadiusSize;
     disabled?: boolean;
     ariaLabel?: string;
 }
@@ -23,20 +23,22 @@ interface PillProps {
  *
  * This component is a general-purpose UI element that shows a label and an optional value badge.
  * It can be used in various contexts where a compact interactive element is needed.
- * Supports multiple variants and sizes following the Clarity design system.
+ * Supports multiple variants and sizes.
  */
 export const Pill: React.FC<PillProps> =
     ({
-         label,
-         chip,
-         onClick,
-         isActive = false,
-         icon,
-         className = '',
-         variant = "ghost",
-         size = "md",
-         disabled = false,
-         ariaLabel
+        label,
+        chip,
+        onClick,
+        isActive = false,
+        icon,
+        className = '',
+        variant = "btn-border-grow",
+        size = "sm",
+        color,
+        radius = "rounded-full",
+        disabled = false,
+        ariaLabel
      }) => {
 
         // Check if value is considered "set" (for badges)
@@ -52,7 +54,7 @@ export const Pill: React.FC<PillProps> =
         return (
             <button
                 type="button"
-                className={`pill clarity-${variant} clarity-hover clarity-active ${isActive&&'active'} ${size} ${className} ${disabled ? 'disabled' : ''}`}
+                className={`pill ${variant} ${radius} ${color} ${isActive&&'active'} ${size} ${className} ${disabled ? 'disabled' : ''}`}
                 onClick={handleClick}
                 disabled={disabled}
                 aria-pressed={isActive}

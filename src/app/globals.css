@@ -1,17 +1,14 @@
 @import "tailwindcss";
 
-/** actual theme config - need to use these as a base for quick live updates**/
-:root{
-
-
+:root {
+    color-scheme: light dark;
 }
-
 /*
   Tailwind Theme Configuration
 */
 @theme {
-    --devsume-colors-primary: #191c1f;
-    --devsume-colors-secondary: #54c3d7;
+    --devsume-colors-primary: #716ce3;
+    --devsume-colors-secondary: #547dd7;
     --devsume-colors-tertiary: #76c972;
     --devsume-colors-quaternary: #92b2e7;
     --devsume-colors-success: #28a745;
@@ -21,12 +18,13 @@
 
     --devsume-colors-disabled: #6c757d;
 
-    --devsume-colors-background: #ffffff;
-    --devsume-colors-background-alt: #efeded;
-    --devsume-colors-foreground: #1f1f1f;
-    --devsume-colors-foreground-alt: #151515;
+    --devsume-colors-dark: #c2c2c2;
+    --devsume-colors-light: #1c1c1f;
 
-    --devsume-colors-headings: #3d3d3d;
+    --devsume-colors-background: light-dark(var(--devsume-colors-dark), var(--devsume-colors-light));
+    --devsume-colors-foreground: light-dark(var(--devsume-colors-light), var(--devsume-colors-dark));
+
+    --devsume-colors-headings: var(--devsume-colors-foreground);
     --devsume-colors-link: var(--devsume-colors-primary);
     --devsume-colors-overlay: rgba(0, 0, 0, 0.5);
 
@@ -47,8 +45,11 @@
 
     --devsume-typography-body-weight: 400;
 
-    --devsume-borders-border-width: 0.1rem;
-    --devsume-borders-border-color: var(--devsume-colors-foreground);
+    --devsume-border-width: 0.1rem;
+    --devsume-border: var(--devsume-border-width) solid;
+
+    --devsume-border-subtle-width: 0.05rem;
+    --devsume-border-subtle: var(--devsume-border-subtle-width) dashed;
 
     --devsume-spacing-xxs: 0.125rem;
     --devsume-spacing-xs: 0.5rem;
@@ -70,20 +71,17 @@
     /* Style 1: Ghost style - discreet dashed outline */
     --devsume-content-style-bg-color-1: transparent;
     --devsume-content-style-fg-color-1: var(--devsume-colors-foreground);
-    --devsume-content-style-border-1: none;
-    --devsume-content-style-outline-1: 0.05rem dashed var(--devsume-colors-foreground);
+    --devsume-content-style-border-1: var(--devsume-border-subtle);
+    --devsume-content-style-outline-1: none;
     --devsume-content-style-border-radius-1: var(--devsume-radius-default);
     --devsume-content-style-padding-1: var(--devsume-spacing-xs);
-    --devsume-content-style-hover-border-1: none;
-    --devsume-content-style-hover-outline-1: 0.2rem dashed var(--devsume-colors-primary);
-    --devsume-content-style-active-border-1: none;
-    --devsume-content-style-active-outline-1: 0.2rem dashed var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-1: var(--devsume-border-subtle);
 
     /* Style 2: Style that uses (hopefully) dynamic border */
-    --devsume-content-style-border-2: 0.1rem solid;
+    --devsume-content-style-border-2: var(--devsume-border);
     --devsume-content-style-outline-2: none;
     --devsume-content-style-border-radius-2: var(--devsume-radius-default);
-    --devsume-content-style-hover-border-2: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-2: var(--devsume-border);
     --devsume-content-style-hover-fg-color-2: var(--devsume-colors-primary);
     --devsume-content-style-hover-outline-2: none;
     --devsume-content-style-active-border-2: solid;
@@ -92,33 +90,17 @@
     /* Style 3: Default style - solid border with focus outline */
     --devsume-content-style-bg-color-3: transparent;
     --devsume-content-style-fg-color-3: var(--devsume-colors-foreground);
-    --devsume-content-style-border-3: 0.1rem solid var(--devsume-colors-foreground);
+    --devsume-content-style-border-3: var(--devsume-border);
     --devsume-content-style-outline-3: none;
     --devsume-content-style-border-radius-3: 0.375rem;
-    --devsume-content-style-hover-border-3: 0.1rem solid var(--devsume-colors-primary);
+    --devsume-content-style-hover-border-3: var(--devsume-border);
     --devsume-content-style-hover-outline-3: none;
     --devsume-content-style-active-border-3: solid;
     --devsume-content-style-active-outline-3: none;
 
-    /* Style 4: Emphasis style - dark background with outline */
-    --devsume-content-style-bg-color-4: var(--devsume-colors-foreground-alt);
-    --devsume-content-style-fg-color-4: var(--devsume-colors-background-alt);
-    --devsume-content-style-border-4: none;
-    --devsume-content-style-border-radius-4: 0.375rem;
-    --devsume-content-style-hover-border-4: none;
-    --devsume-content-style-hover-outline-4: 0.1rem solid var(--devsume-colors-primary);
-    --devsume-content-style-active-border-4: none;
-    --devsume-content-style-active-outline-4: solid;
-
-
-    /* Style 5: Prominent style - inverted colors with double styling */
-    --devsume-content-style-bg-color-5: var(--devsume-colors-foreground);
-    --devsume-content-style-fg-color-5: var(--devsume-colors-background);
-    --devsume-content-style-border-radius-5: 0.375rem;
-    --devsume-content-style-hover-border-5: 0.1rem solid var(--devsume-colors-primary);
-    --devsume-content-style-hover-outline-5: 0.1rem solid var(--devsume-colors-primary);
-    --devsume-content-style-active-border-5: solid;
-    --devsume-content-style-active-outline-5: solid;
+    /* Style 4: Prominent style - inverted colors with double styling */
+    --devsume-content-style-bg-color-4: color-mix(in srgb, var(--devsume-colors-secondary), var(--devsume-colors-foreground) 55%);
+    --devsume-content-style-fg-color-4: var(--devsume-colors-background);
 
     /* Spacing System */
     --spacing-xxs: 0.125rem;
@@ -149,15 +131,13 @@
     --color-disabled: #6c757d;
 
     /* UI colors */
-    --color-background: #ffffff;
-    --color-background-alt: #efeded;
-    --color-foreground: #1f1f1f;
-    --color-foreground-alt: #151515;
+    --color-background: var(--devsume-colors-background);
+    --color-foreground: var(--devsume-colors-foreground);
 
     /* Semantic colors */
-    --color-headings: #3d3d3d;
-    --color-link: var(--color-primary);
-    --color-overlay: rgba(0, 0, 0, 0.5);
+    --color-headings: var(--devsume-colors-headings);
+    --color-link: var(--devsume-colors-link);
+    --color-overlay: var(--devsume-colors-overlay);
 
     /* Typography */
     --text-h1: 3rem;
@@ -198,12 +178,10 @@
 body {
     @apply background-bg;
     font-weight: var(--font-weight-body-w);
-
 }
 
 :focus-visible {
-    @apply ring-primary/50 ring-4;
-    @apply outline-none;
+    @apply outline-primary outline-2 outline-offset-2 outline-dashed;
 }
 
 /*
@@ -390,45 +368,12 @@ body {
     @apply text-foreground border-foreground;
 }
 
-@utility background-bg-alt {
-    @apply bg-background-alt;
-    @apply text-foreground-alt border-foreground-alt;
-}
 
 @utility background-fg {
     @apply bg-foreground;
     @apply text-background border-background;
 }
 
-@utility background-fg-alt {
-    @apply bg-foreground-alt;
-    @apply text-background-alt border-background-alt;
-}
-
-.bg-primary {
-    @apply bg-primary;
-    @apply text-background border-primary;
-}
-
-.bg-secondary {
-    @apply bg-secondary;
-    @apply text-background border-secondary;
-}
-
-.bg-tertiary {
-    @apply bg-tertiary;
-    @apply text-background border-tertiary;
-}
-
-.bg-quaternary {
-    @apply bg-quaternary;
-    @apply text-background border-quaternary;
-}
-
-.bg-disabled {
-    @apply bg-disabled;
-    @apply text-foreground border-disabled;
-}
 
 @utility dimmed {
     @apply opacity-50;
@@ -474,28 +419,20 @@ body {
     /*
         Button Component + button-type components
     */
-    .btn, .action-icon, .binary-toggle, .tag, .pill {
-        @apply border border-solid rounded;
-        @apply interactive rounded flex items-center justify-center transition-all p-xs;
-        @apply h-5;
+    .btn, .action-icon, .tag, .pill {
+        @apply rounded relative;
+        @apply interactive flex items-center justify-center transition-all p-xs gap-xs;
+        @apply h-5 ;
 
         border-width: var(--spacing-border-width);
-        width: max-content;
-        gap: var(--spacing-xs);
         line-height: 1;
-
-        /* Icon handling */
-
-        &.has-icon {
-            padding-left: var(--spacing-xxs);
-        }
+        transition-duration: var(--transition-duration-normal);
+        transition-timing-function: var(--transition-timing);
 
         .btn-icon {
-            @apply flex items-center justify-center;
-            height: 100%;
-
+            @apply flex items-center justify-center h-full;
             svg {
-                height: 100%;
+                @apply h-full;
             }
         }
 
@@ -504,303 +441,186 @@ body {
         &.xs {
             @apply text-xs;
             @apply h-3;
+            @apply gap-xxs;
+            &.has-icon {
+                @apply p-xxs pr-xs;
+            }
         }
 
         &.sm {
             @apply text-sm;
             @apply h-4;
+            @apply gap-xxs;
         }
 
         &.lg {
             @apply text-lg;
             @apply h-6;
+            @apply p-xs;
         }
 
         &.xl {
             @apply text-xl;
             @apply h-8;
+            @apply p-sm
         }
 
-        /* Color variants - for default filled state */
-
-        &.foreground {
-            @apply bg-foreground text-background border-background;
-            &:not(:disabled):hover {
-                @apply bg-background text-foreground;
-            }
-        }
-
+        /*Colors*/
         &.primary {
-            @apply bg-primary text-background border-primary;
-            &:not(:disabled):hover {
-                @apply bg-background text-primary;
-            }
+            @apply text-primary;
         }
 
         &.secondary {
-            @apply bg-secondary text-background border-secondary;
-            &:not(:disabled):hover {
-                @apply bg-background text-secondary;
-            }
+            @apply text-secondary;
         }
 
         &.tertiary {
-            @apply bg-tertiary text-background border-tertiary;
-            &:not(:disabled):hover {
-                @apply bg-background text-tertiary;
-            }
+            @apply text-tertiary;
         }
 
         &.quaternary {
-            @apply bg-quaternary text-background border-quaternary;
-            &:not(:disabled):hover {
-                @apply bg-background text-quaternary;
+            @apply text-quaternary;
+        }
+
+        &.background {
+            @apply text-background;
+        }
+
+        &.foreground {
+            @apply text-foreground;
+        }
+
+        &.info {
+            @apply text-info;
+        }
+
+        &.warning {
+            @apply text-warning;
+        }
+
+        &.danger {
+            @apply text-danger;
+        }
+
+        &.success {
+            @apply text-success;
+        }
+
+        &.disabled {
+            @apply text-disabled;
+        }
+
+        /*
+           Button variants
+        */
+
+        &.btn-shadow-drop {
+            box-shadow: currentColor .25rem .25rem 0 0;
+            left: 0;
+            top: 0;
+
+            &:hover {
+                left: .25rem;
+                top: .25rem;
+                box-shadow: currentColor 0 0 0 0;
             }
         }
 
-        &.info{
-            @apply bg-info text-background border-info;
-            &:not(:disabled):hover {
-                @apply bg-background text-info;
+        &.btn-shadow-spread {
+            box-shadow: currentColor 0 0 0 0;
+            right: 0;
+            bottom: 0;
+
+            &:hover {
+                right: .25rem;
+                bottom: .25rem;
+                box-shadow: currentColor .25rem .25rem 0 0;
+            }
+
+            &:active {
+                box-shadow: currentColor 0 0 0 0;
+                right: 0;
+                bottom: 0;
             }
         }
 
-        &.success{
-            @apply bg-success text-background border-success;
-            &:not(:disabled):hover {
-                @apply bg-background text-success;
+        &.btn-shadow-filled {
+            background-color: currentColor;
+            box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) 0 0 0 0;
+            right: 0;
+            bottom: 0;
+            border-color: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%);
+
+            span {
+                @apply text-background;
+            }
+
+            &:hover {
+                right: .25rem;
+                bottom: .25rem;
+                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) .25rem .25rem 0 0;
+            }
+
+            &:active {
+                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) 0 0 0 0;
+                right: 0;
+                bottom: 0;
             }
         }
 
-        &.danger{
-            @apply bg-danger text-background border-danger;
-            &:not(:disabled):hover {
-                @apply bg-background text-danger;
+        &.btn-swipe {
+            overflow: hidden;
+
+            &::before {
+                background-color: currentColor;
+                content: "";
+                transform: translateX(-150%);
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 140%;
+                width: 240%;
+                transition: var(--transition-duration-normal) var(--transition-timing);
+            }
+
+            span {
+                z-index: 2;
+                position: relative;
+                transition: var(--transition-duration-normal) var(--transition-timing);
+            }
+
+            &:hover span {
+                @apply text-background;
+            }
+
+            &:hover::before {
+                transform: translateX(-50%);
             }
         }
 
-        &.warning{
-            @apply bg-warning text-background border-warning;
-            &:not(:disabled):hover {
-                @apply bg-background text-warning;
+        &.btn-border-grow {
+            @apply outline-0;
+            transition-duration: var(--transition-duration-fast);
+            &:hover {
+                @apply outline-2;
+            }
+            /* Active state */
+
+            &.active {
+                @apply outline-1 outline-offset-2 outline-dashed;
             }
         }
 
-        /* Subtle variants */
-
-        &.subtle {
-            @apply bg-transparent border-transparent;
-            &:not(:disabled):hover {
-                @apply bg-primary/20
-            }
-
-            &.background {
-                @apply text-background border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-background/20
-                }
-            }
-
-            &.primary {
-                @apply text-primary border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-primary/20
-                }
-            }
-            &.secondary {
-                @apply text-secondary border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-secondary/20
-                }
-            }
-            &.tertiary {
-                @apply text-tertiary border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-tertiary/20
-                }
-            }
-            &.quaternary {
-                @apply text-quaternary border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-quaternary/20
-                }
-            }
-            &.info{
-                @apply text-info border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-info/20
-                }
-            }
-            &.success{
-                @apply text-success border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-success/20
-                }
-            }
-            &.danger{
-                @apply text-danger border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-danger/20
-                }
-            }
-            &.warning{
-                @apply text-warning border-transparent;
-                &:not(:disabled):hover {
-                    @apply bg-warning/20
-                }
-            }
+        &.btn-discreet {
+            @apply border-transparent;
         }
 
-        /* Light variants */
+        &.btn-light {
+            @apply bg-[currentColor]/12 border-transparent;
 
-        &.light {
-            @apply bg-foreground/30 text-foreground border-foreground/30;
-            &:not(:disabled):hover {
-                @apply border-foreground
+            &:hover {
+                @apply bg-[currentColor]/20;
             }
-
-            &.background {
-                @apply bg-background/30 text-background border-background/30;
-                &:not(:disabled):hover {
-                    @apply border-background
-                }
-            }
-
-            &.primary {
-                @apply bg-primary/30 text-primary border-primary/30;
-                &:not(:disabled):hover {
-                    @apply border-primary
-                }
-            }
-
-            &.secondary {
-                @apply bg-secondary/30 text-secondary border-secondary/30;
-                &:not(:disabled):hover {
-                    @apply border-secondary
-                }
-            }
-
-            &.tertiary {
-                @apply bg-tertiary/30 text-tertiary border-tertiary/30;
-                &:not(:disabled):hover {
-                    @apply border-tertiary
-                }
-            }
-
-            &.quaternary {
-                @apply bg-quaternary/30 text-quaternary border-quaternary/30;
-                &:not(:disabled):hover {
-                    @apply border-quaternary
-                }
-            }
-
-            &.info{
-                @apply bg-info/30 text-info border-info/30;
-                &:not(:disabled):hover {
-                    @apply border-info
-                }
-            }
-
-            &.success{
-                @apply bg-success/30 text-success border-success/30;
-                &:not(:disabled):hover {
-                    @apply border-success
-                }
-            }
-
-            &.danger{
-                @apply bg-danger/30 text-danger border-danger/30;
-                &:not(:disabled):hover {
-                    @apply border-danger
-                }
-            }
-
-            &.warning{
-                @apply bg-warning/30 text-warning border-warning/30;
-                &:not(:disabled):hover {
-                    @apply border-warning
-                }
-            }
-        }
-
-        /* Outline variants */
-
-        &.outline {
-            @apply bg-transparent;
-
-            &:not(:disabled):hover {
-                @apply bg-foreground text-background;
-            }
-
-            &.foreground {
-                @apply border-foreground text-foreground;
-                &:not(:disabled):hover {
-                    @apply bg-foreground text-background;
-                }
-            }
-            &.primary {
-                @apply border-primary text-primary;
-
-                &:not(:disabled):hover {
-                    @apply bg-primary text-background;
-                }
-            }
-            &.secondary {
-                @apply border-secondary text-secondary;
-
-                &:not(:disabled):hover {
-                    @apply bg-secondary text-background;
-                }
-            }
-            &.tertiary {
-                @apply border-tertiary text-tertiary;
-
-                &:not(:disabled):hover {
-                    @apply bg-tertiary text-background;
-                }
-            }
-            &.quaternary {
-                @apply border-quaternary text-quaternary;
-
-                &:not(:disabled):hover {
-                    @apply bg-quaternary text-background;
-                }
-            }
-            &.info{
-                @apply border-info text-info;
-                &:not(:disabled):hover {
-                    @apply bg-info text-background;
-                }
-            }
-            &.danger{
-                @apply border-danger text-danger;
-                &:not(:disabled):hover {
-                    @apply bg-danger text-background;
-                }
-            }
-            &.warning{
-                @apply border-warning text-warning;
-                &:not(:disabled):hover {
-                    @apply bg-warning text-background;
-                }
-            }
-            &.success{
-                @apply border-success text-success;
-                &:not(:disabled):hover {
-                    @apply bg-success text-background;
-                }
-            }
-        }
-
-        /* Hover states */
-
-        &:not(.primary):not(.secondary):not(.tertiary):not(.quaternary):not(.reverse):not(:disabled):hover {
-            @apply bg-foreground text-background;
-            transform: scale(1.05);
-        }
-
-        &:not(:disabled):hover {
-            transform: scale(1.05);
         }
 
         /* Disabled state */
@@ -808,6 +628,9 @@ body {
         &:disabled {
             @apply opacity-50 cursor-not-allowed;
             transform: none !important;
+            &:hover {
+                transform: none !important;
+            }
         }
     }
 
@@ -816,10 +639,17 @@ body {
      */
 
     .action-icon {
-        @apply p-xxs;
+        @apply p-xs;
         @apply h-5 w-5;
 
+        box-sizing: border-box;
+
+        svg{
+            @apply h-full w-full;
+        }
+
         &.xs {
+            @apply p-[.2rem];
             @apply h-3 w-3;
         }
         &.sm {
@@ -837,7 +667,16 @@ body {
        Binary Toggle Component only rules
    */
     .binary-toggle {
-        @apply p-xxs text-xs grow-on-hover;
+        @apply rounded relative;
+        @apply interactive flex items-center justify-center transition-all p-xs gap-xs;
+        @apply h-5 ;
+        @apply p-xxs text-xs;
+
+        border-width: var(--spacing-border-width);
+        line-height: 1;
+        transition-duration: var(--transition-duration-normal);
+        transition-timing-function: var(--transition-timing);
+
         user-focus: key;
 
         .toggle-switch {
@@ -858,18 +697,13 @@ body {
         }
 
         .toggle-option {
-            @apply interactive text-center p-xxs px-xs z-10 relative cursor-pointer transition-colors h-full flex-center;
+            @apply interactive text-center p-xxs px-xs z-10 relative;
+            @apply grow-on-hover cursor-pointer h-full flex-center;
             width: calc(50% - var(--spacing-xxs) / 2);
             border-radius: inherit;
 
             &[aria-checked="true"] {
-                color: var(--color-background);
-            }
-        }
-
-        &:hover .toggle-option {
-            &[aria-checked="true"] {
-                color: var(--color-foreground);
+                @apply text-background;
             }
         }
 
@@ -987,7 +821,7 @@ body {
 
         .tooltip {
             position: absolute;
-            @apply content-style-5 p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
+            @apply content-style-4 p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
             white-space: nowrap;
             pointer-events: none;
             z-index: 80;
@@ -1047,12 +881,12 @@ body {
         EditableText Component
     */
     .editable-text {
+        @apply interactive;
         position: relative;
         max-width: 100%;
-        @apply input-padding;
 
         input, textarea.text {
-            @apply input-padding;
+            @apply interactive;
             text-wrap: wrap;
             max-width: 100%;
         }
@@ -1095,7 +929,6 @@ body {
 
             .modal-close {
                 @apply interactive rounded-full p-1;
-                @apply hover:background-bg-alt;
             }
 
             .modal-body {
@@ -1124,7 +957,7 @@ body {
         /* Pills row - improved alignment and spacing */
 
         .query-pills {
-            @apply flex-between items-center p-xs rounded content-style-5;
+            @apply flex-between items-center p-xs rounded content-style-4;
         }
 
         .query-pills-group {
@@ -1172,8 +1005,6 @@ body {
 
         .filter-number {
             @apply flex-center rounded-full text-xs font-medium;
-            background-color: var(--color-background-alt);
-            color: var(--color-foreground-alt);
             min-width: 1.5rem;
             height: 1.5rem;
             transition: all var(--transition-duration-normal) var(--transition-timing);
@@ -1210,12 +1041,6 @@ body {
 
         .value-input-wrapper {
             @apply relative;
-        }
-
-        /* Remove button - improved hover states */
-
-        .filter-remove:hover {
-            @apply background-bg-alt;
         }
 
         /* Sort section styling - improved container */
