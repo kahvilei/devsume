@@ -27,7 +27,8 @@ export type ColorVariant =
     | "warning"
     | "danger"
     | "foreground"
-    | "background";
+    | "background"
+    | "disabled";
 
 export type ButtonVariant =
     "btn-swipe"

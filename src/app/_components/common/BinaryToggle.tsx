@@ -1,5 +1,6 @@
 import React from "react";
 import Tooltip from "@/app/_components/common/Tooltip";
+import {ButtonVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface BinaryToggleProps {
     state: boolean;
@@ -7,6 +8,9 @@ interface BinaryToggleProps {
     label?: [string, string];
     elements?: [React.ReactNode, React.ReactNode];
     id?: string;
+    size?: Size;
+    radius?: RadiusSize;
+    variant?: ButtonVariant;
 }
 
 export default function BinaryToggle(
@@ -15,6 +19,9 @@ export default function BinaryToggle(
         onToggle,
         label = ["On", "Off"],
         elements = ["On", "Off"],
+        size = "md",
+        radius = "rounded-full",
+        variant = "btn-shadow-spread",
     }: BinaryToggleProps
 ) {
 
@@ -24,7 +31,8 @@ export default function BinaryToggle(
     };
 
     return (
-            <div className="binary-toggle" role="radiogroup">
+        <div className={`binary-toggle-wrap`}>
+            <div className={`binary-toggle ${size} ${radius} ${variant}`} role="radiogroup">
                 <label className="toggle-switch">
                     <span
                         aria-checked={!state}
@@ -40,7 +48,7 @@ export default function BinaryToggle(
                         }}
                     >
                         <Tooltip text={label[0]} position={"above"}>
-                        {elements[0]}
+                            <span className="toggle-inner">{elements[0]}</span>
                         </Tooltip>
                     </span>
                     <span
@@ -57,11 +65,11 @@ export default function BinaryToggle(
                         }}
                     >
                         <Tooltip text={label[1]} position={"above"}>
-                        {elements[1]}
+                            <span className="toggle-inner">{elements[1]}</span>
                         </Tooltip>
                     </span>
                     <span className="toggle-slider"></span>
                 </label>
-            </div>
+            </div></div>
     );
 }

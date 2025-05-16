@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {AlertMessage} from "@/app/_components/common/AlertMessage";
 import {useSelection} from "@/app/_hooks/common/useSelection";
 import {useAPI} from "@/app/_hooks/common/useAPI";
@@ -6,13 +6,12 @@ import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import ITEMS, {ItemManifest, ItemManifestList} from "@/config/itemManifest";
-import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {BaseDataModel} from "@/interfaces/data";
 import {DataQuery} from "@/interfaces/api";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
-import {Database, ListPlus, MoveDown, Plus, SettingsIcon} from "lucide-react";
+import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
-import {Button} from "@/app/_components/common/Button";
 import {DataQueryEditor} from "@/app/_components/editor/common/DataQueryEditor";
 
 interface MultiSelectProps<T extends BaseDataModel> {
@@ -20,6 +19,7 @@ interface MultiSelectProps<T extends BaseDataModel> {
     label: string;
     dataKey: keyof ItemManifestList;
     onSelect: (value: T[] | DataQuery<T>) => void;
+    onRemove?: () => void;
 }
 
 export default function MultiSelectFromDB<T extends BaseDataModel>
@@ -27,28 +27,37 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
      values = [],
      label,
      dataKey,
-     onSelect
+     onSelect,
+     onRemove
+
  }: MultiSelectProps<T>) {
     const [controlsOpen, setControlsOpen] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [title, setTitle] = useState<string>(label);
+
+    // Get the item manifest and its queryFields (if available)
+    const manifest = ITEMS[dataKey] as ItemManifest<T>;
+    const {
+        queryFields = {},
+        preview: PreviewComponent,
+        edit: EditComponent,
+        openEditInModal = false
+    } = manifest;
 
     // Determine if values is a DataQuery object or an array
     const initialIsDynamic = !Array.isArray(values);
     const [isDynamic, setIsDynamic] = useState<boolean>(initialIsDynamic);
 
     // Initialize query from values if it's a DataQuery, or create an empty one
-    const initialQuery: DataQuery<T> = initialIsDynamic
+    const initialQuery:
+        DataQuery<T> = initialIsDynamic
         ? values as DataQuery<T>
         : {filter: {} as Record<keyof T, string>, sort: undefined, limit: undefined};
+
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
 
-    // Get the item manifest and its queryFields (if available)
-    const manifest = ITEMS[dataKey] as ItemManifest<T>;
-    const queryFields = manifest.queryFields || {};
-
     // Get the list of items from the API
-    const {list, error, warning, createItem, updateItem, deleteItem, fetchItems} = useAPI<T>(
+    const {list, error, warning, createItem, updateItem, deleteItem } = useAPI<T>(
         manifest.api,
         isDynamic ? query : undefined
     );
@@ -59,70 +68,85 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
         toggleItem,
         isSelected,
         setSelectedItems
-    } = useSelection<T>(isDynamic ? [] : (Array.isArray(values) ? values : []), list);
+    } = useSelection<T>(isDynamic ? list : (Array.isArray(values) ? values : []), list);
 
-    // Update the parent component when selection changes
-    useEffect(() => {
-        if (!isDynamic) {
-            onSelect(selectedItems);
-        }
-    }, [selectedItems, isDynamic]);
 
-    // Update the parent component when query changes
-    useEffect(() => {
-        if (isDynamic) {
-            onSelect(query);
-            fetchItems().then();
-        }
-    }, [query, isDynamic]);
-
-    // Update local state when the values prop changes
-    useEffect(() => {
-        const newIsDynamic = !Array.isArray(values);
-        setIsDynamic(newIsDynamic);
-
-        if (newIsDynamic) {
-            setQuery(values as DataQuery<T>);
-        } else if (Array.isArray(values)) {
-            setSelectedItems(values);
-        }
-    }, []);
-
-    // Type assertions for the preview and edit components
-    const PreviewComponent = manifest.preview as React.FC<PreviewProps<T>> | undefined;
-    const EditComponent = manifest.edit as React.FC<EditProps<T>> | undefined;
-    const openEditInModal = manifest.openEditInModal || false;
-
-    const handleAddItemSave = (item: T): void => {
-        createItem(item).then();
+    const handleAddItemSave = async (item: T) => {
+        await createItem(item);
         setIsAdding(false);
     };
 
-    const handleQuerySave = (updatedQuery: DataQuery<T>): void => {
-        setQuery(updatedQuery);
-    };
+    useEffect(() => {
+        onSelect(isDynamic ? query : selectedItems);
+        // Intentionally omitting onSelect from dependencies:
+        // We don't want to re-run this effect when the component receives
+        // a copy of the same function as a prop.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isDynamic, query, selectedItems]);
 
     return (
         <div className="multi-selector">
             <div className="controls">
                 <div className="header">
                     <div className="flex-grow">
-                        <EditableText order={'h4'} value={title}
-                                      label={(manifest.names?.singular ?? dataKey) + " section title"}
-                                      placeholder={"Enter a title"} onUpdate={setTitle}/>
+                        <EditableText
+                            order={'h4'}
+                            value={title}
+                            label={(manifest.names?.singular ?? dataKey) + " section title"}
+                            placeholder={"Enter a title"}
+                            onUpdate={setTitle}
+                        />
                     </div>
-                    <BinaryToggle state={isDynamic} onToggle={setIsDynamic} label={["Direct select", "Query"]}
-                                  elements={[<ListPlus key={1}/>, <Database key={2}/>]}/>
-                    <ActionIcon icon={<SettingsIcon/>} action={() => setControlsOpen(!controlsOpen)}
-                                tooltip={controlsOpen ? "Hide controls" : "Show controls"}/>
+                    {onRemove &&
+                        <ActionIcon
+                            onClick={() => {
+                                 onRemove();
+                            }}
+                            icon={<X/>}
+                            color={"danger"}
+                            tooltip={"Delete this section"}
+                        />
+                    }
+                    <ActionIcon
+                        icon={<SettingsIcon/>}
+                        onClick={() => setControlsOpen(!controlsOpen)}
+                        tooltip={controlsOpen ? "Hide controls" : "Show controls"}
+                    />
                 </div>
                 <div className={"selector " + (controlsOpen ? "open" : "closed")}>
-
+                    <div className={'buttons'}>
+                        <ActionIcon
+                            onClick={() => setIsAdding(true)}
+                            icon={<Plus/>}
+                            size={'sm'}
+                            tooltip={"Create a new " + (manifest.names?.singular ?? dataKey)}>
+                        </ActionIcon>
+                        <ActionIcon
+                            onClick={() => {
+                                onSelect(isDynamic ? {} : []);
+                                setSelectedItems([]);
+                                setQuery({})
+                            }}
+                            icon={<Undo/>}
+                            color={"info"}
+                            size={'sm'}
+                            tooltip={"Reset filters"}>
+                        </ActionIcon>
+                        <BinaryToggle
+                            state={isDynamic}
+                            onToggle={setIsDynamic}
+                            label={["Direct select", "Query"]}
+                            size={"sm"}
+                            elements={[
+                                <ListPlus key={1}/>,
+                                <Database key={2}/>
+                            ]}
+                        />
+                    </div>
                     {isDynamic && (
                         <DataQueryEditor
                             query={query}
-                            onSave={handleQuerySave}
-                            onCancel={() => {}} // No-op since we're always showing the summary
+                            onSave={setQuery}
                             queryFields={queryFields}
                             showEditToggle={true}
                             defaultOpen={false}
@@ -174,30 +198,17 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                             />
                         </div>
                     )}
-                    <div className={'buttons'}>
-                        <Button onClick={() => setIsAdding(true)} icon={<Plus/>}
-                            text={"Create a new " + (manifest.names?.singular ?? dataKey)}></Button>
-                    </div>
                 </div>
                 <div className='connector'><MoveDown height={'1rem'}/></div>
-                <AlertMessage error={error} warning={warning}/>
             </div>
-
-            <div
-                aria-label={label}
-                aria-haspopup="listbox"
-                className="content"
-            >
+            <div aria-label={label} aria-haspopup="listbox" className="content">
                 {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
-                    <div
-                        className="item-selector-placeholder"
-                    >
+                    <div className="item-selector-placeholder">
                         No {manifest.names?.plural ?? "items"} selected. Click settings to add new items or edit the
                         query.
                     </div>
                 )}
 
-                {/* Show selected items for both modes */}
                 <ul
                     role="items"
                     className="selected-items"
@@ -217,6 +228,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     ))}
                 </ul>
             </div>
+            <AlertMessage error={error} warning={warning}/>
         </div>
     );
 }

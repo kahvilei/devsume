@@ -23,7 +23,7 @@ export const Button =
         size = "md",
         type = "button",
         disabled = false,
-        radius = "rounded",
+        radius = "rounded-full",
         variant = "btn-shadow-spread",
         color = "primary",
 

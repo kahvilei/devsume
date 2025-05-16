@@ -6,7 +6,7 @@ import {ColorVariant, ButtonVariant, Size, RadiusSize} from "@/types/designTypes
 
 interface ActionIconProps {
     icon: React.ReactNode;
-    action: () => void;
+    onClick: () => void;
     tooltip: string;
     className?: string;
     variant?: ButtonVariant;
@@ -26,14 +26,14 @@ interface ActionIconProps {
 export const ActionIcon: React.FC<ActionIconProps> =
     ({
          icon,
-         action,
+         onClick,
          tooltip,
          tooltipPosition = "above",
          className = "",
          disabled = false,
          ariaLabel,
          size = "md",
-         radius = "rounded",
+         radius = "rounded-full",
          variant = "btn-shadow-spread",
          color = "",
      }) => {
@@ -41,7 +41,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
             e.stopPropagation();
             e.preventDefault();
             if (!disabled) {
-                action();
+                onClick();
             }
         };
 

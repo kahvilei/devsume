@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {getAndDigest} from "@/lib/http/getAndDigest";
 import {patchAndDigest} from "@/lib/http/patchAndDigest";
 import {deleteAndDigest} from "@/lib/http/deleteAndDigest";
@@ -12,34 +12,37 @@ export function useAPI<T extends BaseDataModel>(url: string, query?: DataQuery<T
     const [warning, setWarning] = useState<string>();
     const [loading, setLoading] = useState(false);
 
-    // Fetch tags on mount
-    useEffect(() => {
-        fetchItems().then();
-    }, []);
-
-    const convertQueryToString = (query: DataQuery<T>) => {
+    const convertQueryToString = useCallback((query: DataQuery<T>) => {
         let queryStr = "?";
         for (const key in query) {
             if (query.hasOwnProperty(key) && key !== "filter") {
                 const value = query[key as keyof DataQuery<T>];
                 queryStr += `${key}=${value}&`;
-            }else if (query.hasOwnProperty(key) && key === "filter") {
-                for (const key in query.filter) {
-                    const value = query.filter[key];
-                    queryStr += `${key}=${value}&`;
+            } else if (query.hasOwnProperty(key) && key === "filter") {
+                for (const filterKey in query.filter) {
+                    const value = query.filter[filterKey];
+                    queryStr += `${filterKey}=${value}&`;
                 }
             }
         }
         return queryStr.slice(0, -1);
-    }
+    }, []);
 
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         setLoading(true);
-        getAndDigest<T[]>(url+(convertQueryToString(query??{})), setList, setError, setWarning).then();
-        setLoading(false);
-    };
+        try {
+            await getAndDigest<T[]>(
+                url + convertQueryToString(query ?? {}),
+                setList,
+                setError,
+                setWarning
+            );
+        } finally {
+            setLoading(false);
+        }
+    }, [url, query, convertQueryToString]);
 
-    const createItem = async (item: T) => {
+    const createItem = useCallback(async (item: T) => {
         return postAndDigest<T>(
             url,
             item,
@@ -47,28 +50,41 @@ export function useAPI<T extends BaseDataModel>(url: string, query?: DataQuery<T
             setError,
             setWarning
         );
-    };
+    }, [url]);
 
-    const updateItem = async (item: T) => {
+    const updateItem = useCallback(async (item: T) => {
         return patchAndDigest<T>(
-            url+item._id,
+            url + item._id,
             item,
-            (updatedItem: T) => setList(prev => prev.map(t => t._id === updatedItem._id ? updatedItem : t)),
+            (updatedItem: T) => setList(prev =>
+                prev.map(t => t._id === updatedItem._id ? updatedItem : t)
+            ),
             setError,
             setWarning
         );
-    };
+    }, [url]);
 
-    const deleteItem = async (item: T) => {
+    const deleteItem = useCallback(async (item: T) => {
         return deleteAndDigest<T>(
-            url+item._id,
-            (deletedItem: T) => setList(prev => prev.filter(t => t._id !== deletedItem._id)),
+            url + item._id,
+            (deletedItem: T) => setList(prev =>
+                prev.filter(t => t._id !== deletedItem._id)
+            ),
             setError,
             setWarning
         );
-    };
+    }, [url]);
 
-    return {
+    const clearError = useCallback(() => setError(undefined), []);
+    const clearWarning = useCallback(() => setWarning(undefined), []);
+
+    // Initial fetch on mount or when query changes
+    useEffect(() => {
+        fetchItems();
+    }, [fetchItems]);
+
+    // Memoize the return object
+    return useMemo(() => ({
         list,
         error,
         warning,
@@ -77,7 +93,18 @@ export function useAPI<T extends BaseDataModel>(url: string, query?: DataQuery<T
         updateItem,
         deleteItem,
         fetchItems,
-        clearError: () => setError(undefined),
-        clearWarning: () => setWarning(undefined)
-    };
+        clearError,
+        clearWarning
+    }), [
+        list,
+        error,
+        warning,
+        loading,
+        createItem,
+        updateItem,
+        deleteItem,
+        fetchItems,
+        clearError,
+        clearWarning
+    ]);
 }

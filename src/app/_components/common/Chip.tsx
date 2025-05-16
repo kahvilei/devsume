@@ -1,14 +1,14 @@
 import React from "react";
-
-type ColorVariant = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'success' | 'danger' | 'warning' | 'info' | 'disabled';
+import {ButtonVariant, ColorVariant} from "@/types/designTypes";
 
 interface ChipProps {
     text: string;
     color?: ColorVariant
+    variant?: ButtonVariant
 }
 
-export const Chip: React.FC<ChipProps> = ({text, color = 'primary'}) => {
+export const Chip: React.FC<ChipProps> = ({text, color = 'primary', variant='btn-shadow-filled'}) => {
     return (
-        <div className={`chip bg-${color}`}>{text}</div>
+        <div className={`chip ${variant} ${color}`}><span>{text}</span></div>
     );
 }
