@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {AlertMessage} from "@/app/_components/common/AlertMessage";
 import {useSelection} from "@/app/_hooks/common/useSelection";
 import {useAPI} from "@/app/_hooks/common/useAPI";
@@ -7,12 +7,15 @@ import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import ITEMS, {ItemManifest, ItemManifestList} from "@/config/itemManifest";
 import {BaseDataModel} from "@/interfaces/data";
-import {DataQuery} from "@/interfaces/api";
+import {DataFilter, DataQuery} from "@/interfaces/api";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {DataQueryEditor} from "@/app/_components/editor/common/DataQueryEditor";
+import PopInOut from "@/app/_components/animations/PopInOut";
+import {AnimatePresence} from "motion/react";
+import Drawer from "../../animations/Drawer";
 
 interface MultiSelectProps<T extends BaseDataModel> {
     values?: T[] | DataQuery<T>;
@@ -52,7 +55,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
     const initialQuery:
         DataQuery<T> = initialIsDynamic
         ? values as DataQuery<T>
-        : {filter: {} as Record<keyof T, string>, sort: undefined, limit: undefined};
+        : {filter: {} as Record<keyof T, DataFilter[]>, sort: undefined, limit: undefined} as DataQuery<T>;
 
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
 
@@ -113,93 +116,101 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                         tooltip={controlsOpen ? "Hide controls" : "Show controls"}
                     />
                 </div>
-                <div className={"selector " + (controlsOpen ? "open" : "closed")}>
-                    <div className={'buttons'}>
-                        <ActionIcon
-                            onClick={() => setIsAdding(true)}
-                            icon={<Plus/>}
-                            size={'sm'}
-                            tooltip={"Create a new " + (manifest.names?.singular ?? dataKey)}>
-                        </ActionIcon>
-                        <ActionIcon
-                            onClick={() => {
-                                onSelect(isDynamic ? {} : []);
-                                setSelectedItems([]);
-                                setQuery({})
-                            }}
-                            icon={<Undo/>}
-                            color={"info"}
-                            size={'sm'}
-                            tooltip={"Reset filters"}>
-                        </ActionIcon>
-                        <BinaryToggle
-                            state={isDynamic}
-                            onToggle={setIsDynamic}
-                            label={["Direct select", "Query"]}
-                            size={"sm"}
-                            elements={[
-                                <ListPlus key={1}/>,
-                                <Database key={2}/>
-                            ]}
-                        />
-                    </div>
-                    {isDynamic && (
-                        <DataQueryEditor
-                            query={query}
-                            onSave={setQuery}
-                            queryFields={queryFields}
-                            showEditToggle={true}
-                            defaultOpen={false}
-                        />
-                    )}
+                        <div className={"selector " + (controlsOpen?" open":" closed")}>
+                            { controlsOpen && (
+                                <Drawer>
+                                    <div className={'buttons'}>
+                                        <ActionIcon
+                                            onClick={() => setIsAdding(true)}
+                                            icon={<Plus/>}
+                                            size={'sm'}
+                                            tooltip={"Create a new " + (manifest.names?.singular ?? dataKey)}>
+                                        </ActionIcon>
+                                        <ActionIcon
+                                            onClick={() => {
+                                                onSelect(isDynamic ? {} : []);
+                                                setSelectedItems([]);
+                                                setQuery({})
+                                            }}
+                                            icon={<Undo/>}
+                                            color={"info"}
+                                            size={'sm'}
+                                            tooltip={"Reset filters"}>
+                                        </ActionIcon>
+                                        <BinaryToggle
+                                            state={isDynamic}
+                                            onToggle={setIsDynamic}
+                                            label={["Direct select", "Query"]}
+                                            size={"sm"}
+                                            elements={[
+                                                <ListPlus key={1}/>,
+                                                <Database key={2}/>
+                                            ]}
+                                        />
+                                    </div>
+                                    {isDynamic && (
+                                        <DataQueryEditor
+                                            query={query}
+                                            onSave={setQuery}
+                                            queryFields={queryFields}
+                                            showEditToggle={true}
+                                            defaultOpen={false}
+                                        />
+                                    )}
 
-                    {/* Different content based on mode and state */}
-                    {!isDynamic ? (
-                        <ul role="listbox" className="divider">
-                            {list.map((option: T) => (
-                                <ItemOption
-                                    key={option._id}
-                                    item={option}
-                                    onSelect={() => toggleItem(option)}
-                                    onEdit={updateItem}
-                                    isSelected={isSelected(option)}
-                                    onDelete={deleteItem}
-                                    Renderer={PreviewComponent}
-                                    Form={EditComponent}
-                                    openEditInModal={openEditInModal}
-                                />
-                            ))}
-                        </ul>
-                    ) : null}
+                                    {/* Different content based on mode and state */}
+                                    {!isDynamic ? (
+                                        <ul role="listbox" className="divider">
+                                            <AnimatePresence>
+                                                {list.map((option: T) => (
+                                                    <PopInOut key={option._id}>
+                                                        <ItemOption
+                                                            item={option}
+                                                            onSelect={() => toggleItem(option)}
+                                                            onEdit={updateItem}
+                                                            isSelected={isSelected(option)}
+                                                            onDelete={deleteItem}
+                                                            Renderer={PreviewComponent}
+                                                            Form={EditComponent}
+                                                            openEditInModal={openEditInModal}
+                                                        />
+                                                    </PopInOut>
+                                                ))}
+                                            </AnimatePresence>
+                                        </ul>
+                                    ) : null}
 
-                    {/* Add new item section */}
-                    {isAdding && openEditInModal && (
-                        <Modal
-                            isOpen={isAdding}
-                            onClose={() => setIsAdding(false)}
-                            title={"Create a new " + (manifest.names?.singular ?? dataKey)}
-                        >
-                            <ItemEdit
-                                label="Add a new item"
-                                Form={EditComponent}
-                                onSave={handleAddItemSave}
-                                onCancel={() => setIsAdding(false)}
-                            />
-                        </Modal>
-                    )}
+                                    {/* Add new item section */}
+                                    {isAdding && openEditInModal && (
+                                        <Modal
+                                            isOpen={isAdding}
+                                            onClose={() => setIsAdding(false)}
+                                            title={"Create a new " + (manifest.names?.singular ?? dataKey)}
+                                        >
+                                            <ItemEdit
+                                                label="Add a new item"
+                                                Form={EditComponent}
+                                                onSave={handleAddItemSave}
+                                                onCancel={() => setIsAdding(false)}
+                                            />
+                                        </Modal>
+                                    )}
 
-                    {isAdding && !openEditInModal && (
-                        <div className="p-sm divider">
-                            <ItemEdit
-                                label="Add a new item"
-                                Form={EditComponent}
-                                onSave={handleAddItemSave}
-                                onCancel={() => setIsAdding(false)}
-                            />
+                                    {isAdding && !openEditInModal && (
+                                        <div className="p-sm divider">
+                                            <ItemEdit
+                                                label="Add a new item"
+                                                Form={EditComponent}
+                                                onSave={handleAddItemSave}
+                                                onCancel={() => setIsAdding(false)}
+                                            />
+                                        </div>
+                                    )}
+                                </Drawer>
+                            )}
                         </div>
-                    )}
-                </div>
-                <div className='connector'><MoveDown height={'1rem'}/></div>
+                        <div className='connector'><MoveDown height={'1rem'}/></div>
+
             </div>
             <div aria-label={label} aria-haspopup="listbox" className="content">
                 {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
@@ -214,18 +225,21 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     className="selected-items"
                     aria-label="Selected Items"
                 >
+                    <AnimatePresence>
                     {(isDynamic ? list : selectedItems).map((option) => (
-                        <ItemOption
-                            key={option._id}
-                            item={option}
-                            onSelect={!isDynamic ? () => toggleItem(option) : undefined}
-                            onEdit={updateItem}
-                            onDelete={deleteItem}
-                            Renderer={PreviewComponent}
-                            Form={EditComponent}
-                            openEditInModal={openEditInModal}
-                        />
+                        <PopInOut key={option._id}>
+                            <ItemOption
+                                item={option}
+                                onSelect={!isDynamic ? () => toggleItem(option) : undefined}
+                                onEdit={updateItem}
+                                onDelete={deleteItem}
+                                Renderer={PreviewComponent}
+                                Form={EditComponent}
+                                openEditInModal={openEditInModal}
+                            />
+                        </PopInOut>
                     ))}
+                    </AnimatePresence>
                 </ul>
             </div>
             <AlertMessage error={error} warning={warning}/>

@@ -2,7 +2,7 @@
 import React from 'react';
 import Tooltip from "@/app/_components/common/Tooltip";
 import {Hash} from "lucide-react";
-import {TooltipPosition} from './SelectField';
+import {TooltipPosition} from '../../common/Select';
 
 type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
 type Size = "xs" | "sm" | "md" | "lg" | "xl";

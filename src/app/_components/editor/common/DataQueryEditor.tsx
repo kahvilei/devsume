@@ -5,7 +5,7 @@ import {DataFilter, DataQuery} from "@/interfaces/api";
 import {Pencil, Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Pill} from "@/app/_components/common/Pill";
-import SelectField, {DropdownOption} from "@/app/_components/editor/common/SelectField";
+import Select, {DropdownOption} from "@/app/_components/common/Select";
 import NumberField from "@/app/_components/editor/common/NumberField";
 import DateField from "@/app/_components/editor/common/DateField";
 import TextField from "@/app/_components/editor/text/TextField";
@@ -90,8 +90,8 @@ export function DataQueryEditor<T extends BaseDataModel>
 
     // Generate sort options based on available fields
     const sortOptions: DropdownOption[] = Object.entries(queryFields).flatMap(([fieldName]) => [
-        {value: `${fieldName}:asc`, label: `${formatFieldName(fieldName)} (ascending)`},
-        {value: `${fieldName}:desc`, label: `${formatFieldName(fieldName)} (descending)`}
+        {value: `${fieldName}:asc`, label: `${formatFieldName(fieldName)} (ascending)`, option: `${formatFieldName(fieldName)} (ascending)`},
+        {value: `${fieldName}:desc`, label: `${formatFieldName(fieldName)} (descending)`, option : `${formatFieldName(fieldName)} (descending)`}
     ]);
 
     // Count the active filters
@@ -236,16 +236,14 @@ export function DataQueryEditor<T extends BaseDataModel>
                     <div className={`query-section ${activeSection === 'sorting' ? 'active' : ''}`}>
                         <div className="query-section-content">
                             <div className="sort-container">
-                                <SelectField
+                                <Select
                                     label="Sort by"
                                     value={localQuery.sort || ''}
                                     options={[
-                                        {value: '', label: 'No sorting'},
                                         ...sortOptions
                                     ]}
                                     onChange={handleSortChange}
                                     placeholder="Select sorting"
-                                    variant={"subtle"}
                                     size={size}
                                 />
 
@@ -387,10 +385,10 @@ export function FilterField({
                 const fieldName = key;
                 const selectOptions: DropdownOption[] =
                     // You would need to provide actual options for select fields
-                    [{value: "option1", label: "Option 1"}, {value: "option2", label: "Option 2"}];
+                    [{value: "option1", label: "Option 1", option: "Option 1"}, {value: "option2", label: "Option 2", option: "Option 2"}];
 
                 return (
-                    <SelectField
+                    <Select
                         label={`${fieldName} value`}
                         value={value}
                         options={selectOptions}
@@ -419,24 +417,25 @@ export function FilterField({
              className={`filter-row ${field.isActive ? 'filter-row-active' : ''}`}>
             <Chip color={`${field.isActive ? 'primary' : 'disabled'}`} text={(index + 1).toString()}/>
             <div className="filter-fields">
-                <SelectField
+                <Select
                     label="Field"
                     value={key}
                     options={Object.entries(queryFields).map(([fieldName]) => ({
                         value: fieldName,
-                        label: formatFieldName(fieldName)
+                        label: formatFieldName(fieldName),
+                        option: formatFieldName(fieldName)
                     }))}
                     onChange={(value) => handleFilterKeyChange(value)}
                     placeholder="Select field"
-                    variant={"subtle"}
                 />
 
-                <SelectField
+                <Select
                     label="Operator"
                     value={operator}
                     options={operatorOptions.map((option) => ({
                         value: option.value,
-                        label: `${option.icon ? option.icon + ' ' : ''}${option.label}`
+                        label: option.icon??option.label,
+                        option: `${option.icon ? option.icon + ' ' : ''}${option.label}`
                     }))}
                     onChange={(value) => handleFilterOperatorChange(value as MongoOperator)}
                     placeholder="Select operator"

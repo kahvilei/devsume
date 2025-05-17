@@ -38,7 +38,7 @@ export default function PreviewTag(
             <span className={"flex gap-xxs"}>
             {setIsEditing &&
                 <ActionIcon
-                    action={() => setIsEditing(true)}
+                    onClick={() => setIsEditing(true)}
                     icon={<Pencil/>}
                     tooltip={"Edit tag"}
                     size="xs"
@@ -49,7 +49,7 @@ export default function PreviewTag(
             }
             {onDelete &&
                 <ActionIcon
-                    action={() => onDelete(tag)}
+                    onClick={() => onDelete(tag)}
                     icon={<Trash/>}
                     tooltip="Delete tag"
                     size="xs"
