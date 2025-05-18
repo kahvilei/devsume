@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useCallback, useContext, useEffect, useRef} from 'react';
 import OverlayContext from "@/app/_data/OverlayContext";
-import PopInOut from "@/app/_components/animations/PopInOut";
+import ScaleInDownUpOut from "@/app/_components/animations/ScaleInDownUpOut";
 
 export interface PortalOverlayProps {
     children?: React.ReactNode;
@@ -32,7 +32,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> =
         const {overlay, setOverlay} = useContext(OverlayContext);
 
         // Handle click outside
-        const handleClickOutside = (event: MouseEvent) => {
+        const handleClickOutside= useCallback((event: MouseEvent) => {
             if (
                 overlayRef.current &&
                 !overlayRef.current.contains(event.target as Node) &&
@@ -42,9 +42,9 @@ const PortalOverlay: React.FC<PortalOverlayProps> =
             ) {
                 onClickOutside();
             }
-        };
+        }, [onClickOutside, targetRef]);
 
-        const updatePosition = () => {
+        const updatePosition = useCallback(() => {
             if (!targetRef.current || !overlayRef.current) return;
 
             const targetRect = targetRef.current.getBoundingClientRect();
@@ -80,36 +80,48 @@ const PortalOverlay: React.FC<PortalOverlayProps> =
 
             // Position the overlay
             overlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
-        };
+        }, [matchWidth, offset, placement, targetRef]);
+
+        const updateOverlay = useCallback(() => {
+            setOverlay(
+                <div
+                    ref={overlayRef}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        pointerEvents: 'auto',
+                    }}
+                >
+                    <ScaleInDownUpOut layout={false}>
+                        <div className={className}>
+                            {children}
+                        </div>
+                    </ScaleInDownUpOut>
+                </div>
+            );
+        }, [children, className, setOverlay])
 
         useEffect(() => {
             // Initial positioning
             updatePosition();
-        }, [overlay]);
+        }, [overlay, updatePosition]);
+
+        useEffect(() => {
+            if (!isOpen && isOpen !== undefined) {
+                return;
+            } else{
+                updateOverlay();
+            }
+        }, [children, isOpen, updateOverlay]);
 
         useEffect(() => {
 
-            if (!isOpen) {
+            if (!isOpen && isOpen !== undefined) {
+                console.log(isOpen);
                 setOverlay(null);
             } else {
-                setOverlay(
-                    <div
-                        ref={overlayRef}
-                        style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            pointerEvents: 'auto',
-                        }}
-                    >
-                        <PopInOut layout={false}>
-                            <div className={className}>
-                                {children}
-                            </div>
-                        </PopInOut>
-                    </div>
-                );
-
+                updateOverlay();
 
                 // Update position on window resize or scroll
                 window.addEventListener('resize', updatePosition);
@@ -130,9 +142,9 @@ const PortalOverlay: React.FC<PortalOverlayProps> =
                 }
             };
 
-        }, [isOpen, children]);
+        }, [isOpen]);
 
-        return (<div></div>);
+        return null;
     }
 
 export default PortalOverlay;

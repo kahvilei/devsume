@@ -1,18 +1,14 @@
-// @/app/_components/editor/common/NumberField.tsx
+// @/app/_components/editor/common/NumberSelect.tsx
 import React from 'react';
-import Tooltip from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
 import {Hash} from "lucide-react";
-import {TooltipPosition} from '../../common/Select';
-
-type ClarityVariant = "ghost" | "subtle" | "default" | "emphasis" | "prominent";
-type Size = "xs" | "sm" | "md" | "lg" | "xl";
+import {Size} from "@/types/designTypes";
 
 export interface NumberFieldProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
-    variant?: ClarityVariant;
     size?: Size;
     min?: number;
     max?: number;
@@ -25,17 +21,16 @@ export interface NumberFieldProps {
 }
 
 /**
- * NumberField component - A styled number input with icon and tooltip support
+ * NumberSelect component - A styled number input with icon and tooltip support
  *
  * Provides a consistent interface for number inputs with validation.
  */
-const NumberField: React.FC<NumberFieldProps> =
+const NumberSelect: React.FC<NumberFieldProps> =
     ({
          label,
          value,
          onChange,
          placeholder = "Enter number",
-         variant = "subtle",
          size = "md",
          min,
          max,
@@ -53,9 +48,9 @@ const NumberField: React.FC<NumberFieldProps> =
         };
 
         const numberContent = (
-            <div className={`number-field-wrap ${size} ${className}`}>
-                <div className="number-field-container clarity-ghost">
-                    <Hash size={16} className="field-icon"/>
+            <div className={`number-select ${size} ${className}`}>
+                <div className="select-trigger">
+                    <Hash size={16} className="select-icon"/>
                     <input
                         id={id}
                         type="number"
@@ -65,7 +60,7 @@ const NumberField: React.FC<NumberFieldProps> =
                         max={max}
                         step={step}
                         placeholder={placeholder}
-                        className={`clarity-${variant} input number-field ${size}`}
+                        className={`${size}`}
                         disabled={disabled}
                         aria-label={label}
                     />
@@ -84,4 +79,4 @@ const NumberField: React.FC<NumberFieldProps> =
         return numberContent;
     };
 
-export default NumberField;
+export default NumberSelect;

@@ -6,7 +6,7 @@ import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes
 interface PillProps {
     label: string;
     chip?: string | number;
-    onClick: () => void;
+    onClick?: () => void;
     isActive?: boolean;
     icon?: React.ReactNode;
     className?: string;
@@ -29,7 +29,7 @@ export const Pill: React.FC<PillProps> =
     ({
         label,
         chip,
-        onClick,
+        onClick = () => {},
         isActive = false,
         icon,
         className = '',

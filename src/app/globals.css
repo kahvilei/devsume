@@ -827,7 +827,6 @@ body {
     */
     .tooltip {
         position: relative;
-        display: inline-block;
         overflow: visible;
 
         .tooltip {
@@ -978,7 +977,7 @@ body {
         /* Editor panel - smoother transitions */
 
         .query-editor-panel {
-            @apply background-bg transition-all;
+            @apply background-bg transition-all flex-col gap-xs p-xs content-style-1;
             overflow: visible;
             max-height: 80vh;
         }
@@ -987,16 +986,6 @@ body {
 
         .query-section {
             @apply transition-all;
-            display: none;
-            opacity: 0;
-            transform: translateY(-8px);
-        }
-
-        .query-section.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-            animation: fadeIn var(--transition-duration-normal) var(--transition-timing) forwards;
         }
 
         .query-section-content {
@@ -1029,7 +1018,7 @@ body {
         /* Improved responsive layout for filter rows */
 
         .filter-row {
-            @apply flex flex-col flex-between sm:flex-row gap-xs content-style-1 p-xs;
+            @apply flex flex-col flex-wrap flex-between sm:flex-row gap-xs content-style-1 p-xs;
         }
 
         .filter-group {
@@ -1039,7 +1028,7 @@ body {
         /* Improved field styling */
 
         .filter-fields {
-            @apply flex flex-col flex-1 flex-left sm:flex-row items-center gap-xs;
+            @apply flex flex-col flex-1  flex-wrap flex-left sm:flex-row items-center gap-xs;
         }
 
         .filter-field {
@@ -1053,18 +1042,8 @@ body {
 
         /* Sort section styling - improved container */
 
-        .sort-container, .limit-container {
-            @apply p-sm rounded transition-all;
-        }
 
 
-        .sort-preview {
-            @apply flex-between p-xs;
-        }
-
-        .sort-icon {
-            @apply text-primary text-lg font-bold;
-        }
 
         /* Limit section styling - improved controls */
 
@@ -1079,15 +1058,24 @@ body {
             @apply p-xs;
         }
     }
+    .sort-preview {
+        @apply flex-between items-center w-full gap-xs;
+        .field-name {
+            @apply flex-between items-center;
+        }
+        .field {
+            @apply flex-between items-center;
+        }
+    }
 
     /* Select Styles */
-    .select {
+    .select, .number-select {
         position: relative;
         width: 100%;
         user-select: none;
 
         .select-trigger {
-            @apply interactive content-style-3 flex items-center justify-between p-xxs rounded;
+            @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded;
         }
 
         .select-trigger.open {
@@ -1097,11 +1085,15 @@ body {
         .select-trigger.disabled {
             @apply border-disabled opacity-50 cursor-not-allowed;
         }
+        input {
+            @apply rounded;
+        }
 
         .select-value {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            @apply w-full;
         }
 
         .select-value.placeholder {
@@ -1115,38 +1107,6 @@ body {
         .select-arrow .rotate {
             transform: rotate(180deg);
         }
-
-        /* Size variants */
-        &.xs .select-trigger {
-            min-height: 1.5rem;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        &.sm .select-trigger {
-            min-height: 2rem;
-            padding: 0.375rem 0.625rem;
-            font-size: 0.875rem;
-        }
-
-        &.md .select-trigger {
-            min-height: 2.5rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
-        }
-
-        &.lg .select-trigger {
-            min-height: 3rem;
-            padding: 0.625rem 0.875rem;
-            font-size: 1.125rem;
-        }
-
-        &.xl .select-trigger {
-            min-height: 3.5rem;
-            padding: 0.75rem 1rem;
-            font-size: 1.25rem;
-        }
-
     }
     .select-dropdown {
         @apply content-style-4 p-xs flex flex-col gap-xxs rounded max-h-30 min-w-max;
@@ -1161,6 +1121,34 @@ body {
 
         .select-option.selected {
             @apply bg-primary text-foreground;
+        }
+    }
+    .text-input {
+        @apply w-full flex-1 border-none box-border;
+
+        input {
+            @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded w-full box-border;
+        }
+    }
+    .select, .text-input input {
+        &.xs, &.xs .select-trigger{
+            @apply h-3 text-xs;
+        }
+
+        &.sm, &.sm .select-trigger{
+            @apply h-4 text-sm;
+        }
+
+        &.md, &.md .select-trigger{
+            @apply h-5 text-base;
+        }
+
+        &.lg, &.lg .select-trigger{
+            @apply h-7 text-lg;
+        }
+
+        &.xl, &.xl .select-trigger{
+            @apply h-8 text-xl;
         }
     }
 

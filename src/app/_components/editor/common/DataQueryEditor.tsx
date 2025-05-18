@@ -6,9 +6,9 @@ import {Pencil, Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Pill} from "@/app/_components/common/Pill";
 import Select, {DropdownOption} from "@/app/_components/common/Select";
-import NumberField from "@/app/_components/editor/common/NumberField";
-import DateField from "@/app/_components/editor/common/DateField";
-import TextField from "@/app/_components/editor/text/TextField";
+import NumberSelect from "@/app/_components/common/NumberSelect";
+import DateSelect from "@/app/_components/common/DateSelect";
+import TextInput from "@/app/_components/common/TextInput";
 import {Chip} from "@/app/_components/common/Chip";
 import {ContentVariant, Size} from "@/types/designTypes";
 import {MongoOperator} from "@/types/dataTypes";
@@ -62,7 +62,6 @@ export function DataQueryEditor<T extends BaseDataModel>
  }: DataQueryEditorProps<T>) {
     const [localQuery, setLocalQuery] = useState<DataQuery<T>>({...query});
     const [filters, setFilters] = useState<FilterField[]>(Object.entries(query.filter as object).map(([key, value]) => ({key, value})));
-    const [activeSection, setActiveSection] = useState<string>('filters');
     const [isEditorOpen, setIsEditorOpen] = useState<boolean>(defaultOpen);
 
     // Watch for localQuery changes and trigger debounced save
@@ -89,9 +88,25 @@ export function DataQueryEditor<T extends BaseDataModel>
     };
 
     // Generate sort options based on available fields
+
+    const sortPreview = (sortInfo: {field:string, direction: "asc" | "desc"}) => {
+        return (
+            <div className="sort-preview">
+                <div className="field-name">
+                    {formatFieldName(sortInfo.field)}
+                    <span className="text-xs ml-xs">
+                        ({sortInfo.direction})
+                    </span>
+                </div>
+                <div className="icon">
+                    {sortInfo.direction === 'desc' ? '↓' : '↑'}
+                </div>
+            </div>
+        )
+    }
     const sortOptions: DropdownOption[] = Object.entries(queryFields).flatMap(([fieldName]) => [
-        {value: `${fieldName}:asc`, label: `${formatFieldName(fieldName)} (ascending)`, option: `${formatFieldName(fieldName)} (ascending)`},
-        {value: `${fieldName}:desc`, label: `${formatFieldName(fieldName)} (descending)`, option : `${formatFieldName(fieldName)} (descending)`}
+        {value: `${fieldName}:asc`, label: sortPreview({field:fieldName, direction: "asc"}), option: sortPreview({field:fieldName, direction: "asc"})},
+        {value: `${fieldName}:desc`, label: sortPreview({field:fieldName, direction: "desc"}), option : sortPreview({field:fieldName, direction: "desc"})}
     ]);
 
     // Count the active filters
@@ -106,10 +121,6 @@ export function DataQueryEditor<T extends BaseDataModel>
     // Get sort direction icon
     const sortDirectionIcon = sortInfo ? (sortInfo.direction === 'desc' ? '↓' : '↑') : undefined;
 
-    const handleSummaryItemClick = (section: string) => {
-        setActiveSection(section);
-        setIsEditorOpen(true);
-    };
 
     const toggleEditor = () => {
         setIsEditorOpen(!isEditorOpen);
@@ -173,24 +184,18 @@ export function DataQueryEditor<T extends BaseDataModel>
                     <Pill
                         label="Filters"
                         chip={activeFilterCount}
-                        isActive={activeSection === 'filters' && isEditorOpen}
-                        onClick={() => handleSummaryItemClick('filters')}
                         size={size}
                     />
 
                     <Pill
                         label="Sort"
                         chip={sortDirectionIcon}
-                        isActive={activeSection === 'sorting' && isEditorOpen}
-                        onClick={() => handleSummaryItemClick('sorting')}
                         size={size}
                     />
 
                     <Pill
                         label="Limit"
                         chip={localQuery.limit}
-                        isActive={activeSection === 'limits' && isEditorOpen}
-                        onClick={() => handleSummaryItemClick('limits')}
                         size={size}
                     />
                 </div>
@@ -208,8 +213,9 @@ export function DataQueryEditor<T extends BaseDataModel>
             {isEditorOpen && (
                 <div className="query-editor-panel">
                     {/* Filters Section */}
-                    <div className={`query-section ${activeSection === 'filters' ? 'active' : ''}`}>
+                    <div className={`query-section`}>
                         <div className="query-section-content">
+                            <h4>Filters</h4>
                             {filters.map((filter, index) => (
                                 <FilterField
                                     field={filter}  // Properly format the field object
@@ -233,9 +239,9 @@ export function DataQueryEditor<T extends BaseDataModel>
                     </div>
 
                     {/* Sorting Section */}
-                    <div className={`query-section ${activeSection === 'sorting' ? 'active' : ''}`}>
+                    <div className={`query-section`}>
                         <div className="query-section-content">
-                            <div className="sort-container">
+                            <h4>Sort</h4>
                                 <Select
                                     label="Sort by"
                                     value={localQuery.sort || ''}
@@ -246,59 +252,25 @@ export function DataQueryEditor<T extends BaseDataModel>
                                     placeholder="Select sorting"
                                     size={size}
                                 />
-
-                                {sortInfo && (
-                                    <div className="sort-preview">
-                                        <div className="sort-icon">
-                                            {sortInfo.direction === 'desc' ? '↓' : '↑'}
-                                        </div>
-                                        <div>
-                                            {formatFieldName(sortInfo.field)}
-                                            <span className="text-xs ml-xs">
-                                                ({sortInfo.direction})
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
 
                     {/* Limit Section */}
-                    <div className={`query-section ${activeSection === 'limits' ? 'active' : ''}`}>
+                    <div className={`query-section`}>
                         <div className="query-section-content">
-                            <div className="limit-container">
+                            <h4>Limit</h4>
                                 <div className="limit-input-group">
-                                    <NumberField
+                                    <NumberSelect
                                         label="Limit"
                                         value={localQuery.limit?.toString() || ''}
                                         onChange={handleLimitChange}
                                         placeholder="No limit"
-                                        variant={"subtle"}
                                         size={size}
                                         min={1}
                                     />
                                     <span className="text-sm">items</span>
                                 </div>
-
-                                <div className="limit-buttons">
-                                    {[5, 10, 25, 50, 100].map(limit => (
-                                        <button
-                                            key={limit}
-                                            type="button"
-                                            className={`btn limit-button ${size} ${
-                                                localQuery.limit === limit
-                                                    ? 'primary'
-                                                    : 'outline primary'
-                                            }`}
-                                            onClick={() => handleLimitChange(limit.toString())}
-                                        >
-                                            {limit}
-                                        </button>
-                                    ))}
-                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             )}
@@ -363,7 +335,7 @@ export function FilterField({
         switch (fieldType) {
             case 'number':
                 return (
-                    <NumberField
+                    <NumberSelect
                         label="Value"
                         value={value}
                         onChange={(value) => handleFilterValueChange(value)}
@@ -372,7 +344,7 @@ export function FilterField({
                 );
             case 'date':
                 return (
-                    <DateField
+                    <DateSelect
                         label="Value"
                         value={value}
                         onChange={(value) => handleFilterValueChange(value)}
@@ -398,7 +370,7 @@ export function FilterField({
                 );
             default:
                 return (
-                    <TextField
+                    <TextInput
                         label="Value"
                         value={value}
                         onChange={(value) => handleFilterValueChange(value)}
@@ -426,7 +398,7 @@ export function FilterField({
                         option: formatFieldName(fieldName)
                     }))}
                     onChange={(value) => handleFilterKeyChange(value)}
-                    placeholder="Select field"
+                    placeholder="Field"
                 />
 
                 <Select
@@ -438,7 +410,7 @@ export function FilterField({
                         option: `${option.icon ? option.icon + ' ' : ''}${option.label}`
                     }))}
                     onChange={(value) => handleFilterOperatorChange(value as MongoOperator)}
-                    placeholder="Select operator"
+                    placeholder="Operator"
                 />
 
                 {renderValueField()}

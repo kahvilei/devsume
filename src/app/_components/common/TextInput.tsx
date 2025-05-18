@@ -1,7 +1,7 @@
-// @/app/_components/editor/common/TextField.tsx
+// @/app/_components/editor/common/TextInput.tsx
 import React from 'react';
 import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
-import {ContentVariant,Size} from "@/types/designTypes";
+import {Size} from "@/types/designTypes";
 
 
 
@@ -10,7 +10,6 @@ export interface TextFieldProps {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
-    variant?: ContentVariant;
     size?: Size;
     showTooltip?: boolean;
     tooltipPosition?: TooltipPosition;
@@ -22,11 +21,11 @@ export interface TextFieldProps {
 }
 
 /**
- * TextField component - A styled text input with tooltip support
+ * TextInput component - A styled text input with tooltip support
  *
  * Provides a consistent interface for text inputs with validation.
  */
-const TextField: React.FC<TextFieldProps> =
+const TextInput: React.FC<TextFieldProps> =
     ({
          label,
          value,
@@ -34,7 +33,7 @@ const TextField: React.FC<TextFieldProps> =
          placeholder = "Enter text",
          size = "md",
          showTooltip = true,
-         tooltipPosition = "left",
+         tooltipPosition = "above",
          disabled = false,
          className = "",
          id,
@@ -48,7 +47,6 @@ const TextField: React.FC<TextFieldProps> =
         };
 
         const textContent = (
-            <div className={`text-field ${size} ${className}`}>
                 <input
                     id={id}
                     type="text"
@@ -56,23 +54,23 @@ const TextField: React.FC<TextFieldProps> =
                     onChange={handleChange}
                     placeholder={placeholder}
                     aria-label={label}
-                    className={`input ${size}`}
                     disabled={disabled}
                     maxLength={maxLength}
                     pattern={pattern}
                 />
-            </div>
         );
 
         if (showTooltip && label) {
             return (
-                <Tooltip text={label} position={tooltipPosition}>
-                    {textContent}
-                </Tooltip>
+                <div className={`text-input ${size} ${className}`} >
+                    <Tooltip text={label} position={tooltipPosition}>
+                        {textContent}
+                    </Tooltip>
+                </div>
             );
         }
 
         return textContent;
     };
 
-export default TextField;
+export default TextInput;

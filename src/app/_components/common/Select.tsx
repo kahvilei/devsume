@@ -42,7 +42,7 @@ const Select: React.FC<SelectFieldProps> =
          className = "",
          required = false,
          showTooltip = true,
-         tooltipPosition = "left",
+         tooltipPosition = "above",
          disabled = false,
          id
      }) => {
@@ -78,11 +78,13 @@ const Select: React.FC<SelectFieldProps> =
                 close();
             } else if (event.key === 'ArrowDown' && isOpen) {
                 event.preventDefault();
+                event.stopPropagation();
                 const currentIndex = options.findIndex(opt => opt.value === value);
                 const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
                 onChange(options[nextIndex].value);
             } else if (event.key === 'ArrowUp' && isOpen) {
                 event.preventDefault();
+                event.stopPropagation();
                 const currentIndex = options.findIndex(opt => opt.value === value);
                 const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
                 onChange(options[prevIndex].value);
