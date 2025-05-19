@@ -1,11 +1,11 @@
+
 import React, {useEffect, useState} from "react";
 import {AlertMessage} from "@/app/_components/common/AlertMessage";
 import {useSelection} from "@/app/_hooks/common/useSelection";
-import {useAPI} from "@/app/_hooks/common/useAPI";
 import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
-import ITEMS, {ItemManifest, ItemManifestList} from "@/config/itemManifest";
+import ITEMS, {ItemConfig, ItemManifestList} from "@/config/itemConfig";
 import {BaseDataModel} from "@/interfaces/data";
 import {DataFilter, DataQuery} from "@/interfaces/api";
 import EditableText from "@/app/_components/editor/text/EditableText";
@@ -16,6 +16,8 @@ import {DataQueryEditor} from "@/app/_components/editor/common/DataQueryEditor";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {AnimatePresence} from "motion/react";
 import Drawer from "../../animations/Drawer";
+import {DataService} from "@/app/_data";
+import {observer} from "mobx-react-lite"
 
 interface MultiSelectProps<T extends BaseDataModel> {
     values?: T[] | DataQuery<T>;
@@ -25,21 +27,20 @@ interface MultiSelectProps<T extends BaseDataModel> {
     onRemove?: () => void;
 }
 
-export default function MultiSelectFromDB<T extends BaseDataModel>
-({
-     values = [],
-     label,
-     dataKey,
-     onSelect,
-     onRemove
-
- }: MultiSelectProps<T>) {
+export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
+    values = [],
+    label,
+    dataKey,
+    onSelect,
+    onRemove
+}: MultiSelectProps<T>) =>
+{
     const [controlsOpen, setControlsOpen] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [title, setTitle] = useState<string>(label);
 
     // Get the item manifest and its queryFields (if available)
-    const manifest = ITEMS[dataKey] as ItemManifest<T>;
+    const manifest = ITEMS[dataKey] as ItemConfig<T>;
     const {
         queryFields = {},
         preview: PreviewComponent,
@@ -58,12 +59,23 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
         : {filter: {} as Record<keyof T, DataFilter[]>, sort: undefined, limit: undefined} as DataQuery<T>;
 
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
+    const [list, setList] = useState<T[]>([]);
 
-    // Get the list of items from the API
-    const {list, error, warning, createItem, updateItem, deleteItem } = useAPI<T>(
-        manifest.api,
-        isDynamic ? query : undefined
-    );
+    const service = DataService[dataKey as keyof typeof DataService];
+    useEffect(() => {
+        service.getQuery(query).then(
+            (results) => {
+                setList(results.content as T[]);
+            }
+        )
+    }, [query, service]);
+
+    const updateItem = service.updateItem;
+    const deleteItem = service.deleteItem;
+
+    const [error, setError] = useState<string>();
+    const [warning, setWarning] = useState<string>();
+
 
     // Use the selection hook to manage selected items
     const {
@@ -75,7 +87,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
 
 
     const handleAddItemSave = async (item: T) => {
-        await createItem(item);
+        await service.createItem(item);
         setIsAdding(false);
     };
 
@@ -89,6 +101,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
 
     return (
         <div className="multi-selector">
+
             <div className="controls">
                 <div className="header">
                     <div className="flex-grow">
@@ -103,7 +116,7 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     {onRemove &&
                         <ActionIcon
                             onClick={() => {
-                                 onRemove();
+                                onRemove();
                             }}
                             icon={<X/>}
                             color={"danger"}
@@ -116,100 +129,101 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                         tooltip={controlsOpen ? "Hide controls" : "Show controls"}
                     />
                 </div>
-                        <div className={"selector " + (controlsOpen?" open":" closed")}>
-                            { controlsOpen && (
-                                <Drawer>
-                                    <div className={'buttons'}>
-                                        <ActionIcon
-                                            onClick={() => setIsAdding(true)}
-                                            icon={<Plus/>}
-                                            size={'sm'}
-                                            tooltip={"Create a new " + (manifest.names?.singular ?? dataKey)}>
-                                        </ActionIcon>
-                                        <ActionIcon
-                                            onClick={() => {
-                                                onSelect(isDynamic ? {} : []);
-                                                setSelectedItems([]);
-                                                setQuery({})
-                                            }}
-                                            icon={<Undo/>}
-                                            color={"info"}
-                                            size={'sm'}
-                                            tooltip={"Reset filters"}>
-                                        </ActionIcon>
-                                        <BinaryToggle
-                                            state={isDynamic}
-                                            onToggle={setIsDynamic}
-                                            label={["Direct select", "Query"]}
-                                            size={"sm"}
-                                            elements={[
-                                                <ListPlus key={1}/>,
-                                                <Database key={2}/>
-                                            ]}
-                                        />
-                                    </div>
-                                    {isDynamic && (
-                                        <DataQueryEditor
-                                            query={query}
-                                            onSave={setQuery}
-                                            queryFields={queryFields}
-                                            showEditToggle={true}
-                                            defaultOpen={false}
-                                        />
-                                    )}
+                <div className={"selector " + (controlsOpen ? " open" : " closed")}>
+                    {controlsOpen && (
+                        <Drawer>
+                            <div className={'buttons'}>
+                                <ActionIcon
+                                    onClick={() => setIsAdding(true)}
+                                    icon={<Plus/>}
+                                    size={'sm'}
+                                    tooltip={"Create a new " + (manifest.names?.singular ?? dataKey)}>
+                                </ActionIcon>
+                                <ActionIcon
+                                    onClick={() => {
+                                        onSelect(isDynamic ? {} : []);
+                                        setSelectedItems([]);
+                                        setQuery({})
+                                    }}
+                                    icon={<Undo/>}
+                                    color={"info"}
+                                    size={'sm'}
+                                    tooltip={"Reset filters"}>
+                                </ActionIcon>
+                                <BinaryToggle
+                                    state={isDynamic}
+                                    onToggle={setIsDynamic}
+                                    label={["Direct select", "Query"]}
+                                    size={"sm"}
+                                    elements={[
+                                        <ListPlus key={1}/>,
+                                        <Database key={2}/>
+                                    ]}
+                                />
+                            </div>
 
-                                    {/* Different content based on mode and state */}
-                                    {!isDynamic ? (
-                                        <ul role="listbox" className="divider">
-                                            <AnimatePresence>
-                                                {list.map((option: T) => (
-                                                    <PopInOut key={option._id}>
-                                                        <ItemOption
-                                                            item={option}
-                                                            onSelect={() => toggleItem(option)}
-                                                            onEdit={updateItem}
-                                                            isSelected={isSelected(option)}
-                                                            onDelete={deleteItem}
-                                                            Renderer={PreviewComponent}
-                                                            Form={EditComponent}
-                                                            openEditInModal={openEditInModal}
-                                                        />
-                                                    </PopInOut>
-                                                ))}
-                                            </AnimatePresence>
-                                        </ul>
-                                    ) : null}
-
-                                    {/* Add new item section */}
-                                    {isAdding && openEditInModal && (
-                                        <Modal
-                                            isOpen={isAdding}
-                                            onClose={() => setIsAdding(false)}
-                                            title={"Create a new " + (manifest.names?.singular ?? dataKey)}
-                                        >
-                                            <ItemEdit
-                                                label="Add a new item"
-                                                Form={EditComponent}
-                                                onSave={handleAddItemSave}
-                                                onCancel={() => setIsAdding(false)}
-                                            />
-                                        </Modal>
-                                    )}
-
-                                    {isAdding && !openEditInModal && (
-                                        <div className="p-sm divider">
-                                            <ItemEdit
-                                                label="Add a new item"
-                                                Form={EditComponent}
-                                                onSave={handleAddItemSave}
-                                                onCancel={() => setIsAdding(false)}
-                                            />
-                                        </div>
-                                    )}
-                                </Drawer>
+                            {isDynamic && (
+                                <DataQueryEditor
+                                    query={query}
+                                    onSave={setQuery}
+                                    queryFields={queryFields}
+                                    showEditToggle={true}
+                                    defaultOpen={false}
+                                />
                             )}
-                        </div>
-                        <div className='connector'><MoveDown height={'1rem'}/></div>
+
+                            {/* Different content based on mode and state */}
+                            {!isDynamic ? (
+                                <ul role="listbox" className="divider">
+                                    <AnimatePresence>
+                                        {list.map((option: T) => (
+                                            <PopInOut key={option._id} layout={false}>
+                                                <ItemOption
+                                                    item={option}
+                                                    onSelect={() => toggleItem(option)}
+                                                    onEdit={updateItem}
+                                                    isSelected={isSelected(option)}
+                                                    onDelete={deleteItem}
+                                                    Renderer={PreviewComponent}
+                                                    Form={EditComponent}
+                                                    openEditInModal={openEditInModal}
+                                                />
+                                            </PopInOut>
+                                        ))}
+                                    </AnimatePresence>
+                                </ul>
+                            ) : null}
+
+                            {/* Add new item section */}
+                            {isAdding && openEditInModal && (
+                                <Modal
+                                    isOpen={isAdding}
+                                    onClose={() => setIsAdding(false)}
+                                    title={"Create a new " + (manifest.names?.singular ?? dataKey)}
+                                >
+                                    <ItemEdit
+                                        label="Add a new item"
+                                        Form={EditComponent}
+                                        onSave={handleAddItemSave}
+                                        onCancel={() => setIsAdding(false)}
+                                    />
+                                </Modal>
+                            )}
+
+                            {isAdding && !openEditInModal && (
+                                <div className="p-sm divider">
+                                    <ItemEdit
+                                        label="Add a new item"
+                                        Form={EditComponent}
+                                        onSave={handleAddItemSave}
+                                        onCancel={() => setIsAdding(false)}
+                                    />
+                                </div>
+                            )}
+                        </Drawer>
+                    )}
+                </div>
+                <div className='connector'><MoveDown height={'1rem'}/></div>
 
             </div>
             <div aria-label={label} aria-haspopup="listbox" className="content">
@@ -226,19 +240,19 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
                     aria-label="Selected Items"
                 >
                     <AnimatePresence>
-                    {(isDynamic ? list : selectedItems).map((option) => (
-                        <PopInOut key={option._id}>
-                            <ItemOption
-                                item={option}
-                                onSelect={!isDynamic ? () => toggleItem(option) : undefined}
-                                onEdit={updateItem}
-                                onDelete={deleteItem}
-                                Renderer={PreviewComponent}
-                                Form={EditComponent}
-                                openEditInModal={openEditInModal}
-                            />
-                        </PopInOut>
-                    ))}
+                        {(isDynamic ? list : selectedItems).map((option) => (
+                            <PopInOut key={option._id}>
+                                <ItemOption
+                                    item={option}
+                                    onSelect={!isDynamic ? () => toggleItem(option) : undefined}
+                                    onEdit={updateItem}
+                                    onDelete={deleteItem}
+                                    Renderer={PreviewComponent}
+                                    Form={EditComponent}
+                                    openEditInModal={openEditInModal}
+                                />
+                            </PopInOut>
+                        ))}
                     </AnimatePresence>
                 </ul>
             </div>
@@ -246,3 +260,6 @@ export default function MultiSelectFromDB<T extends BaseDataModel>
         </div>
     );
 }
+)
+
+export default MultiSelectFromDB;

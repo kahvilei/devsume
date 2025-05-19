@@ -5,7 +5,7 @@ import React from "react";
 import {ITag} from "@/models/categories/Tag";
 import mongoose from "mongoose";
 
-export interface ItemManifest<T extends BaseDataModel = BaseDataModel> {
+export interface ItemConfig<T extends BaseDataModel> {
   api: string;
   model?: mongoose.Model<T>;
   preview?: React.FC<PreviewProps<T>>;
@@ -21,7 +21,7 @@ export interface ItemManifest<T extends BaseDataModel = BaseDataModel> {
 }
 
 export interface ItemManifestList {
-  [key: string]: ItemManifest
+  [key: string]: ItemConfig<any>
 }
 
 const ITEMS: ItemManifestList = {

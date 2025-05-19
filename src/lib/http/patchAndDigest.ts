@@ -1,5 +1,5 @@
-import axios, { AxiosError } from "axios";
-import { ResponseObject } from "@/lib/db/utils";
+import axios, {AxiosError} from "axios";
+import {ResponseObject} from "@/lib/db/utils";
 
 export const patchAndDigest = async <T>(
     url: string,
@@ -10,7 +10,7 @@ export const patchAndDigest = async <T>(
 ): Promise<void> => {
     try {
         const response = await axios.patch<ResponseObject>(url, data);
-        const { warning = "", error = "", content } = response.data;
+        const {warning = "", error = "", content} = response.data;
 
         setWarning(warning);
         setError(error);
@@ -23,3 +23,19 @@ export const patchAndDigest = async <T>(
         setError(error.message);
     }
 };
+
+export const patchAndReturn = async <T> (
+    url: string,
+    data: Partial<T>,
+) => {
+    try {
+        const response = await axios.patch<ResponseObject>(url, data);
+        return response.data;
+    } catch (e) {
+        const error = e as AxiosError;
+        return {
+            success: false,
+            error: error.toString()
+        }
+    }
+}

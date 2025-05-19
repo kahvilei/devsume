@@ -22,3 +22,19 @@ export const getAndDigest = async <T>(
         setError(error.message);
     }
 };
+
+export const getAndReturn = async(
+    url: string,
+): Promise<ResponseObject> => {
+    try {
+        const response = await axios.get<ResponseObject>(url);
+        return response.data;
+
+    } catch (e) {
+        const error = e as AxiosError;
+        return {
+            success: false,
+            error: error.toString()
+        }
+    }
+};

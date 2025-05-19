@@ -1,5 +1,5 @@
-import axios, { AxiosError } from "axios";
-import { ResponseObject } from "@/lib/db/utils";
+import axios, {AxiosError} from "axios";
+import {ResponseObject} from "@/lib/db/utils";
 
 export const deleteAndDigest = async <T>(
     url: string,
@@ -9,7 +9,7 @@ export const deleteAndDigest = async <T>(
 ): Promise<void> => {
     try {
         const response = await axios.delete<ResponseObject>(url);
-        const { warning = "", error = "", content } = response.data;
+        const {warning = "", error = "", content} = response.data;
 
         setWarning(warning);
         setError(error);
@@ -22,3 +22,17 @@ export const deleteAndDigest = async <T>(
         setError(error.message);
     }
 };
+
+
+export const deleteAndReturn = async (url: string): Promise<ResponseObject> => {
+    try {
+        const response = await axios.delete<ResponseObject>(url);
+        return response.data;
+    } catch (e) {
+        const error = e as AxiosError;
+        return {
+            success: false,
+            error: error.toString()
+        }
+    }
+}

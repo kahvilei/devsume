@@ -54,16 +54,14 @@ export default function ItemOption<T extends BaseDataModel>(
             className="flex items-center justify-between item-selector item cursor-pointer"
             aria-selected={isSelected}
         >
-            <div className="flex items-center">
-                <ItemRenderer
-                    item={item}
-                    onDelete={onDelete}
-                    setIsEditing={setIsEditing}
-                    onClick={() => {
-                        onSelect(item);
-                    }}
-                />
-            </div>
+            <ItemRenderer
+                item={item}
+                onDelete={onDelete}
+                setIsEditing={setIsEditing}
+                onClick={() => {
+                    onSelect(item);
+                }}
+            />
 
             {/* Render edit form based on modal preference */}
             {isEditing && openEditInModal ? (

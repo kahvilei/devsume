@@ -794,6 +794,13 @@ body {
             @apply dimmed text-sm italic;
         }
 
+        .item-selector {
+            @apply rounded;
+            &[aria-selected="true"] {
+                @apply outline-2 outline-offset-1 outline-dashed;
+            }
+        }
+
         .connector {
             @apply h-2;
             @apply left-2 bottom-[calc(-1.9*var(--spacing-xs))];
@@ -962,25 +969,7 @@ body {
         DataQueryEditor Component Styles
     */
     .query-editor {
-        @apply flex flex-col w-full rounded relative;
-
-        /* Pills row - improved alignment and spacing */
-
-        .query-pills {
-            @apply flex-between items-center p-xs rounded content-style-4;
-        }
-
-        .query-pills-group {
-            @apply flex flex-wrap gap-xs;
-        }
-
-        /* Editor panel - smoother transitions */
-
-        .query-editor-panel {
-            @apply background-bg transition-all flex-col gap-xs p-xs content-style-1;
-            overflow: visible;
-            max-height: 80vh;
-        }
+        @apply flex flex-col w-full rounded relative p-xs transition-all;
 
         /* Section styling with smooth animations */
 
@@ -990,6 +979,13 @@ body {
 
         .query-section-content {
             @apply container flex flex-col flex-left gap-xs py-xs;
+        }
+
+        .query-sort-limit {
+            @apply flex flex-row gap-xs;
+            .query-section {
+                @apply flex-1;
+            }
         }
 
         /* Filter card styling */
@@ -1123,11 +1119,19 @@ body {
             @apply bg-primary text-foreground;
         }
     }
-    .text-input {
+    .text-input{
         @apply w-full flex-1 border-none box-border;
 
         input {
             @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded w-full box-border;
+        }
+    }
+    .number-select {
+        .select-trigger {
+            @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded w-full box-border;
+        }
+        input {
+            @apply w-full;
         }
     }
     .select, .text-input input {

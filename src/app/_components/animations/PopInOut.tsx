@@ -7,6 +7,10 @@ interface PopInOutProps {
     children: React.ReactNode;
     layout?: boolean;
 }
+const transition = {
+    duration: 0.2,
+    delay: 0
+}
 
 export default function PopInOut
 ({
@@ -19,6 +23,7 @@ export default function PopInOut
             initial={{opacity: 0, scale: 0}}
             animate={{opacity: 1, scale: 1}}
             exit={{opacity: 0, scale: 0}}
+            transition={transition}
             layout={layout}
         >
             {children}

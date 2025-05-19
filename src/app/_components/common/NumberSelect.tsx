@@ -36,7 +36,7 @@ const NumberSelect: React.FC<NumberFieldProps> =
          max,
          step = 1,
          showTooltip = true,
-         tooltipPosition = "left",
+         tooltipPosition = "above",
          disabled = false,
          className = "",
          id
@@ -48,31 +48,31 @@ const NumberSelect: React.FC<NumberFieldProps> =
         };
 
         const numberContent = (
-            <div className={`number-select ${size} ${className}`}>
-                <div className="select-trigger">
-                    <Hash size={16} className="select-icon"/>
-                    <input
-                        id={id}
-                        type="number"
-                        value={value}
-                        onChange={handleChange}
-                        min={min}
-                        max={max}
-                        step={step}
-                        placeholder={placeholder}
-                        className={`${size}`}
-                        disabled={disabled}
-                        aria-label={label}
-                    />
-                </div>
+            <div className="select-trigger">
+                <Hash size={16} className="select-icon"/>
+                <input
+                    id={id}
+                    type="number"
+                    value={value}
+                    onChange={handleChange}
+                    min={min}
+                    max={max}
+                    step={step}
+                    placeholder={placeholder}
+                    className={`${size}`}
+                    disabled={disabled}
+                    aria-label={label}
+                />
             </div>
         );
 
         if (showTooltip && label) {
             return (
-                <Tooltip text={label} position={tooltipPosition}>
-                    {numberContent}
-                </Tooltip>
+                <div className={`number-select ${size} ${className}`}>
+                    <Tooltip text={label} position={tooltipPosition}>
+                        {numberContent}
+                    </Tooltip>
+                </div>
             );
         }
 

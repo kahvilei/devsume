@@ -23,3 +23,19 @@ export const postAndDigest = async <T>(
         setError(error.message);
     }
 };
+
+export const postAndReturn = async <T>(
+    url: string,
+    data: T,
+)=> {
+    try {
+        const response = await axios.post<ResponseObject>(url, data);
+        return response.data;
+    } catch (e) {
+        const error = e as AxiosError;
+        return {
+            success: false,
+            error: error.toString()
+        }
+    }
+}
