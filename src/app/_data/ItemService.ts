@@ -1,26 +1,26 @@
 import mongoose from "mongoose";
-import { makeAutoObservable, runInAction, action, observable } from "mobx";
-import { BaseDataModel, EditProps, PreviewProps } from "@/interfaces/data";
-import { ItemConfig } from "@/config/itemConfig";
-import { DataQuery } from "@/interfaces/api";
-import { ResponseObject } from "@/lib/db/utils";
-import { getAndReturn } from "@/lib/http/getAndDigest";
-import { postAndReturn } from "@/lib/http/postAndDigest";
-import { patchAndReturn } from "@/lib/http/patchAndDigest";
-import { deleteAndReturn } from "@/lib/http/deleteAndDigest";
-import React, {useCallback} from "react";
+import {action, makeAutoObservable, observable,} from "mobx";
+import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {ItemConfig} from "@/config/itemConfig";
+import * as api from "@/interfaces/api";
+import * as utils from "@/lib/db/utils";
+import {getAndReturn} from "@/lib/http/getAndDigest";
+import {postAndReturn} from "@/lib/http/postAndDigest";
+import {patchAndReturn} from "@/lib/http/patchAndDigest";
+import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
+import React from "react";
 
 
 interface QueryResult {
-    data: ResponseObject;
+    data: utils.ResponseObject;
     timestamp: number;
 }
 
-const convertQueryToString = <T>(query: DataQuery<T>) => {
+const convertQueryToString = <T>(query: api.DataQuery<T>) => {
     let queryStr = "?";
     for (const key in query) {
         if (query.hasOwnProperty(key) && key !== "filter") {
-            const value = query[key as keyof DataQuery<T>];
+            const value = query[key as keyof api.DataQuery<T>];
             queryStr += `${key}=${value}&`;
         } else if (query.hasOwnProperty(key) && key === "filter") {
             for (const filterKey in query.filter) {
@@ -46,46 +46,63 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         plural: string;
     }
 
-    @observable.shallow queries = new Map<DataQuery<T>, QueryResult>();
-    @observable loading = false;
-    @observable error: string | null = null;
+    lastItemChange = new Date();
+
+    queries = new Map<string, QueryResult>();
+    loading = false;
+    error: string | undefined = undefined;
+    warning: string | undefined = undefined;
+
 
     constructor(config: ItemConfig<T>) {
-        makeAutoObservable(this, {
-            queries: observable.shallow,
-            getQuery: action,
-            createItem: action,
-            updateItem: action,
-            deleteItem: action,
-        });
-
         this.api = config.api;
         this.preview = config.preview;
         this.edit = config.edit;
         this.openEditInModal = config.openEditInModal;
         this.queryFields = config.queryFields;
         this.names = config.names;
+        makeAutoObservable(this);
     }
 
-    async getQuery(query: DataQuery<T>): Promise<ResponseObject> {
-        const current = this.queries.get(query);
-        if (current) {
-            return current.data;
+    setErrorWarning(response: utils.ResponseObject) {
+        this.warning = response.warning;
+        this.error = response.error;
+    }
+
+    async getQuery(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
+        let queryStr = '';
+        if (typeof query === 'string') {
+            queryStr = query;
+        } else {
+            queryStr = convertQueryToString(query);
         }
 
+        const current = this.queries.get(queryStr);
+        const cacheAge = current ? Date.now() - current.timestamp : Infinity;
+
+        // If cache is missing or older than 2 minutes since last item change, fetch fresh data
+        if (!current || cacheAge > 20000 || current.timestamp < this.lastItemChange.getTime()) {
+            return this.fetchItems(query);
+        }
+
+        return current.data;
+    }
+
+    async fetchItems(query: api.DataQuery<T> | string) {
         this.loading = true;
+        let queryStr = '';
+        if (typeof query === 'string') {
+            queryStr = query;
+        } else {
+            queryStr = convertQueryToString(query);
+        }
         try {
-            const data = await getAndReturn(this.api+convertQueryToString(query));
-            runInAction(() => {
-                this.queries.set(query, { data, timestamp: Date.now() });
-                this.loading = false;
-            });
+            const data = await getAndReturn(this.api + queryStr);
+            this.setErrorWarning(data);
+            this.queries.set(queryStr, {data, timestamp: Date.now()});
+            this.loading = false;
             return data;
         } catch (err) {
-            runInAction(() => {
-                this.error = err instanceof Error ? err.message : 'Unknown error';
-                this.loading = false;
-            });
             throw err;
         }
     }
@@ -94,25 +111,14 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         this.loading = true;
         try {
             const result = await postAndReturn<T>(this.api, item);
-
-            runInAction(() => {
-                if (result.success) {
-                    // Refresh all queries
-                    const queryArray = Array.from(this.queries.keys());
-                    for (const query of queryArray) {
-                        this.getQuery(query);
-                    }
-                }
-                this.loading = false;
-            });
-
+            this.setErrorWarning(result);
+            this.lastItemChange = new Date();
+            this.loading = false;
             return result;
         } catch (err) {
-            runInAction(() => {
-                this.error = err instanceof Error ? err.message : 'Unknown error';
-                this.loading = false;
-            });
-            return { success: false };
+            this.error = err instanceof Error ? err.message : 'Unknown error';
+            this.loading = false;
+            return {success: false};
         }
     }
 
@@ -120,66 +126,29 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         this.loading = true;
         try {
             const result = await patchAndReturn<T>(this.api + item._id, item);
-
-            runInAction(() => {
-                if (result.success) {
-                    this.queries.forEach(query => {
-                        if (query.data.content) {
-                            const content = query.data.content as T[];
-                            if (content.some(i => i._id === item._id)) {
-                                query.data.content = content.map(i =>
-                                    i._id === item._id ? item : i
-                                );
-                            }
-                        }
-                    });
-                }
-                this.loading = false;
-            });
-
+            this.setErrorWarning(result);
+            this.lastItemChange = new Date();
+            this.loading = false;
             return result;
         } catch (err) {
-            runInAction(() => {
-                this.error = err instanceof Error ? err.message : 'Unknown error';
-                this.loading = false;
-            });
-            return { success: false };
+            this.error = err instanceof Error ? err.message : 'Unknown error';
+            this.loading = false;
+            return {success: false};
         }
     }
-
 
     async deleteItem(item: T) {
         this.loading = true;
         try {
             const result = await deleteAndReturn(this.api + item._id);
-
-            runInAction(() => {
-                if (result.success) {
-                    this.queries.forEach(query => {
-                        if (query.data.content) {
-                            const content = query.data.content as T[];
-                            if (content.some(i => i._id === item._id)) {
-                                query.data.content = content.filter(i =>
-                                    i._id !== item._id
-                                );
-                            }
-                        }
-                    });
-                }
-                this.loading = false;
-            });
-
+            this.setErrorWarning(result);
+            this.lastItemChange = new Date();
+            this.loading = false;
             return result;
         } catch (err) {
-            runInAction(() => {
-                this.error = err instanceof Error ? err.message : 'Unknown error';
-                this.loading = false;
-            });
-            return { success: false };
+            this.error = err instanceof Error ? err.message : 'Unknown error';
+            this.loading = false;
+            return {success: false};
         }
-    }
-
-    clearError() {
-        this.error = null;
     }
 }

@@ -118,7 +118,6 @@ const PortalOverlay: React.FC<PortalOverlayProps> =
         useEffect(() => {
 
             if (!isOpen && isOpen !== undefined) {
-                console.log(isOpen);
                 setOverlay(null);
             } else {
                 updateOverlay();

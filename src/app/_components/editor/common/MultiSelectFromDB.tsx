@@ -59,23 +59,16 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
         : {filter: {} as Record<keyof T, DataFilter[]>, sort: undefined, limit: undefined} as DataQuery<T>;
 
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
-    const [list, setList] = useState<T[]>([]);
 
     const service = DataService[dataKey as keyof typeof DataService];
+    const [list, setList] = useState<T[]>([]);
     useEffect(() => {
         service.getQuery(query).then(
             (results) => {
-                setList(results.content as T[]);
+                setList((results?.content)as T[]??[]);
             }
-        )
-    }, [query, service]);
-
-    const updateItem = service.updateItem;
-    const deleteItem = service.deleteItem;
-
-    const [error, setError] = useState<string>();
-    const [warning, setWarning] = useState<string>();
-
+        );
+    }, [query, service, service.lastItemChange]);
 
     // Use the selection hook to manage selected items
     const {
@@ -181,9 +174,9 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                                                 <ItemOption
                                                     item={option}
                                                     onSelect={() => toggleItem(option)}
-                                                    onEdit={updateItem}
+                                                    onEdit={(item) => service.updateItem(item)}
                                                     isSelected={isSelected(option)}
-                                                    onDelete={deleteItem}
+                                                    onDelete={(item) => service.deleteItem(item)}
                                                     Renderer={PreviewComponent}
                                                     Form={EditComponent}
                                                     openEditInModal={openEditInModal}
@@ -245,8 +238,8 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                                 <ItemOption
                                     item={option}
                                     onSelect={!isDynamic ? () => toggleItem(option) : undefined}
-                                    onEdit={updateItem}
-                                    onDelete={deleteItem}
+                                    onEdit={(item) => service.updateItem(item)}
+                                    onDelete={(item) => service.deleteItem(item)}
                                     Renderer={PreviewComponent}
                                     Form={EditComponent}
                                     openEditInModal={openEditInModal}
@@ -256,7 +249,7 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                     </AnimatePresence>
                 </ul>
             </div>
-            <AlertMessage error={error} warning={warning}/>
+            <AlertMessage error={service.error} warning={service.warning}/>
         </div>
     );
 }
