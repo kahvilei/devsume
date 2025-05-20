@@ -63,7 +63,7 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
     const service = DataService[dataKey as keyof typeof DataService];
     const [list, setList] = useState<T[]>([]);
     useEffect(() => {
-        service.getQuery(query).then(
+        service.getQueryResult(query).then(
             (results) => {
                 setList((results?.content)as T[]??[]);
             }

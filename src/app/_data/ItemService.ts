@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {action, makeAutoObservable, observable,} from "mobx";
+import {makeAutoObservable} from "mobx";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import {ItemConfig} from "@/config/itemConfig";
 import * as api from "@/interfaces/api";
@@ -9,27 +9,11 @@ import {postAndReturn} from "@/lib/http/postAndDigest";
 import {patchAndReturn} from "@/lib/http/patchAndDigest";
 import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
 import React from "react";
-
+import {convertQueryToString} from "@/lib/misc/convertQuery";
 
 interface QueryResult {
     data: utils.ResponseObject;
     timestamp: number;
-}
-
-const convertQueryToString = <T>(query: api.DataQuery<T>) => {
-    let queryStr = "?";
-    for (const key in query) {
-        if (query.hasOwnProperty(key) && key !== "filter") {
-            const value = query[key as keyof api.DataQuery<T>];
-            queryStr += `${key}=${value}&`;
-        } else if (query.hasOwnProperty(key) && key === "filter") {
-            for (const filterKey in query.filter) {
-                const value = query.filter[filterKey];
-                queryStr += `${filterKey}=${value}&`;
-            }
-        }
-    }
-    return queryStr.slice(0, -1);
 }
 
 export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
@@ -46,13 +30,14 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         plural: string;
     }
 
-    lastItemChange = new Date();
+    MAX_CACHE_AGE = 20000;
+    MAX_CACHE_QUERIES = 100;
 
+    lastItemChange = Date.now();
     queries = new Map<string, QueryResult>();
     loading = false;
     error: string | undefined = undefined;
     warning: string | undefined = undefined;
-
 
     constructor(config: ItemConfig<T>) {
         this.api = config.api;
@@ -69,86 +54,84 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         this.error = response.error;
     }
 
-    async getQuery(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
-        let queryStr = '';
-        if (typeof query === 'string') {
-            queryStr = query;
-        } else {
-            queryStr = convertQueryToString(query);
+    cacheClean() {
+        if (this.queries.size > this.MAX_CACHE_QUERIES) {
+            //sort by query age, then remove the oldest half of max
+            const sortedQueries = Array.from(this.queries.entries())
+                .sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+            // Remove the oldest half of MAX_CACHE_QUERIES
+            const removeCount = Math.floor(this.MAX_CACHE_QUERIES / 2);
+
+            // Remove oldest entries
+            for (let i = 0; i < removeCount && i < sortedQueries.length; i++) {
+                this.queries.delete(sortedQueries[i][0]);
+            }
         }
+    }
 
-        const current = this.queries.get(queryStr);
-        const cacheAge = current ? Date.now() - current.timestamp : Infinity;
 
-        // If cache is missing or older than 2 minutes since last item change, fetch fresh data
-        if (!current || cacheAge > 20000 || current.timestamp < this.lastItemChange.getTime()) {
+    // Helper method to process query into a string
+    private getQueryString(query: api.DataQuery<T> | string): string {
+        return typeof query === 'string' ? query : convertQueryToString(query);
+    }
+
+    // Helper method for common operation pattern
+    private async executeOperation(
+        operation: () => Promise<utils.ResponseObject>,
+        updateCache = true
+    ): Promise<utils.ResponseObject> {
+        this.loading = true;
+        try {
+            const result = await operation();
+            this.setErrorWarning(result);
+
+            if (updateCache) {
+                this.lastItemChange = Date.now();
+            }
+
+            this.loading = false;
+            return result;
+        } catch (err) {
+            this.error = err instanceof Error ? err.message : 'Unknown error';
+            this.loading = false;
+            return {success: false};
+        }
+    }
+
+    async getQueryResult(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
+        const queryStr = this.getQueryString(query);
+        const current = this.queries.get(queryStr);// 20 seconds
+
+        if (!current ||
+            Date.now() - current.timestamp > this.MAX_CACHE_AGE ||
+            current.timestamp < this.lastItemChange) {
             return this.fetchItems(query);
         }
 
         return current.data;
     }
 
-    async fetchItems(query: api.DataQuery<T> | string) {
-        this.loading = true;
-        let queryStr = '';
-        if (typeof query === 'string') {
-            queryStr = query;
-        } else {
-            queryStr = convertQueryToString(query);
-        }
-        try {
+    async fetchItems(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
+        const queryStr = this.getQueryString(query);
+
+        return this.executeOperation(async () => {
             const data = await getAndReturn(this.api + queryStr);
-            this.setErrorWarning(data);
+            this.cacheClean();
             this.queries.set(queryStr, {data, timestamp: Date.now()});
-            this.loading = false;
             return data;
-        } catch (err) {
-            throw err;
-        }
+        }, false);
     }
 
-    async createItem(item: T) {
-        this.loading = true;
-        try {
-            const result = await postAndReturn<T>(this.api, item);
-            this.setErrorWarning(result);
-            this.lastItemChange = new Date();
-            this.loading = false;
-            return result;
-        } catch (err) {
-            this.error = err instanceof Error ? err.message : 'Unknown error';
-            this.loading = false;
-            return {success: false};
-        }
+    async createItem(item: T): Promise<utils.ResponseObject> {
+        return this.executeOperation(() => postAndReturn<T>(this.api, item));
     }
 
-    async updateItem(item: T) {
-        this.loading = true;
-        try {
-            const result = await patchAndReturn<T>(this.api + item._id, item);
-            this.setErrorWarning(result);
-            this.lastItemChange = new Date();
-            this.loading = false;
-            return result;
-        } catch (err) {
-            this.error = err instanceof Error ? err.message : 'Unknown error';
-            this.loading = false;
-            return {success: false};
-        }
+    async updateItem(item: T): Promise<utils.ResponseObject> {
+        return this.executeOperation(() => patchAndReturn<T>(this.api + item._id, item));
     }
 
-    async deleteItem(item: T) {
-        this.loading = true;
-        try {
-            const result = await deleteAndReturn(this.api + item._id);
-            this.setErrorWarning(result);
-            this.lastItemChange = new Date();
-            this.loading = false;
-            return result;
-        } catch (err) {
-            this.error = err instanceof Error ? err.message : 'Unknown error';
-            this.loading = false;
-            return {success: false};
-        }
+    async deleteItem(item: T): Promise<utils.ResponseObject> {
+        return this.executeOperation(() => deleteAndReturn(this.api + item._id));
     }
 }
