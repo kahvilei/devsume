@@ -1,8 +1,8 @@
 import {ItemService} from "@/app/_data/ItemService";
-import ITEMS from "@/config/itemConfig";
+import ITEMS from "@/config/items";
 
-const TagService = new ItemService(ITEMS.tags)
+const CategoryService = new ItemService(ITEMS.categories)
 
 export const DataService = {
-    tags: TagService
+    categories: CategoryService
 }

@@ -2,10 +2,10 @@ import {IResume} from "@/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import EditableText from "@/app/_components/editor/text/EditableText";
-import {ITag} from "@/custom/categories/skills/model";
 import ItemSectionEditor from "@/app/_components/editor/common/ItemSectionEditor";
 import {Section} from "@/models/schemas/section";
 import {IPost} from "@/models/Post";
+import {ICategory} from "@/models/Category";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -46,14 +46,14 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
                 </section>
-                <section className="tags">
+                <section className="categories">
                     <ItemSectionEditor
                         max={100}
-                        sectionTypes={["tags"]}
-                        sectionData={resumeData?.tags ?? []}
-                        onSave={(sections: Section<ITag>[]) => setResumeData({
+                        sectionTypes={["categories"]}
+                        sectionData={resumeData?.categories ?? []}
+                        onSave={(sections: Section<ICategory>[]) => setResumeData({
                             ...resumeData,
-                            tags: sections
+                            categories: sections
                         })}
                     />
                 </section>

@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 import {makeAutoObservable} from "mobx";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
-import {ItemConfig} from "@/config/itemConfig";
-import * as api from "@/interfaces/api";
+import {ItemConfig} from "@/config/items";
 import * as utils from "@/lib/db/utils";
 import {getAndReturn} from "@/lib/http/getAndDigest";
 import {postAndReturn} from "@/lib/http/postAndDigest";
@@ -10,6 +9,7 @@ import {patchAndReturn} from "@/lib/http/patchAndDigest";
 import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
 import React from "react";
 import {convertQueryToString} from "@/lib/misc/convertQuery";
+import {DataQuery} from "@/models/schemas/data";
 
 interface QueryResult {
     data: utils.ResponseObject;
@@ -72,7 +72,7 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
 
 
     // Helper method to process query into a string
-    private getQueryString(query: api.DataQuery<T> | string): string {
+    private getQueryString(query: DataQuery<T> | string): string {
         return typeof query === 'string' ? query : convertQueryToString(query);
     }
 
@@ -99,7 +99,7 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         }
     }
 
-    async getQueryResult(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
+    async getQueryResult(query: DataQuery<T> | string): Promise<utils.ResponseObject> {
         const queryStr = this.getQueryString(query);
         const current = this.queries.get(queryStr);// 20 seconds
 
@@ -112,7 +112,7 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         return current.data;
     }
 
-    async fetchItems(query: api.DataQuery<T> | string): Promise<utils.ResponseObject> {
+    async fetchItems(query: DataQuery<T> | string): Promise<utils.ResponseObject> {
         const queryStr = this.getQueryString(query);
 
         return this.executeOperation(async () => {

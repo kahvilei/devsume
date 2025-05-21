@@ -1,15 +1,15 @@
-import {addTag, getTags} from "@/actions/tags";
+import {addCategory, getCategories} from "@/actions/categories";
 import {NextRequest, NextResponse} from "next/server";
 
 const get = async (request: NextRequest) => {
     const query = request.nextUrl.searchParams;
-    const internalResponse = await getTags(query);
+    const internalResponse = await getCategories(query);
     return NextResponse.json(internalResponse);
 }
 
 const post = async (request: NextRequest) => {
     const body = await request.json();
-    const internalResponse = await addTag(body);
+    const internalResponse = await addCategory(body);
     return NextResponse.json(internalResponse);
 }
 

@@ -1,21 +1,21 @@
-import {ISkill} from "@/custom/categories/skills/model";
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
+import {ICategory} from "@/models/Category";
 
-export default function PreviewSkill(
+export default function PreviewCategory(
     {
-        item: tag,
+        item: category,
         onClick = () => {
-            window.location.href = `/tags/${tag.slug}`
+            window.location.href = `/categories/${category.slug}`
         },
         size = "md",
         className = 'rounded-full primary btn-shadow-filled',
         disabled = false,
         onDelete,
         setIsEditing,
-    }: PreviewProps<ISkill>) {
+    }: PreviewProps<ICategory>) {
     return (
 
         <div
@@ -34,30 +34,30 @@ export default function PreviewSkill(
                 e.stopPropagation();
             }}
         >
-            <span className="tag-label">{tag.title}</span>
+            <span className="tag-label">{category.title}</span>
             <span className={"flex gap-xxs"}>
             {setIsEditing &&
                 <ActionIcon
                     onClick={() => setIsEditing(true)}
                     icon={<Pencil/>}
-                    tooltip={"Edit tag"}
+                    tooltip={"Edit categories"}
                     size="xs"
                     variant="btn-light"
                     color="background"
                     radius="rounded-full"
                 />
             }
-            {onDelete &&
-                <ActionIcon
-                    onClick={() => onDelete(tag)}
-                    icon={<Trash/>}
-                    tooltip="Delete tag"
-                    size="xs"
-                    variant="btn-light"
-                    color="background"
-                    radius="rounded-full"
-                />
-            }
+                {onDelete &&
+                    <ActionIcon
+                        onClick={() => onDelete(category)}
+                        icon={<Trash/>}
+                        tooltip="Delete category permanently"
+                        size="xs"
+                        variant="btn-light"
+                        color="background"
+                        radius="rounded-full"
+                    />
+                }
             </span>
         </div>
     );

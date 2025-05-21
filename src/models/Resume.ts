@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 import {Link, LinkSchema} from './schemas/link';
 import {IUser} from "@/models/User";
 import {IImage} from "@/models/Image";
-import {ITag} from "@/custom/categories/skills/model";
 import {IPost} from "@/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
 import {Section, SectionSchema} from "@/models/schemas/section";
+import {ICategory} from "@/models/Category";
 
 export interface IResume extends BaseDataModel {
     _id?: string;
@@ -17,7 +17,7 @@ export interface IResume extends BaseDataModel {
     links?: Link[];
     image?: IImage;
     about?: string;
-    tags?: Section<ITag>[];
+    categories?: Section<ICategory>[];
     posts?: Section<IPost>[];
 }
 
@@ -30,7 +30,7 @@ const ResumeSchema = new mongoose.Schema({
     links: [LinkSchema],
     image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }, // Reference to the Image model
     about: { type: String },
-    tags: [SectionSchema],
+    categories: [SectionSchema],
     posts: [SectionSchema]
 });
 

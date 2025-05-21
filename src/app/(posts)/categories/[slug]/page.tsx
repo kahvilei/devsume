@@ -1,6 +1,6 @@
-import {getTagBySlug} from "@/actions/tags";
+import {getTagBySlug} from "@/actions/categories";
 import { notFound } from "next/navigation";
-import {ITag} from "@/custom/categories/skills/model";
+import {ISkill} from "@/custom/categories/skills/model";
 
 interface PageProps {
     params: {
@@ -9,18 +9,18 @@ interface PageProps {
 }
 
 export default async function TagPage({ params }: PageProps) {
-    const tag = (await getTagBySlug(params.slug)).content as ITag;
+    const skill = (await getTagBySlug(params.slug)).content as ISkill;
 
-    if (!tag) {
+    if (!skill) {
         notFound();
     }
 
     return (
         <main className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-4">{tag.title}</h1>
-            {tag.description && (
+            <h1 className="text-3xl font-bold mb-4">{skill.title}</h1>
+            {skill.description && (
                 <div className="prose max-w-none">
-                    <p>{tag.description}</p>
+                    <p>{skill.description}</p>
                 </div>
             )}
         </main>
