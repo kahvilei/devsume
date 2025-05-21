@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import {Link, LinkSchema} from './schemas/link';
 import {IUser} from "@/models/User";
 import {IImage} from "@/models/Image";
-import {ITag} from "@/models/categories/Tag";
+import {ITag} from "@/custom/categories/skills/model";
 import {IPost} from "@/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
 import {Section, SectionSchema} from "@/models/schemas/section";

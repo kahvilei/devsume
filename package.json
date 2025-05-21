@@ -25,7 +25,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "slugify": "^1.6.6",
-    "tailwindcss": "^4.1.5"
+    "tailwindcss": "^4.1.5",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

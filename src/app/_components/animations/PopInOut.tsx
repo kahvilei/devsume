@@ -4,9 +4,10 @@ import {motion} from "motion/react"
 import React from "react";
 
 interface PopInOutProps {
-    children: React.ReactNode;
-    layout?: boolean;
+    children: React.ReactNode,
+    layout?: boolean,
 }
+
 const transition = {
     duration: 0.2,
     delay: 0
@@ -14,8 +15,8 @@ const transition = {
 
 export default function PopInOut
 ({
-    children,
-    layout = true,
+     children,
+     layout = true,
  }: PopInOutProps) {
     return (
         <motion.div

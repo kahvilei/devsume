@@ -1,8 +1,7 @@
-import PreviewTag from "@/app/(posts)/(categories)/tags/preview";
-import EditTag from "@/app/(posts)/(categories)/tags/edit";
+import PreviewTag from "@/custom/categories/skills/preview";
+import EditTag from "@/custom/categories/skills/edit";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
-import {ITag} from "@/models/categories/Tag";
 import mongoose from "mongoose";
 import {Tag} from "lucide-react";
 
@@ -27,24 +26,20 @@ export interface ItemManifestList {
 }
 
 const ITEMS: ItemManifestList = {
-  tags: {
-    api: "/api/tags/",
+  categories: {
+    api: "/api/categories/",
     preview: PreviewTag as React.FC<PreviewProps<ITag>>,
     edit: EditTag as React.FC<EditProps<ITag>>,
     openEditInModal: false,
     queryFields: {
       title: "string",
-      description: "string"
+      tags: "string"
     },
     names: {
-      singular: "tag",
-      plural: "tags"
+      singular: "category",
+      plural: "categories"
     },
     icon: <Tag/>
-  },
-  people: {
-    api: "/api/people/",
-    openEditInModal: false
   },
   posts: {
     api: "/api/posts/",

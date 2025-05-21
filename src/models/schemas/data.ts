@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-import {ITag} from "@/models/categories/Tag";
+import {ITag} from "@/custom/categories/skills/model";
 import {IResume} from "@/models/Resume";
 import {IPost} from "@/models/Post";
-import {IPerson} from "@/models/categories/Person";
+import {IPerson} from "@/custom/categories/collaborator/model";
 import {IImage} from "@/models/Image";
 import {BaseDataModel} from "@/interfaces/data";
 

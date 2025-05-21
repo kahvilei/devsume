@@ -1,19 +1,19 @@
-import {ITag} from "@/models/categories/Tag";
+import {ISkill} from "@/custom/categories/skills/model";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 import {Data} from "@/models/schemas/data";
 
 interface TagSelectProps {
-    values?: Data<ITag>;
-    label: string;
-    onSelect: (value: Data<ITag>) => void;
+    values?: Data<ISkill>;
+    title: string;
+    onSelect: (value: Data<ISkill>) => void;
     onRemove?: () => void;
 }
 
-export default function TagSelector({values, label, onSelect, onRemove}: TagSelectProps) {
+export default function SkillSelector({values, title, onSelect, onRemove}: TagSelectProps) {
     return (
         <MultiSelectFromDB
             values={values}
-            label={label}
+            title={title}
             dataKey={"tags"}
             onSelect={onSelect}
             onRemove={onRemove}

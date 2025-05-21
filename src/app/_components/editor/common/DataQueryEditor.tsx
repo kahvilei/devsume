@@ -29,6 +29,7 @@ interface FilterField {
     key: string
     value: string
     isActive?: boolean;
+    id?: string;
 }
 
 interface DataQueryEditorProps<T extends BaseDataModel> {
@@ -220,7 +221,6 @@ export function DataQueryEditor<T extends BaseDataModel>
             <div className={`query-section`}>
                 <div className="query-section-content">
                     <h4>Filters</h4>
-                    <AnimatePresence>
                         {filters.map((filter, index) => (
                             <PopInOut key={index}>
                                 <FilterField
@@ -233,17 +233,17 @@ export function DataQueryEditor<T extends BaseDataModel>
                                 />
                             </PopInOut>
                         ))}
-                    </AnimatePresence>
-                    <Button
-                        onClick={() => addFilterField()}
-                        color="foreground"
-                        icon={<Plus/>}
-                        text="Add filter"
-                        variant="btn-discreet"
-                        radius={"rounded"}
-                        className={"content-style-1"}
-                    >
-                    </Button>
+                    <div className="add-new">
+                        <Button
+                            onClick={() => addFilterField()}
+                            color="foreground"
+                            icon={<Plus/>}
+                            text="Add filter"
+                            variant="btn-discreet"
+                            radius={"rounded"}
+                        >
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

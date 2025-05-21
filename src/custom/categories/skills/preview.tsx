@@ -1,4 +1,4 @@
-import {ITag} from "@/models/categories/Tag";
+import {ITag} from "@/custom/categories/skills/model";
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";

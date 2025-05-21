@@ -1,6 +1,6 @@
 import {getTagBySlug} from "@/actions/tags";
 import { notFound } from "next/navigation";
-import {ITag} from "@/models/categories/Tag";
+import {ITag} from "@/custom/categories/skills/model";
 
 interface PageProps {
     params: {

@@ -1,20 +1,20 @@
 import React from "react";
-import {ITag} from "@/models/categories/Tag";
 import {EditProps} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import {Save, X} from "lucide-react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
+import {ISkill} from "@/custom/categories/skills/model";
 
 
-export default function EditTag({item: tag = {title: ""}, onSaveItem: onSaveTag, onCancel}: EditProps<ITag>) {
+export default function EditSkill({item: skill = {title: ""}, onSaveItem: onSaveTag, onCancel}: EditProps<ISkill>) {
 
-    const [title, setTitle] = React.useState(tag.title);
-    const [description, setDescription] = React.useState(tag.description);
+    const [title, setTitle] = React.useState(skill.title);
+    const [description, setDescription] = React.useState(skill.description);
 
-    //if value has an _id, it's an existing tag
+    //if value has an _id, it's an existing skill
     const handleSaveTag = () => {
-        console.log(tag);
-        onSaveTag({...tag, title, description})
+        console.log(skill);
+        onSaveTag({...skill, title, description})
     };
 
     return (
@@ -28,9 +28,9 @@ export default function EditTag({item: tag = {title: ""}, onSaveItem: onSaveTag,
             >
                 <div className='tag md primary btn-shadow-filled rounded-full no-hover flex-between'>
                     <span className="tag-label flex gap-xxs">
-                        <EditableText value={title} label={'tag name'} placeholder={'Enter new tag name'}
+                        <EditableText value={title} label={'skill name'} placeholder={'Name'}
                                       onUpdate={(value: string) => setTitle(value)} required/>
-                        <EditableText value={description} label={'tag description'} placeholder={'Enter tag description'}
+                        <EditableText value={description} label={'skill description'} placeholder={'Description'}
                                       onUpdate={(value: string) => setDescription(value)}/>
                     </span>
                     <span className={"flex gap-xxs"}>

@@ -1,6 +1,6 @@
 import {createFailResponse, createSuccessResponse, dbOperation, getMongooseParams} from "@/lib/db/utils";
 import {Tag} from "@/models";
-import {ITag} from "@/models/categories/Tag";
+import {ITag} from "@/custom/categories/skills/model";
 
 export const getAllTags = () => {
     return dbOperation(async () => {

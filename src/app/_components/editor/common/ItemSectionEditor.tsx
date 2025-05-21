@@ -3,7 +3,6 @@ import {useState} from "react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
 import {Plus} from "lucide-react";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
-import {AnimatePresence} from "motion/react";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {Section} from "@/models/schemas/section";
 import {DataQuery, DataType} from "@/models/schemas/data";
@@ -13,20 +12,15 @@ interface ItemSectionEditorProps {
     sectionTypes: (keyof ItemManifestList)[], //allowed data types for each section, each section must be one of these types
     sectionData: Section<DataType>[], // pre-existing data for each section
     onSave: (data: Section<DataType>[]) => void;
-    onCancel?: () => void;
 }
 
 
-export default function ItemSectionEditor({max, sectionTypes, sectionData, onSave, onCancel}: ItemSectionEditorProps) {
+export default function ItemSectionEditor({max, sectionTypes, sectionData, onSave}: ItemSectionEditorProps) {
 
     const [sections, setSections] = useState<Section<DataType>[]>(sectionData);
+
     const handleSave = () => {
         onSave(sections);
-    }
-    const handleCancel = () => {
-        if (onCancel) {
-            onCancel();
-        }
     }
 
     const handleAddSection = (newSection: Section<DataType>) => {
@@ -36,13 +30,13 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
     }
 
     const handleRemoveSection = (sectionToRemove: Section<DataType>) => {
-        if (sections.length > 1) {
-            setSections(sections.filter(section => section !== sectionToRemove));
-        }
+        setSections(sections.filter(section => section !== sectionToRemove));
+        handleSave();
     }
 
-    const handleUpdateSection = (index: number, newSection: Section<DataType>) => {
-        setSections(sections.map((section, i) => i === index ? newSection : section));
+    const handleUpdateSectionTitle = (index: number, newTitle: string) => {
+        const newSections = sections.map((section, i) => i === index ? {...section, title: newTitle} : section);
+        setSections(newSections);
     }
 
     const handleUpdateSectionContent = (index: number, newSection: DataType[] | DataQuery<DataType>) => {
@@ -51,21 +45,21 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
     }
 
     return (
-        <section className={"content-sections flex flex-col gap-lg"}>
-            <AnimatePresence>
+        <section className={"content-sections flex flex-col gap-md"}>
             {sections.map((section, index) => (
-                <PopInOut key={index+section.title}>
+                <PopInOut key={index}>
                     <MultiSelectFromDB
                         values={section.data}
-                        label={section.title}
-                        dataKey={"tags"}
+                        title={section.title}
+                        dataKey={section.type}
                         onSelect={(section) => handleUpdateSectionContent(index, section)}
+                        onUpdateTitle={(title) => handleUpdateSectionTitle(index, title)}
                         onRemove={() => handleRemoveSection(section)}
                     />
                 </PopInOut>
             ))}
 
-            <div className={"add-new-section"}>
+            <div className={"add-new h-10"}>
                 {sectionTypes.map((type, index) => (
                     <ActionIcon
                         key={index}
@@ -75,12 +69,11 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
                             data: [],
                             title: ""
                         })}
-                        tooltip={"Add new section"}
+                        tooltip={`Add a new ${ITEMS[type].names?.singular ?? type} section`}
                     />
                     ))
                 }
             </div>
-            </AnimatePresence>
         </section>
     )
 }

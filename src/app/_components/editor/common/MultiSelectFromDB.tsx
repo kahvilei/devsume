@@ -21,23 +21,24 @@ import {Data, DataFilter, DataQuery} from "@/models/schemas/data";
 
 interface MultiSelectProps<T extends BaseDataModel> {
     values?: Data<T>;
-    label: string;
+    title: string;
     dataKey: keyof ItemManifestList;
     onSelect: (value: Data<T>) => void;
+    onUpdateTitle?: (title: string) => void;
     onRemove?: () => void;
 }
 
 export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
     values = [],
-    label,
+    title,
     dataKey,
     onSelect,
-    onRemove
+    onRemove,
+    onUpdateTitle
 }: MultiSelectProps<T>) =>
 {
     const [controlsOpen, setControlsOpen] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
-    const [title, setTitle] = useState<string>(label);
 
     // Get the item manifest and its queryFields (if available)
     const manifest = ITEMS[dataKey] as ItemConfig<T>;
@@ -103,7 +104,7 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                             value={title}
                             label={(manifest.names?.singular ?? dataKey) + " section title"}
                             placeholder={"Enter a title"}
-                            onUpdate={setTitle}
+                            onUpdate={onUpdateTitle??(()=>{})}
                         />
                     </div>
                     {onRemove &&
@@ -218,7 +219,7 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                 <div className='connector'><MoveDown height={'1rem'}/></div>
 
             </div>
-            <div aria-label={label} aria-haspopup="listbox" className="content">
+            <div aria-label={title} aria-haspopup="listbox" className="content">
                 {(isDynamic ? list.length === 0 : selectedItems.length === 0) && (
                     <div className="item-selector-placeholder">
                         No {manifest.names?.plural ?? "items"} selected. Click settings to add new items or edit the

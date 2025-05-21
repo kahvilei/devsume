@@ -273,9 +273,14 @@ main {
     border: var(--devsume-border-subtle);
 }
 
-@utility separator-* {
+@utility separator-b {
     border-bottom: var(--devsume-border-subtle);
     padding: 0 0 var(--spacing-xs) 0;
+}
+
+@utility separator-t {
+    border-top: var(--devsume-border-subtle);
+    padding: var(--spacing-xs) 0 0 0;
 }
 
 /* Interactive elements */
@@ -1165,6 +1170,12 @@ main {
         }
     }
 
+    /*
+      'add new' block
+     */
+    .add-new {
+        @apply separator-t flex items-center justify-center gap-xs p-xs;
+    }
 }
 
 

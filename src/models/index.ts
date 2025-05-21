@@ -1,4 +1,4 @@
-import { Tag, Person } from '@/models/categories';
+import Category from '@/models/Category';
 import Image from '@/models/Image';
 import Post from '@/models/Post';
 import Resume from "@/models/Resume";
@@ -7,8 +7,7 @@ import Theme from "@/models/Theme";
 import User from "@/models/User";
 
 export {
-    Tag,
-    Person,
+    Category,
     Image,
     Post,
     Resume,

@@ -2,12 +2,10 @@ import {IResume} from "@/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import EditableText from "@/app/_components/editor/text/EditableText";
-import {ITag} from "@/models/categories/Tag";
-import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
-import {DataQuery} from "@/interfaces/api";
-import TagSelector from "@/app/_components/editor/categories/tags/TagSelector";
+import {ITag} from "@/custom/categories/skills/model";
 import ItemSectionEditor from "@/app/_components/editor/common/ItemSectionEditor";
-import {Section} from "@/interfaces/data";
+import {Section} from "@/models/schemas/section";
+import {IPost} from "@/models/Post";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -70,12 +68,13 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                     toolTipPosition={"right"}
                 />
                 <section className="work">
-                    <TagSelector
-                        label="Core competencies"
-                        values={resumeData?.tags as ITag[]}
-                        onSelect={(value: ITag[] | DataQuery<ITag>) => setResumeData({
+                    <ItemSectionEditor
+                        max={100}
+                        sectionTypes={["posts"]}
+                        sectionData={resumeData?.posts ?? []}
+                        onSave={(sections: Section<IPost>[]) => setResumeData({
                             ...resumeData,
-                            tags: [{title: "Core", tags: (value || [])}]
+                            posts: sections
                         })}
                     />
                 </section>
