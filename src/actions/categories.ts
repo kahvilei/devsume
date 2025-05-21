@@ -6,7 +6,7 @@ const resolveType = async (type?: string) => {
     if (!type) return Category;
     try {
         // Dynamic import of the model based on type
-        return await import(`@/custom/${type}/model`);
+        return (await import(`@/custom/categories/${type}/model`)).default;
     } catch (error) {
         // If model doesn't exist for the type, fallback to default Category
         return Category;
@@ -25,7 +25,6 @@ export const getAllCategories = (type?: string) => {
 export const getCategories = (query: URLSearchParams, type?: string) => {
     return dbOperation(async () => {
         const {sort, filters, limit, skip} = getMongooseParams(query);
-        console.log(filters, sort, limit, skip);
         const Model = await resolveType(type);
         const categories = await Model.find(filters).sort(sort).limit(limit).lean();
         return createSuccessResponse(categories);
