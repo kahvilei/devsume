@@ -1,6 +1,5 @@
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
-import mongoose from "mongoose";
 import {Tag} from "lucide-react";
 import {ICategory} from "@/models/Category";
 import PreviewCategory from "@/app/(posts)/categories/preview";
@@ -11,7 +10,6 @@ import {IResume} from "@/models/Resume";
 
 export interface ItemConfig<T extends BaseDataModel> {
   api: string;
-  model?: mongoose.Model<T>;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
   openEditInModal?: boolean;
@@ -44,7 +42,7 @@ export interface ItemManifestList {
 
 const ITEMS: ItemManifestList = {
   categories: {
-    api: "/api/categories/",
+    api: "/api/categories/category/",
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
     openEditInModal: false,
@@ -72,10 +70,11 @@ const ITEMS: ItemManifestList = {
 }
 
 export const getConfig = (key: string) : ItemConfig<any>=> {
-    for (const item of Object.values(ITEMS)) {
-        if (item.key === key) {
+    for (const [ikey, item] of Object.entries(ITEMS)) {
+        if (ikey === key) {
             return item;
-        } else if (item.discriminators) {
+        }
+        if (item.discriminators) {
           for (const discriminator of item.discriminators) {
             if (discriminator.key === key) {
               return {...item, ...discriminator};
@@ -86,15 +85,45 @@ export const getConfig = (key: string) : ItemConfig<any>=> {
     return ITEMS.categories;
 }
 
+export const getParentKey = (key: string) => {
+  for (const [ikey, item] of Object.entries(ITEMS)) {
+    if (ikey === key) {
+      return ikey;
+    } else {
+      for (const discriminator of item.discriminators ?? []) {
+        if (discriminator.key === key) {
+          return ikey
+        }
+      }
+    }
+  }
+  return "categories";
+}
+
+export const getAllPossibleKeys = (keys: string[]) => {
+  const newKeys = [];
+  for (const [ikey, item] of Object.entries(ITEMS)) {
+    if (keys.includes(ikey)){
+      newKeys.push(ikey);
+    }
+    for (const discriminator of item.discriminators ?? []) {
+      if (keys.includes(ikey)){
+        newKeys.push(discriminator.key);
+      }
+    }
+  }
+  return newKeys;
+}
+
 export const getAllConfigsOfType = (key: string) : ItemConfig<any>[] => {
   const configs: ItemConfig<any>[] = [];
-    for (const item of Object.values(ITEMS)) {
-        if (item.key === key) {
+    for (const [ikey, item] of Object.entries(ITEMS)) {
+        if (ikey === key) {
             configs.push(item);
         }
         if (item.discriminators) {
           for (const discriminator of item.discriminators) {
-            if (discriminator.key === key || item.key === key) {
+            if (discriminator.key === key || ikey === key) {
               configs.push({...item, ...discriminator});
             }
           }

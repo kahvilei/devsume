@@ -5,7 +5,7 @@ import {useSelection} from "@/app/_hooks/common/useSelection";
 import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
-import ITEMS, {ItemConfig, ItemManifestList} from "@/config/items";
+import {getConfig, ItemManifestList} from "@/config/items";
 import {BaseDataModel} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
@@ -22,7 +22,7 @@ import {Data, DataFilter, DataQuery} from "@/models/schemas/data";
 interface MultiSelectProps<T extends BaseDataModel> {
     values?: Data<T>;
     title: string;
-    dataKey: keyof ItemManifestList;
+    dataKey: string;
     onSelect: (value: Data<T>) => void;
     onUpdateTitle?: (title: string) => void;
     onRemove?: () => void;
@@ -41,7 +41,7 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
     const [isAdding, setIsAdding] = useState<boolean>(false);
 
     // Get the item manifest and its queryFields (if available)
-    const manifest = ITEMS[dataKey] as ItemConfig<T>;
+    const manifest = getConfig(dataKey as keyof ItemManifestList);
     const {
         queryFields = {},
         preview: PreviewComponent,

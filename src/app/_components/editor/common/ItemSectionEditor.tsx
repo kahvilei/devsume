@@ -1,4 +1,4 @@
-import ITEMS, {ItemManifestList} from "@/config/items";
+import {getAllPossibleKeys, getConfig} from "@/config/items";
 import {useState} from "react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
 import {Plus} from "lucide-react";
@@ -9,7 +9,7 @@ import {DataQuery, DataType} from "@/models/schemas/data";
 
 interface ItemSectionEditorProps {
     max: number; // maximum number of sections allowed
-    sectionTypes: (keyof ItemManifestList)[], //allowed data types for each section, each section must be one of these types
+    sectionTypes: string[], //allowed data types for each section, each section must be one of these types
     sectionData: Section<DataType>[], // pre-existing data for each section
     onSave: (data: Section<DataType>[]) => void;
 }
@@ -22,6 +22,8 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
     const handleSave = () => {
         onSave(sections);
     }
+
+    const allAllowedTypes = getAllPossibleKeys(sectionTypes);
 
     const handleAddSection = (newSection: Section<DataType>) => {
         if (sections.length < max) {
@@ -60,16 +62,16 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
             ))}
 
             <div className={"add-new h-10"}>
-                {sectionTypes.map((type, index) => (
+                {allAllowedTypes.map((type, index) => (
                     <ActionIcon
                         key={index}
-                        icon={ITEMS[type].icon??<Plus/>}
+                        icon={getConfig(type).icon??<Plus/>}
                         onClick={() => handleAddSection({
                             type,
                             data: [],
                             title: ""
                         })}
-                        tooltip={`Add a new ${ITEMS[type].names?.singular ?? type} section`}
+                        tooltip={`Add a new ${getConfig(type).names?.singular ?? type} section`}
                     />
                     ))
                 }

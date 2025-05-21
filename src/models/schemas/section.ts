@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import {ItemManifestList} from "@/config/items";
 import {DataEnum, DataQuery} from "@/models/schemas/data";
 
 
@@ -15,7 +14,7 @@ export const SectionSchema = new mongoose.Schema(SectionSchemaDefinition);
 
 // Export a type interface for TypeScript
 export interface Section<DataType>{
-    type: keyof ItemManifestList,
+    type: string,
     data: DataType[] | DataQuery<DataType>
     title: string;
 }

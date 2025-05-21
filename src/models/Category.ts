@@ -26,13 +26,13 @@ export function createCategoryModel(typeName: string, schema: object) {
         return mongoose.models[typeName];
     }
 
-    // If Post model doesn't exist yet, create it first
+    // If Category model doesn't exist yet, create it first
     if (!mongoose.models.Category) {
         mongoose.model('Category', withSlugGeneration(CategorySchema));
     }
 
     // Create a discriminator model for this post type
-    return mongoose.models.Post.discriminator(
+    return mongoose.models.Category.discriminator(
         typeName,
         new mongoose.Schema(schema)
     );

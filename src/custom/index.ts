@@ -7,14 +7,15 @@ import {ISkill} from "@/custom/categories/skills/model";
 export const config = {
     categories: [
         {
-            api: "/api/categories/",
+            api: "/api/categories/skills/",
             key: "skills",
             preview: PreviewSkill as React.FC<PreviewProps<ISkill>>,
             edit: EditSkill as React.FC<EditProps<ISkill>>,
             openEditInModal: false,
             queryFields: {
                 title: "string",
-                tags: "string"
+                tags: "string[]",
+                description: "string"
             },
             names: {
                 singular: "skill",
