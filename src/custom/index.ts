@@ -8,6 +8,7 @@ export const config = {
     categories: [
         {
             api: "/api/categories/",
+            key: "skills",
             preview: PreviewSkill as React.FC<PreviewProps<ISkill>>,
             edit: EditSkill as React.FC<EditProps<ISkill>>,
             openEditInModal: false,
@@ -16,8 +17,8 @@ export const config = {
                 tags: "string"
             },
             names: {
-                singular: "category",
-                plural: "categories"
+                singular: "skill",
+                plural: "skills"
             },
         }
     ]

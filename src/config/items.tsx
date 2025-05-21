@@ -23,13 +23,17 @@ export interface ItemConfig<T extends BaseDataModel> {
     plural: string;
   }
   icon?: React.ReactNode;
-  discriminators?: ItemConfig<T>[];
+  discriminators?: Partial<CustomConfig<T>>[];
 }
 
-export interface CustomConfig {
-  categories?: ItemConfig<ICategory>[];
-  posts?: ItemConfig<IPost>[];
-  resumes?: ItemConfig<IResume>[];
+interface CustomConfig<T extends BaseDataModel> extends ItemConfig<T> {
+  key: string;
+}
+
+export interface CustomConfigList {
+  categories?: Partial<CustomConfig<ICategory>>[];
+  posts?:  Partial<CustomConfig<IPost>>[];
+  resumes?: Partial<CustomConfig<IResume>>[];
 }
 
 export interface ItemManifestList {
@@ -53,18 +57,50 @@ const ITEMS: ItemManifestList = {
       plural: "categories"
     },
     icon: <Tag/>,
-    discriminators: (custom as CustomConfig).categories??[]
+    discriminators: (custom as CustomConfigList).categories??[]
   },
   posts: {
     api: "/api/posts/",
     openEditInModal: true,
-    discriminators: (custom as CustomConfig).posts??[]
+    discriminators: (custom as CustomConfigList).posts??[]
   },
   resumes: {
     api: "/api/resumes/",
     openEditInModal: true,
-    discriminators: (custom as CustomConfig).resumes??[]
+    discriminators: (custom as CustomConfigList).resumes??[]
   },
+}
+
+export const getConfig = (key: string) : ItemConfig<any>=> {
+    for (const item of Object.values(ITEMS)) {
+        if (item.key === key) {
+            return item;
+        } else if (item.discriminators) {
+          for (const discriminator of item.discriminators) {
+            if (discriminator.key === key) {
+              return {...item, ...discriminator};
+            }
+          }
+        }
+    }
+    return ITEMS.categories;
+}
+
+export const getAllConfigsOfType = (key: string) : ItemConfig<any>[] => {
+  const configs: ItemConfig<any>[] = [];
+    for (const item of Object.values(ITEMS)) {
+        if (item.key === key) {
+            configs.push(item);
+        }
+        if (item.discriminators) {
+          for (const discriminator of item.discriminators) {
+            if (discriminator.key === key || item.key === key) {
+              configs.push({...item, ...discriminator});
+            }
+          }
+        }
+    }
+    return configs;
 }
 
 export default ITEMS
