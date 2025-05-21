@@ -1,5 +1,4 @@
 
-
 export interface BaseDataModel {
     _id?: string;
     title: string;

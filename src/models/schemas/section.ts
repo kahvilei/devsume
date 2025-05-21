@@ -1,0 +1,21 @@
+import mongoose from 'mongoose';
+import {ItemManifestList} from "@/config/itemConfig";
+import {DataEnum, DataQuery} from "@/models/schemas/data";
+
+
+// Creating a schema definition that can be reused
+export const SectionSchemaDefinition = {
+    title: { type: String, required: true },
+    type: { type: String, required: true },
+    data: DataEnum
+};
+
+// Create the actual schema for use in other models
+export const SectionSchema = new mongoose.Schema(SectionSchemaDefinition);
+
+// Export a type interface for TypeScript
+export interface Section<DataType>{
+    type: keyof ItemManifestList,
+    data: DataType[] | DataQuery<DataType>
+    title: string;
+}

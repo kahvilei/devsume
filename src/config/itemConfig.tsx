@@ -4,6 +4,7 @@ import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ITag} from "@/models/categories/Tag";
 import mongoose from "mongoose";
+import {Tag} from "lucide-react";
 
 export interface ItemConfig<T extends BaseDataModel> {
   api: string;
@@ -18,6 +19,7 @@ export interface ItemConfig<T extends BaseDataModel> {
     singular: string;
     plural: string;
   }
+  icon?: React.ReactNode;
 }
 
 export interface ItemManifestList {
@@ -29,7 +31,7 @@ const ITEMS: ItemManifestList = {
     api: "/api/tags/",
     preview: PreviewTag as React.FC<PreviewProps<ITag>>,
     edit: EditTag as React.FC<EditProps<ITag>>,
-    openEditInModal: true,
+    openEditInModal: false,
     queryFields: {
       title: "string",
       description: "string"
@@ -37,7 +39,8 @@ const ITEMS: ItemManifestList = {
     names: {
       singular: "tag",
       plural: "tags"
-    }
+    },
+    icon: <Tag/>
   },
   people: {
     api: "/api/people/",

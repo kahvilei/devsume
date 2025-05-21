@@ -5,6 +5,9 @@ import EditableText from "@/app/_components/editor/text/EditableText";
 import {ITag} from "@/models/categories/Tag";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 import {DataQuery} from "@/interfaces/api";
+import TagSelector from "@/app/_components/editor/categories/tags/TagSelector";
+import ItemSectionEditor from "@/app/_components/editor/common/ItemSectionEditor";
+import {Section} from "@/interfaces/data";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -46,14 +49,14 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                     />
                 </section>
                 <section className="tags">
-                    <MultiSelectFromDB
-                        label="Core competencies"
-                        values={resumeData?.tags as ITag[]}
-                        onSelect={(value: ITag[] | DataQuery<ITag>) => setResumeData({
+                    <ItemSectionEditor
+                        max={100}
+                        sectionTypes={["tags"]}
+                        sectionData={resumeData?.tags ?? []}
+                        onSave={(sections: Section<ITag>[]) => setResumeData({
                             ...resumeData,
-                            tags: [{title: "Core", tags: (value || [])}]
+                            tags: sections
                         })}
-                        dataKey={"tags"}
                     />
                 </section>
             </section>
@@ -67,14 +70,13 @@ export default function EditResume({resume, onSave}: EditResumeProps) {
                     toolTipPosition={"right"}
                 />
                 <section className="work">
-                    <MultiSelectFromDB
+                    <TagSelector
                         label="Core competencies"
                         values={resumeData?.tags as ITag[]}
                         onSelect={(value: ITag[] | DataQuery<ITag>) => setResumeData({
                             ...resumeData,
                             tags: [{title: "Core", tags: (value || [])}]
                         })}
-                        dataKey={"tags"}
                     />
                 </section>
             </section>

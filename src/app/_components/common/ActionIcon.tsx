@@ -1,12 +1,11 @@
-// @/app/_components/common/ActionIcon.tsx
 import React from "react";
 import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
-import {ColorVariant, ButtonVariant, Size, RadiusSize} from "@/types/designTypes";
-
+import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface ActionIconProps {
     icon: React.ReactNode;
-    onClick: () => void;
+    type?: 'button' | 'submit' | 'reset';
+    onClick?: () => void;
     tooltip: string;
     className?: string;
     variant?: ButtonVariant;
@@ -17,6 +16,7 @@ interface ActionIconProps {
     disabled?: boolean;
     ariaLabel?: string;
 }
+
 /**
  * ActionIcon Component - A versatile button with an icon that supports tooltips
  *
@@ -27,6 +27,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
     ({
          icon,
          onClick,
+         type,
          tooltip,
          tooltipPosition = "above",
          className = "",
@@ -38,9 +39,10 @@ export const ActionIcon: React.FC<ActionIconProps> =
          color = "",
      }) => {
         const handleClick = (e: React.MouseEvent) => {
+            if (!onClick) return;
             e.stopPropagation();
             e.preventDefault();
-            if (!disabled) {
+            if (!disabled && onClick && typeof onClick === 'function' && onClick.constructor === Function) {
                 onClick();
             }
         };
@@ -48,6 +50,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
         const buttonContent = (
             <button
                 className={`action-icon ${variant} ${color} ${radius} ${size} ${className} ${disabled ? 'disabled' : ''}`}
+                type={ (type || "button")}
                 onClick={handleClick}
                 disabled={disabled}
                 aria-label={ariaLabel || tooltip}

@@ -1,7 +1,6 @@
 // @/app/_components/editor/DataQueryEditor.tsx
 import React, {useEffect, useState} from "react";
 import {BaseDataModel} from "@/interfaces/data";
-import {DataFilter, DataQuery} from "@/interfaces/api";
 import {Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import Select, {DropdownOption} from "@/app/_components/common/Select";
@@ -14,6 +13,7 @@ import {MongoOperator} from "@/types/dataTypes";
 import {Button} from "@/app/_components/common/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {AnimatePresence} from "motion/react";
+import {DataFilter, DataQuery} from "@/models/schemas/data";
 
 // Field types for specialized inputs
 type FieldType = 'text' | 'number' | 'date' | 'select';

@@ -23,8 +23,8 @@ export default function RootLayout({
     <html lang="en">
         <Provider>
             <OverlayProvider>
-            <body className="h-lvh flex flex-col justify-between align-middle">
-                 <div className="h-lvh flex flex-col items-center">
+            <body>
+                 <div className="flex flex-col items-center">
                     <Header/>
                     <main className="max-w-content w-full p-sm">
                         {children}

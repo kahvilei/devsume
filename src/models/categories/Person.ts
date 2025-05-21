@@ -3,7 +3,7 @@ import { LinkSchema } from "../schemas/link";
 import { withSlugGeneration } from '../Post';
 
 export interface IPerson {
-    name: string;
+    title: string;
     slug: string;
     description: string;
     img: string;
@@ -11,7 +11,7 @@ export interface IPerson {
 }
 
 const PersonSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    title: { type: String, required: true },
     slug: { type: String, unique: true },
     description: { type: String },
     img: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },

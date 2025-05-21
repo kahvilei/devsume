@@ -54,23 +54,35 @@ export default function ItemOption<T extends BaseDataModel>(
             className="flex items-center justify-between item-selector item cursor-pointer"
             aria-selected={isSelected}
         >
-            <ItemRenderer
-                item={item}
-                onDelete={onDelete}
-                setIsEditing={setIsEditing}
-                onClick={() => {
-                    onSelect(item);
-                }}
-            />
+            {!isEditing && (
+                <ItemRenderer
+                    item={item}
+                    onDelete={onDelete}
+                    setIsEditing={setIsEditing}
+                    onClick={() => {
+                        onSelect(item);
+                    }}
+                />
+            )}
 
-            {/* Render edit form based on modal preference */}
-            {isEditing && openEditInModal ? (
-                <div onClick={(e) => e.stopPropagation()} className="mt-2 border-t pt-2">
-                    <Modal
-                        isOpen={isEditing}
-                        onClose={() => setIsEditing(false)}
-                        title={`Edit ${item.title}`}
-                    >
+            {/* Render edit form */}
+            {isEditing && (
+                <div onClick={(e) => e.stopPropagation()}>
+                    {openEditInModal ? (
+                        <Modal
+                            isOpen={isEditing}
+                            onClose={() => setIsEditing(false)}
+                            title={`Edit ${item.title}`}
+                        >
+                            <ItemEdit
+                                label="Edit item"
+                                item={item}
+                                onSave={handleEdit}
+                                onCancel={() => setIsEditing(false)}
+                                Form={Form}
+                            />
+                        </Modal>
+                    ) : (
                         <ItemEdit
                             label="Edit item"
                             item={item}
@@ -78,17 +90,7 @@ export default function ItemOption<T extends BaseDataModel>(
                             onCancel={() => setIsEditing(false)}
                             Form={Form}
                         />
-                    </Modal>
-                </div>
-            ) : isEditing && (
-                <div onClick={(e) => e.stopPropagation()} className="mt-2 border-t pt-2">
-                    <ItemEdit
-                        label="Edit item"
-                        item={item}
-                        onSave={handleEdit}
-                        onCancel={() => setIsEditing(false)}
-                        Form={Form}
-                    />
+                    )}
                 </div>
             )}
         </li>

@@ -1,6 +1,6 @@
 export default function Header() {
     return (
-        <header className="w-full h-16 flex items-center justify-center">
+        <header className="site-header">
             Header
         </header>
     )

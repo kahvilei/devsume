@@ -7,7 +7,6 @@ import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import ITEMS, {ItemConfig, ItemManifestList} from "@/config/itemConfig";
 import {BaseDataModel} from "@/interfaces/data";
-import {DataFilter, DataQuery} from "@/interfaces/api";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
@@ -18,12 +17,13 @@ import {AnimatePresence} from "motion/react";
 import Drawer from "../../animations/Drawer";
 import {DataService} from "@/app/_data";
 import {observer} from "mobx-react-lite"
+import {Data, DataFilter, DataQuery} from "@/models/schemas/data";
 
 interface MultiSelectProps<T extends BaseDataModel> {
-    values?: T[] | DataQuery<T>;
+    values?: Data<T>;
     label: string;
     dataKey: keyof ItemManifestList;
-    onSelect: (value: T[] | DataQuery<T>) => void;
+    onSelect: (value: Data<T>) => void;
     onRemove?: () => void;
 }
 
@@ -48,15 +48,15 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
         openEditInModal = false
     } = manifest;
 
-    // Determine if values is a DataQuery object or an array
+    // Determine if values is a Data object or an array
     const initialIsDynamic = !Array.isArray(values);
     const [isDynamic, setIsDynamic] = useState<boolean>(initialIsDynamic);
 
-    // Initialize query from values if it's a DataQuery, or create an empty one
+    // Initialize query from values if it's a Data, or create an empty one
     const initialQuery:
         DataQuery<T> = initialIsDynamic
         ? values as DataQuery<T>
-        : {filter: {} as Record<keyof T, DataFilter[]>, sort: undefined, limit: undefined} as DataQuery<T>;
+        : {filter: {} as Record<keyof T, DataFilter>, sort: undefined, limit: undefined} as DataQuery<T>;
 
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
 
@@ -154,7 +154,17 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                                     ]}
                                 />
                             </div>
-
+                            {isAdding && !openEditInModal && (
+                                <div className="buttons">
+                                    <h4>Add new {manifest.names?.singular??"item"}</h4>
+                                    <ItemEdit
+                                        label="Add a new item"
+                                        Form={EditComponent}
+                                        onSave={handleAddItemSave}
+                                        onCancel={() => setIsAdding(false)}
+                                    />
+                                </div>
+                            )}
                             {isDynamic && (
                                 <DataQueryEditor
                                     query={query}
@@ -201,17 +211,6 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                                         onCancel={() => setIsAdding(false)}
                                     />
                                 </Modal>
-                            )}
-
-                            {isAdding && !openEditInModal && (
-                                <div className="p-sm divider">
-                                    <ItemEdit
-                                        label="Add a new item"
-                                        Form={EditComponent}
-                                        onSave={handleAddItemSave}
-                                        onCancel={() => setIsAdding(false)}
-                                    />
-                                </div>
                             )}
                         </Drawer>
                     )}
