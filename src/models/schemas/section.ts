@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {ItemManifestList} from "@/config/itemConfig";
+import {ItemManifestList} from "@/config/items";
 import {DataEnum, DataQuery} from "@/models/schemas/data";
 
 

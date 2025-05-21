@@ -5,7 +5,7 @@ import {useSelection} from "@/app/_hooks/common/useSelection";
 import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
-import ITEMS, {ItemConfig, ItemManifestList} from "@/config/itemConfig";
+import ITEMS, {ItemConfig, ItemManifestList} from "@/config/items";
 import {BaseDataModel} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";

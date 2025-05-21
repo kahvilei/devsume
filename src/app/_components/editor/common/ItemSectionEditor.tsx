@@ -1,4 +1,4 @@
-import ITEMS, {ItemManifestList} from "@/config/itemConfig";
+import ITEMS, {ItemManifestList} from "@/config/items";
 import {useState} from "react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
 import {Plus} from "lucide-react";
