@@ -2,7 +2,8 @@ import {
     createFailResponse,
     createSuccessResponse,
     getMongooseParams,
-    ResponseObject
+    ResponseObject,
+    PagContent
 } from "@/lib/db/utils";
 import { Model, Document, UpdateQuery } from "mongoose";
 import { DataQuery } from "@/server/models/schemas/data";
@@ -10,7 +11,7 @@ import { BaseDataModel } from "@/interfaces/data";
 import { createModelResolver } from "@/lib/db/model-resolver";
 import { dbOperation } from "@/lib/db/db-operation";
 
-export interface ServiceFactory<TInterface extends BaseDataModel> {
+export interface ServiceFactory<TInterface> {
     getAll: (type?: string) => Promise<ResponseObject>;
     get: (query: URLSearchParams, type?: string) => Promise<ResponseObject>;
     getBySlug: (slug: string, type?: string) => Promise<ResponseObject>;
@@ -19,8 +20,9 @@ export interface ServiceFactory<TInterface extends BaseDataModel> {
     update: (id: string, value: Partial<TInterface>, type?: string) => Promise<ResponseObject>;
     delete: (id: string, type?: string) => Promise<ResponseObject>;
     addMany: (values: TInterface[], type?: string) => Promise<ResponseObject>;
-    getCount: (filters?: DataQuery<TInterface>, type?: string) => Promise<ResponseObject>;
-    exists: (filters: DataQuery<TInterface>, type?: string) => Promise<ResponseObject>;
+    getCount: (query: URLSearchParams, type?: string) => Promise<ResponseObject>;
+    exists: (query: URLSearchParams, type?: string) => Promise<ResponseObject>;
+    getTotalCount: (type?: string) => Promise<ResponseObject>;
     clearCache: () => void;
 }
 
@@ -48,61 +50,68 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         return /^[0-9a-fA-F]{24}$/.test(id) || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id);
     };
 
+    // Helper to calculate pagination metadata
+    const calculatePagination = (total: number, limit: number, skip: number): PagContent => {
+        const pages = Math.ceil(total / limit) || 1;
+        const page = Math.floor(skip / limit) + 1;
+
+        return {
+            total,
+            limit,
+            skip,
+            page,
+            pages,
+            hasMore: skip + limit < total
+        };
+    };
+
     return {
-        // Get all entities
+        // Get all entities with pagination info
         getAll: (type?: string) => {
             return dbOperation(false, async () => {
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const entities = await Model.find().lean();
-                return createSuccessResponse(entities);
+
+                // Get both entities and total count
+                const [entities, total] = await Promise.all([
+                    Model.find().lean(),
+                    Model.countDocuments()
+                ]);
+
+                const pagination = calculatePagination(total, entities.length, 0);
+
+                return createSuccessResponse(entities, pagination);
             });
         },
 
-        // Get entities with query parameters
+        // Get entities with query parameters and full pagination
         get: (query: URLSearchParams, type?: string) => {
             return dbOperation(false, async () => {
                 manageCacheSize();
                 const { sort, filters, limit, skip } = getMongooseParams(query);
                 const Model = await resolveModel(type);
 
-                // Build query with proper typing
-                let mongoQuery = Model.find(filters);
+                // Execute query and count in parallel for better performance
+                const [entities, total] = await Promise.all([
+                    Model.find(filters)
+                        .sort(sort && Object.keys(sort).length > 0 ? sort : {})
+                        .limit(limit)
+                        .skip(skip)
+                        .lean(),
+                    Model.countDocuments(filters)
+                ]);
 
-                if (sort && Object.keys(sort).length > 0) {
-                    mongoQuery = mongoQuery.sort(sort);
-                }
+                const pagination = calculatePagination(total, limit, skip);
 
-                if (limit > 0) {
-                    mongoQuery = mongoQuery.limit(limit);
-                }
-
-                if (skip > 0) {
-                    mongoQuery = mongoQuery.skip(skip); // Fixed: was missing in original
-                }
-
-                const entities = await mongoQuery.lean();
-
-                // Include total count for pagination
-                const total = await Model.countDocuments(filters);
-
-                return createSuccessResponse({
-                    data: entities,
-                    pagination: {
-                        total,
-                        limit,
-                        skip,
-                        hasMore: skip + entities.length < total
-                    }
-                });
+                return createSuccessResponse(entities, pagination);
             });
         },
 
-        // Get entity by slug
+        // Get entity by slug (no pagination needed)
         getBySlug: (slug: string, type?: string) => {
             return dbOperation(false, async () => {
                 if (!slug || typeof slug !== 'string') {
-                    return createFailResponse('Invalid slug provided');
+                    return createFailResponse('Invalid slug provided', 400);
                 }
 
                 manageCacheSize();
@@ -110,18 +119,18 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                 const entity = await Model.findOne({ slug }).lean();
 
                 if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with slug: ${slug}`);
+                    return createFailResponse(`No ${entityNameLower} found with slug: ${slug}`, 404);
                 }
 
                 return createSuccessResponse(entity);
             });
         },
 
-        // Get entity by ID
+        // Get entity by ID (no pagination needed)
         getById: (id: string, type?: string) => {
             return dbOperation(false, async () => {
                 if (!validateId(id)) {
-                    return createFailResponse('Invalid ID format');
+                    return createFailResponse('Invalid ID format', 400);
                 }
 
                 manageCacheSize();
@@ -129,18 +138,18 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                 const entity = await Model.findById(id).lean();
 
                 if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`);
+                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);
                 }
 
                 return createSuccessResponse(entity);
             });
         },
 
-        // Add new entity
+        // Add new entity (return updated total count)
         add: (values: TInterface, type?: string) => {
             return dbOperation(true, async () => {
                 if (!values || typeof values !== 'object') {
-                    return createFailResponse('Invalid data provided');
+                    return createFailResponse('Invalid data provided', 400);
                 }
 
                 manageCacheSize();
@@ -149,16 +158,23 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
 
                 try {
                     await entity.save();
-                    return createSuccessResponse(entity.toObject());
+
+                    // Get updated total count
+                    const total = await Model.countDocuments();
+
+                    return createSuccessResponse(
+                        entity.toObject(),
+                        { total }
+                    );
                 } catch (error) {
                     if (error instanceof Error) {
                         // Handle duplicate key errors
                         if (error.message.includes('duplicate key')) {
-                            return createFailResponse('A record with this unique field already exists');
+                            return createFailResponse('A record with this unique field already exists', 409);
                         }
                         // Handle validation errors
                         if (error.name === 'ValidationError') {
-                            return createFailResponse(`Validation error: ${error.message}`);
+                            return createFailResponse(`Validation error: ${error.message}`, 400);
                         }
                     }
                     throw error;
@@ -170,11 +186,11 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         update: (id: string, value: Partial<TInterface>, type?: string) => {
             return dbOperation(true, async () => {
                 if (!validateId(id)) {
-                    return createFailResponse('Invalid ID format');
+                    return createFailResponse('Invalid ID format', 400);
                 }
 
                 if (!value || typeof value !== 'object') {
-                    return createFailResponse('Invalid update data provided');
+                    return createFailResponse('Invalid update data provided', 400);
                 }
 
                 manageCacheSize();
@@ -198,18 +214,18 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                 );
 
                 if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`);
+                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);
                 }
 
                 return createSuccessResponse(entity.toObject());
             });
         },
 
-        // Delete entity
+        // Delete entity (return updated total count)
         delete: (id: string, type?: string) => {
             return dbOperation(true, async () => {
                 if (!validateId(id)) {
-                    return createFailResponse('Invalid ID format');
+                    return createFailResponse('Invalid ID format', 400);
                 }
 
                 manageCacheSize();
@@ -217,21 +233,27 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                 const entity = await Model.findByIdAndDelete(id);
 
                 if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`);
+                    return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);
                 }
 
-                return createSuccessResponse({
-                    deleted: true,
-                    entity: entity.toObject()
-                });
+                // Get updated total count
+                const total = await Model.countDocuments();
+
+                return createSuccessResponse(
+                    {
+                        deleted: true,
+                        entity: entity.toObject()
+                    },
+                    { total }
+                );
             });
         },
 
-        // Batch operations
+        // Batch operations with count info
         addMany: (values: TInterface[], type?: string) => {
             return dbOperation(true, async () => {
                 if (!Array.isArray(values) || values.length === 0) {
-                    return createFailResponse('Invalid array of data provided');
+                    return createFailResponse('Invalid array of data provided', 400);
                 }
 
                 manageCacheSize();
@@ -242,44 +264,67 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                         ordered: false // Continue on error
                     });
 
-                    return createSuccessResponse({
-                        inserted: entities.length,
-                        entities: entities.map(e => e.toObject())
-                    });
+                    // Get updated total count
+                    const total = await Model.countDocuments();
+
+                    return createSuccessResponse(
+                        {
+                            inserted: entities.length,
+                            entities: entities.map(e => e.toObject())
+                        },
+                        { total }
+                    );
                 } catch (error) {
                     if (error instanceof Error && 'writeErrors' in error) {
                         const bulkError = error as any;
-                        return createSuccessResponse({
-                            inserted: bulkError.insertedDocs?.length || 0,
-                            errors: bulkError.writeErrors,
-                            entities: bulkError.insertedDocs || []
-                        });
+                        const insertedCount = bulkError.insertedDocs?.length || 0;
+
+                        // Get updated total count even if some failed
+                        const total = await Model.countDocuments();
+
+                        return createSuccessResponse(
+                            {
+                                inserted: insertedCount,
+                                errors: bulkError.writeErrors,
+                                entities: bulkError.insertedDocs || []
+                            },
+                            { total }
+                        );
                     }
                     throw error;
                 }
             });
         },
 
-        // Get count
-        getCount: (filters: DataQuery<TInterface> = {}, type?: string) => {
-            return dbOperation(false, async () => { // Changed to false - read operation
+        // Get count with filters from query
+        getCount: (query: URLSearchParams = new URLSearchParams(), type?: string) => {
+            return dbOperation(false, async () => {
+                const { filters } = getMongooseParams(query);
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const count = await Model.countDocuments(filters as any);
+                const count = await Model.countDocuments(filters);
                 return createSuccessResponse({ count });
             });
         },
 
+        // Get total count (no filters)
+        getTotalCount: (type?: string) => {
+            return dbOperation(false, async () => {
+                manageCacheSize();
+                const Model = await resolveModel(type);
+                const total = await Model.countDocuments();
+                return createSuccessResponse({ total });
+            });
+        },
+
         // Check if exists
-        exists: (filters: DataQuery<TInterface>, type?: string) => {
-            return dbOperation(false, async () => { // Changed to false - read operation
-                if (!filters || typeof filters !== 'object') {
-                    return createFailResponse('Invalid filters provided');
-                }
+        exists: (query: URLSearchParams = new URLSearchParams(), type?: string) => {
+            return dbOperation(false, async () => {
+                const { filters } = getMongooseParams(query);
 
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const exists = await Model.exists(filters as any);
+                const exists = await Model.exists(filters);
                 return createSuccessResponse({ exists: !!exists });
             });
         },

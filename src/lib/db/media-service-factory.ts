@@ -72,12 +72,12 @@ export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceF
 /**
  * Enhanced media service factory with file upload capabilities
  */
-export const createMediaServiceFactory = <T extends Document & IMedia, TInterface extends IMedia>( // Fixed: proper type constraint
+export const createMediaServiceFactory = <T extends Document & IMedia>( // Fixed: proper type constraint
     defaultModel: Model<T>,
     customPath: string,
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
-): MediaServiceFactory<TInterface> => {
+): MediaServiceFactory<T> => {
     const modelCache = new Map<string, Model<T>>();
     const MAX_CACHE_SIZE = 100; // Prevent memory leak
 
@@ -173,7 +173,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
     };
 
     // Base CRUD operations
-    const baseMethods = createServiceFactory<T, TInterface>(defaultModel, customPath, entityName);
+    const baseMethods = createServiceFactory<T, T>(defaultModel, customPath, entityName);
 
     const mediaMethods: Omit<MediaServiceFactory<T>, keyof ServiceFactory<T>> = {
         // Upload single file
@@ -255,7 +255,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
         ) => {
             return dbOperation(true, async () => {
                 if (!files || files.length === 0) {
-                    return createFailResponse('No files provided');
+                    return createFailResponse('No files provided', 400);
                 }
 
                 const uploadedFiles = [];
@@ -263,11 +263,53 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
 
                 for (const file of files) {
                     try {
-                        const result = await mediaMethods.uploadFile(file, metadata, type);
-                        if (result.success) {
-                            uploadedFiles.push(result.content);
-                        } else {
-                            errors.push({ file: file.originalname, error: result.content });
+                        // Call uploadFile directly without dbOperation wrapper since we're already in one
+                        validateFile(file);
+                        manageCacheSize();
+
+                        const mediaId = uuidv4();
+                        const uploadDir = await ensureUploadDir(mediaId);
+
+                        try {
+                            const ext = path.extname(file.originalname);
+                            const filename = `original${ext}`;
+                            const filePath = path.join(uploadDir, filename);
+
+                            await fs.writeFile(filePath, file.buffer);
+
+                            const thumbnails = await generateThumbnails(filePath, mediaId, file.mimetype);
+                            const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
+
+                            const mediaData: Partial<IMedia> = {
+                                _id: mediaId,
+                                filename,
+                                title: metadata.title,
+                                originalName: file.originalname,
+                                path: filePath,
+                                url: `${mediaConfig.baseUrl}/${mediaId}`,
+                                size: file.size,
+                                mimetype: file.mimetype,
+                                alt: metadata.alt || '',
+                                caption: metadata.caption || '',
+                                blurDataUrl,
+                                createdAt: new Date(),
+                                metadata: {
+                                    description: metadata.description || '',
+                                    tags: metadata.tags || []
+                                }
+                            };
+
+                            const Model = await resolveModel(type);
+                            const entity = new Model(mediaData);
+                            await entity.save();
+
+                            uploadedFiles.push({
+                                ...entity.toObject(),
+                                thumbnails
+                            });
+                        } catch (error) {
+                            await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
+                            throw error;
                         }
                     } catch (error) {
                         errors.push({
@@ -278,7 +320,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
                 }
 
                 if (uploadedFiles.length === 0) {
-                    return createFailResponse('All uploads failed');
+                    return createFailResponse('All uploads failed', 400);
                 }
 
                 return createSuccessResponse({
@@ -295,7 +337,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
                 const entity = await Model.findById(id) as T;
 
                 if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`);
+                    return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
                 }
 
                 let filePath = entity.path;
@@ -341,7 +383,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
                     const entity = await Model.findById(id) as T;
 
                     if (!entity) {
-                        return createFailResponse(`No ${entityNameLower} found with this ID`);
+                        return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
                     }
 
                     // Clean up old files
@@ -397,13 +439,13 @@ export const createMediaServiceFactory = <T extends Document & IMedia, TInterfac
         // Get media with thumbnail URLs
         getWithThumbnails: (id: string, type?: string) => {
             return dbOperation(false, async () => {
-                const result = await baseMethods.getById(id, type);
+                const Model = await resolveModel(type);
+                const entity = await Model.findById(id).lean() as T;
 
-                if (!result.success) {
-                    return result;
+                if (!entity) {
+                    return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
                 }
 
-                const entity = result.content as IMedia;
                 const thumbnails: { [key: string]: string } = {};
 
                 // Generate thumbnail URLs for existing thumbnails

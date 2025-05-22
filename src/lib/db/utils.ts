@@ -1,27 +1,42 @@
-import dbConnect from "@/lib/db/connect";
-import {MongoServerError} from "mongodb";
 import {DataQuery} from "@/server/models/schemas/data";
+import {NextResponse} from "next/server";
 
-export interface ResponseObject {
-    success: boolean,
-    content?: object,
+export interface ResponseObject extends NextResponse {
     error?: string,
     warning?: string,
-}
-
-export const createSuccessResponse = (responseObject: object, warning = ''): ResponseObject => {
-    return {
-        success: true,
-        warning: warning,
-        content: responseObject
+    status: number,
+    content?: object,
+    pagination?: {
+        total: number,
+        page: number,
+        limit: number,
+        pages: number
     }
 }
 
-export const createFailResponse = (error: unknown): ResponseObject => {
-    return {
-        success: false,
-        error: error as string
-    }
+export interface PagContent {
+    total?: number,
+    page?: number,
+    limit?: number,
+    skip?: number,
+    pages?: number,
+    hasMore?: boolean,
+}
+
+export const createSuccessResponse = (content: object, pagination:PagContent = {}, warning = ''): ResponseObject => {
+    return NextResponse.json({
+        warning,
+        content,
+        pagination
+    })
+}
+
+export const createFailResponse = (error: unknown, status: number = 400): ResponseObject => {
+    return NextResponse.json(
+        {error: error},
+        {status: status}
+    )
+
 }
 
 export const getMongooseParams = (query: URLSearchParams) => {
