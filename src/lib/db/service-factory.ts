@@ -1,49 +1,36 @@
-import { createFailResponse, createSuccessResponse, dbOperation, getMongooseParams } from "@/lib/db/utils";
+import {
+    createFailResponse,
+    createSuccessResponse,
+    dbOperation,
+    getMongooseParams,
+    ResponseObject
+} from "@/lib/db/utils";
 import {Model, Document, UpdateQuery} from "mongoose";
 import {DataQuery} from "@/server/models/schemas/data";
 import {BaseDataModel} from "@/interfaces/data";
+import {createModelResolver} from "@/lib/db/model-resolver";
 
-// Cache for dynamically loaded models to avoid repeated imports
-const modelCache = new Map<string, object>();
+export interface ServiceFactory<TInterface> {
+    getAll: (type?: string) => Promise<ResponseObject>;
+    get: (query: URLSearchParams, type?: string) => Promise<ResponseObject>;
+    getBySlug: (slug: string, type?: string) => Promise<ResponseObject>;
+    getById: (id: string, type?: string) => Promise<ResponseObject>;
+    add: (values: TInterface, type?: string) => Promise<ResponseObject>;
+    update: (id: string, value: Partial<TInterface>, type?: string) => Promise<ResponseObject>;
+    delete: (id: string, type?: string) => Promise<ResponseObject>;
+    addMany: (values: TInterface[], type?: string) => Promise<ResponseObject>;
+    getCount: (filters: DataQuery<TInterface>, type?: string) => Promise<ResponseObject>;
+    exists: (filters: DataQuery<TInterface>, type?: string) => Promise<ResponseObject>;
+    clearCache: () => void;
+}
 
-/**
- * Generic model resolver with caching
- */
-const createModelResolver = <T extends Document>(
-    defaultModel: Model<T>,
-    customPath: string
-) => {
-    return async (type?: string): Promise<Model<T>> => {
-        if (!type) return defaultModel;
-
-        const cacheKey = `${customPath}/${type}`;
-
-        if (modelCache.has(cacheKey)) {
-            return (modelCache.get(cacheKey) as Model<T>)??defaultModel;
-        }
-
-        try {
-            const customModel = (await import(`@/custom/${customPath}/${type}/model`)).default;
-            modelCache.set(cacheKey, customModel);
-            return customModel;
-        } catch (e) {
-            console.error(`Failed to import custom model for ${type}:`, e);
-            // Cache the fallback as well to avoid repeated failed imports
-            modelCache.set(cacheKey, defaultModel);
-            return defaultModel;
-        }
-    };
-};
-
-/**
- * Generic service factory that creates CRUD operations for any model
- */
 export const createServiceFactory = <T extends Document, TInterface = BaseDataModel>(
     defaultModel: Model<T>,
     customPath: string,
     entityName: string
-) => {
-    const resolveModel = createModelResolver(defaultModel, customPath);
+): ServiceFactory<TInterface> => {
+    const modelCache = new Map<string, object>();
+    const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
 
     return {
@@ -138,7 +125,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
         },
 
         // Get count
-        getCount: (filters: DataQuery<T> = {}, type?: string) => {
+        getCount: (filters: DataQuery<TInterface> = {}, type?: string) => {
             return dbOperation(async () => {
                 const Model = await resolveModel(type);
                 const count = await Model.countDocuments(filters);
@@ -147,17 +134,16 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
         },
 
         // Check if exists
-        exists: (filters: DataQuery<T>, type?: string) => {
+        exists: (filters: DataQuery<TInterface>, type?: string) => {
             return dbOperation(async () => {
                 const Model = await resolveModel(type);
                 const exists = await Model.exists(filters);
                 return createSuccessResponse({ exists: !!exists });
             });
+        },
+
+        clearCache: () => {
+            modelCache.clear();
         }
     };
-};
-
-// Utility to clear model cache (useful for testing or hot reloading)
-export const clearModelCache = () => {
-    modelCache.clear();
 };

@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import service from "@/server/actions/categories";
+import service from "@/server/actions/posts";
 import {PageProps} from "@/interfaces/api";
 
 const get = async (request: NextRequest, { params }: PageProps) => {
@@ -13,8 +13,8 @@ const get = async (request: NextRequest, { params }: PageProps) => {
 const patch = async (request: NextRequest, { params }: PageProps) => {
     const type = (await params).type;
     const id = (await params).slug;
-    const newCategory = await request.json();
-    const internalResponse = await service.update(id, newCategory, type);
+    const newPost = await request.json();
+    const internalResponse = await service.update(id, newPost, type);
     return NextResponse.json(internalResponse);
 }
 

@@ -1,4 +1,4 @@
-import service from "@/server/actions/categories";
+import service from "@/server/actions/posts";
 import {NextRequest, NextResponse} from "next/server";
 
 const get = async (request: NextRequest) => {

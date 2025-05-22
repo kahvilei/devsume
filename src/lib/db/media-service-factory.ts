@@ -7,6 +7,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp'; // For image processing
 import { v4 as uuidv4 } from 'uuid';
+import {createModelResolver} from "@/lib/db/model-resolver";
 
 // File upload configuration
 export interface MediaUploadConfig {
@@ -42,34 +43,6 @@ const defaultConfig: MediaUploadConfig = {
     generateBlurDataUrl: true
 };
 
-// Cache for dynamically loaded models
-const modelCache = new Map<string, object>();
-
-const createModelResolver = <T extends Document>(
-    defaultModel: Model<T>,
-    customPath: string
-) => {
-    return async (type?: string): Promise<Model<T>> => {
-        if (!type) return defaultModel;
-
-        const cacheKey = `${customPath}/${type}`;
-
-        if (modelCache.has(cacheKey)) {
-            return (modelCache.get(cacheKey) as Model<T>) ?? defaultModel;
-        }
-
-        try {
-            const customModel = (await import(`@/custom/${customPath}/${type}/model`)).default;
-            modelCache.set(cacheKey, customModel);
-            return customModel;
-        } catch (e) {
-            console.error(`Failed to import custom model for ${type}:`, e);
-            modelCache.set(cacheKey, defaultModel);
-            return defaultModel;
-        }
-    };
-};
-
 /**
  * Enhanced media service factory with file upload capabilities
  */
@@ -79,7 +52,8 @@ export const createMediaServiceFactory = <T extends Document>(
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
 ) => {
-    const resolveModel = createModelResolver(defaultModel, customPath);
+    const modelCache = new Map<string, object>();
+    const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
     const mediaConfig = { ...defaultConfig, ...config };
 

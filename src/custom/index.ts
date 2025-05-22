@@ -21,8 +21,33 @@ export const config = {
                 singular: "skill",
                 plural: "skills"
             },
+        },
+        {
+            api: "/api/categories/collaborators",
+            key: "collaborators",
+            openEditInModal: false,
+            queryFields: {
+                title: "string",
+                tags: "string[]",
+                description: "string"
+            },
+            names: {
+                singular: "collaborator",
+                plural: "collaborators"
+            },
         }
-    ]
+    ],
+    media: {
+        api: "/api/media/images",
+        openEditInModal: true,
+        queryFields: {
+            title: "string",
+        },
+        names: {
+            singular: "image",
+            plural: "images"
+        }
+    }
 }
 
 export default config;
