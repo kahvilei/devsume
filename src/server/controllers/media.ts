@@ -1,6 +1,6 @@
-import {createController} from "@/lib/api/controller-factory";
+import {createMediaController} from "@/lib/api/media-controller-factory";
 import service from "@/server/actions/media";
 
-const mediaController = createController(service);
+const mediaController = createMediaController(service);
 
 export default mediaController;
