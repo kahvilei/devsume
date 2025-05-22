@@ -7,7 +7,7 @@ import EditCategory from "@/app/(posts)/categories/edit";
 import custom from "@/custom";
 import {IPost} from "@/server/models/Post";
 import {IResume} from "@/server/models/Resume";
-import {IImage} from "@/server/models/Media";
+import {IMedia} from "@/server/models/Media";
 
 export interface ItemConfig<T extends BaseDataModel> {
   api: string;
@@ -32,14 +32,14 @@ interface CustomConfig<T extends BaseDataModel> extends ItemConfig<T> {
 export interface CustomConfigList {
   categories?: Partial<CustomConfig<ICategory>>[];
   posts?:  Partial<CustomConfig<IPost>>[];
-  media?: Partial<CustomConfig<IImage>>[];
+  media?: Partial<CustomConfig<IMedia>>[];
   resumes?: Partial<CustomConfig<IResume>>[];
 }
 
 export interface ItemManifestList {
   categories: ItemConfig<ICategory>;
   posts: ItemConfig<IPost>;
-  media: ItemConfig<IImage>;
+  media: ItemConfig<IMedia>;
   resumes: ItemConfig<IResume>;
 }
 
@@ -61,7 +61,7 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).categories??[]
   },
   media :{
-    api: "/api/media/images",
+    api: "/api/media.ts/images",
     openEditInModal: true,
     queryFields: {
        title: "string",

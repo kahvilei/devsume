@@ -37,8 +37,9 @@ export const config = {
             },
         }
     ],
-    media: {
-        api: "/api/media/images",
+    media: [
+        {
+        api: "/api/media.ts/images",
         openEditInModal: true,
         queryFields: {
             title: "string",
@@ -47,7 +48,7 @@ export const config = {
             singular: "image",
             plural: "images"
         }
-    }
+    }]
 }
 
 export default config;

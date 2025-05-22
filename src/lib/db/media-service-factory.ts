@@ -1,13 +1,14 @@
-// lib/db/media-service-factory.ts
-import { createFailResponse, createSuccessResponse, dbOperation, getMongooseParams } from "@/lib/db/utils";
-import { Model, Document, UpdateQuery } from "mongoose";
-import { DataQuery } from "@/server/models/schemas/data";
+// lib/db/media.ts-service-factory.ts
+import { createFailResponse, createSuccessResponse } from "@/lib/db/utils";
+import { Model, Document} from "mongoose";
 import { IMedia } from "@/server/models/Media";
 import fs from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp'; // For image processing
 import { v4 as uuidv4 } from 'uuid';
 import {createModelResolver} from "@/lib/db/model-resolver";
+import {dbOperation} from "@/lib/db/db-operation";
+import {createServiceFactory} from "@/lib/db/service-factory";
 
 // File upload configuration
 export interface MediaUploadConfig {
@@ -23,7 +24,7 @@ export interface MediaUploadConfig {
 // Default configuration
 const defaultConfig: MediaUploadConfig = {
     uploadDir: 'uploads',
-    baseUrl: '/api/media', // Will serve files at /api/media/[id]
+    baseUrl: '/api/media.ts', // Will serve files at /api/media.ts/[id]
     maxFileSize: 10 * 1024 * 1024, // 10MB
     allowedMimeTypes: [
         'image/jpeg',
@@ -44,7 +45,7 @@ const defaultConfig: MediaUploadConfig = {
 };
 
 /**
- * Enhanced media service factory with file upload capabilities
+ * Enhanced media.ts service factory with file upload capabilities
  */
 export const createMediaServiceFactory = <T extends Document>(
     defaultModel: Model<T>,
@@ -52,7 +53,7 @@ export const createMediaServiceFactory = <T extends Document>(
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
 ) => {
-    const modelCache = new Map<string, object>();
+    const modelCache = new Map<string, Model<T>>();
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
     const mediaConfig = { ...defaultConfig, ...config };
@@ -129,105 +130,8 @@ export const createMediaServiceFactory = <T extends Document>(
     };
 
     // Base CRUD operations (same as generic factory)
-    const baseMethods = {
-        getAll: (type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entities = await Model.find().lean();
-                return createSuccessResponse(entities);
-            });
-        },
+    const baseMethods = createServiceFactory(defaultModel, customPath, entityName);
 
-        get: (query: URLSearchParams, type?: string) => {
-            return dbOperation(async () => {
-                const { sort, filters, limit, skip } = getMongooseParams(query);
-                const Model = await resolveModel(type);
-                const entities = await Model.find(filters)
-                    .sort(sort)
-                    .limit(limit)
-                    .skip(skip)
-                    .lean();
-                return createSuccessResponse(entities);
-            });
-        },
-
-        getBySlug: (slug: string, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entity = await Model.findOne({ slug }).lean();
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this slug`);
-                }
-                return createSuccessResponse(entity);
-            });
-        },
-
-        getById: (id: string, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entity = await Model.findById(id).lean();
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`);
-                }
-                return createSuccessResponse(entity);
-            });
-        },
-
-        add: (values: Partial<IMedia>, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entity = new Model(values);
-                await entity.save();
-                return createSuccessResponse(entity);
-            });
-        },
-
-        update: (id: string, values: Partial<IMedia>, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entity = await Model.findByIdAndUpdate(id, values as UpdateQuery<T>, { new: true });
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`);
-                }
-                return createSuccessResponse(entity);
-            });
-        },
-
-        delete: (id: string, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const entity = await Model.findById(id) as IMedia;
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`);
-                }
-
-                // Clean up associated files
-                await cleanupFiles(entity);
-
-                // Delete the database record
-                await Model.findByIdAndDelete(id);
-                return createSuccessResponse(entity);
-            });
-        },
-
-        getCount: (filters: DataQuery<T> = {}, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const count = await Model.countDocuments(filters);
-                return createSuccessResponse({ count });
-            });
-        },
-
-        exists: (filters: DataQuery<T>, type?: string) => {
-            return dbOperation(async () => {
-                const Model = await resolveModel(type);
-                const exists = await Model.exists(filters);
-                return createSuccessResponse({ exists: !!exists });
-            });
-        }
-    };
-
-    // Enhanced media-specific methods
     const mediaMethods = {
         // Upload single file
         uploadFile: (
@@ -241,7 +145,7 @@ export const createMediaServiceFactory = <T extends Document>(
             } = {},
             type?: string
         ) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 validateFile(file);
 
                 const mediaId = uuidv4();
@@ -307,7 +211,7 @@ export const createMediaServiceFactory = <T extends Document>(
             } = {},
             type?: string
         ) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const uploadedFiles = [];
 
                 for (const file of files) {
@@ -327,7 +231,7 @@ export const createMediaServiceFactory = <T extends Document>(
 
         // Get file stream for serving
         getFileStream: (id: string, thumbnailType?: string, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const entity = await Model.findById(id) as IMedia;
 
@@ -370,7 +274,7 @@ export const createMediaServiceFactory = <T extends Document>(
             file: { buffer: Buffer; originalname: string; mimetype: string; size: number },
             type?: string
         ) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 validateFile(file);
 
                 const Model = await resolveModel(type);
@@ -418,9 +322,9 @@ export const createMediaServiceFactory = <T extends Document>(
             });
         },
 
-        // Get media with thumbnail URLs
+        // Get media.ts with thumbnail URLs
         getWithThumbnails: (id: string, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(false, async () => {
                 const result = await baseMethods.getById(id, type);
 
                 if (!result.success) {

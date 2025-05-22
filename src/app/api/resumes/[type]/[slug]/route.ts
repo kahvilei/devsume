@@ -1,4 +1,4 @@
-import controller from "@/server/controllers/categories";
+import controller from "@/server/controllers/resumes";
 
 const get = controller.getBySlug;
 const patch = controller.patch;

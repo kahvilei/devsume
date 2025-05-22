@@ -8,8 +8,8 @@ const mediaService = createMediaServiceFactory<Document>(
     "Media",
     {
         uploadDir: 'uploads',
-        baseUrl: '/api/media',
-        maxFileSize: 50 * 1024 * 1024, // 50MB for media files
+        baseUrl: '/api/media.ts',
+        maxFileSize: 50 * 1024 * 1024, // 50MB for media.ts files
         allowedMimeTypes: [
             // Images
             'image/jpeg',
@@ -44,5 +44,4 @@ const mediaService = createMediaServiceFactory<Document>(
     }
 );
 
-// Export service for advanced usage
-export { mediaService };
+export default mediaService;

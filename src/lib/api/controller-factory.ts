@@ -1,6 +1,9 @@
 import {ServiceFactory} from "@/lib/db/service-factory";
 import {NextRequest, NextResponse} from "next/server";
 import {PageProps} from "@/interfaces/api";
+import {getServerSession} from "next-auth";
+import {authOptions} from "@/lib/auth";
+
 
 export const createController = <TInterface>(
     service: ServiceFactory<TInterface>,
@@ -15,6 +18,8 @@ export const createController = <TInterface>(
         },
 
         post: async (request: NextRequest, { params }: PageProps) => {
+            const session = getServerSession(authOptions);
+            if (!session) return new Response('Unauthorized', {status: 401});
             const document = await request.json();
             const type = (await params).type;
             const internalResponse = await service.add(document, type);
@@ -30,6 +35,8 @@ export const createController = <TInterface>(
         },
 
         patch: async (request: NextRequest, { params }: PageProps) => {
+            const session = getServerSession(authOptions);
+            if (!session) return new Response('Unauthorized', {status: 401});
             const type = (await params).type;
             const id = (await params).slug;
             const document = await request.json();
@@ -38,6 +45,8 @@ export const createController = <TInterface>(
         },
 
         delete: async (request: NextRequest, { params }: PageProps) => {
+            const session = getServerSession(authOptions);
+            if (!session) return new Response('Unauthorized', {status: 401});
             const type = (await params).type;
             const id = (await params).slug;
             const internalResponse = await service.delete(id, type);

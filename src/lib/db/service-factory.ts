@@ -1,7 +1,6 @@
 import {
     createFailResponse,
     createSuccessResponse,
-    dbOperation,
     getMongooseParams,
     ResponseObject
 } from "@/lib/db/utils";
@@ -9,6 +8,7 @@ import {Model, Document, UpdateQuery} from "mongoose";
 import {DataQuery} from "@/server/models/schemas/data";
 import {BaseDataModel} from "@/interfaces/data";
 import {createModelResolver} from "@/lib/db/model-resolver";
+import {dbOperation} from "@/lib/db/db-operation";
 
 export interface ServiceFactory<TInterface> {
     getAll: (type?: string) => Promise<ResponseObject>;
@@ -29,14 +29,14 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
     customPath: string,
     entityName: string
 ): ServiceFactory<TInterface> => {
-    const modelCache = new Map<string, object>();
+    const modelCache = new Map<string, Model<T>>();
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
 
     return {
         // Get all entities
         getAll: (type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(false, async () => {
                 const Model = await resolveModel(type);
                 const entities = await Model.find().lean();
                 return createSuccessResponse(entities);
@@ -45,7 +45,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Get entities with query parameters
         get: (query: URLSearchParams, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(false, async () => {
                 const { sort, filters, limit, skip } = getMongooseParams(query);
                 const Model = await resolveModel(type);
                 const entities = await Model.find(filters)
@@ -59,7 +59,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Get entity by slug
         getBySlug: (slug: string, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(false, async () => {
                 const Model = await resolveModel(type);
                 const entity = await Model.findOne({ slug }).lean();
                 if (!entity) {
@@ -71,7 +71,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Get entity by ID
         getById: (id: string, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(false, async () => {
                 const Model = await resolveModel(type);
                 const entity = await Model.findById(id).lean();
                 if (!entity) {
@@ -83,7 +83,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Add new entity
         add: (values: TInterface, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const entity = new Model(values);
                 await entity.save();
@@ -93,7 +93,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Update entity
         update: (id: string, value: Partial<TInterface>, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const entity = await Model.findByIdAndUpdate(id, value as UpdateQuery<T>, { new: true });
                 if (!entity) {
@@ -105,7 +105,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Delete entity
         delete: (id: string, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const entity = await Model.findByIdAndDelete(id);
                 if (!entity) {
@@ -117,7 +117,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Batch operations
         addMany: (values: TInterface[], type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const entities = await Model.insertMany(values);
                 return createSuccessResponse(entities);
@@ -126,7 +126,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Get count
         getCount: (filters: DataQuery<TInterface> = {}, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const count = await Model.countDocuments(filters);
                 return createSuccessResponse({ count });
@@ -135,7 +135,7 @@ export const createServiceFactory = <T extends Document, TInterface = BaseDataMo
 
         // Check if exists
         exists: (filters: DataQuery<TInterface>, type?: string) => {
-            return dbOperation(async () => {
+            return dbOperation(true, async () => {
                 const Model = await resolveModel(type);
                 const exists = await Model.exists(filters);
                 return createSuccessResponse({ exists: !!exists });

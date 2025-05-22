@@ -3,7 +3,7 @@ import {Document, Model} from "mongoose";
 export const createModelResolver = <T extends Document>(
     defaultModel: Model<T>,
     customPath: string,
-    modelCache: Map<string, object> = new Map()
+    modelCache: Map<string, Model<T>> = new Map()
 ) => {
     return async (type?: string): Promise<Model<T>> => {
         if (!type) return defaultModel;

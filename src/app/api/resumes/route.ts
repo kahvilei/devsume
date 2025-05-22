@@ -1,4 +1,4 @@
-import controller from "@/server/controllers/posts";
+import controller from "@/server/controllers/resumes";
 
 const get = controller.get
 const post = controller.post
