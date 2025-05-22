@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import {IResume} from "@/models/Resume";
-import {IPost} from "@/models/Post";
-import {IImage} from "@/models/Image";
+import {IResume} from "@/server/models/Resume";
+import {IPost} from "@/server/models/Post";
+import {IImage} from "@/server/models/Media";
 import {BaseDataModel} from "@/interfaces/data";
-import {ICategory} from "@/models/Category";
+import {ICategory} from "@/server/models/Category";
 
 export type DataType = ICategory | IResume | IPost | IImage;
 export type DataFilter = string | number | string[] | number[];

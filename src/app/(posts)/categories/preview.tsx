@@ -2,7 +2,7 @@ import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
-import {ICategory} from "@/models/Category";
+import {ICategory} from "@/server/models/Category";
 
 export default function PreviewCategory(
     {

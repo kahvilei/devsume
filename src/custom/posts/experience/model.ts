@@ -1,4 +1,4 @@
-import {createPostModel} from "@/models/Post";
+import {createPostModel} from "@/server/models/Post";
 import mongoose from "mongoose";
 
 export const ExperienceSchema = {

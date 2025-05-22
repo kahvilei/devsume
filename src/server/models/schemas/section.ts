@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {DataEnum, DataQuery} from "@/models/schemas/data";
+import {DataEnum, DataQuery} from "@/server/models/schemas/data";
 
 
 // Creating a schema definition that can be reused

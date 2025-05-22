@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import {Link, LinkSchema} from './schemas/link';
-import {IUser} from "@/models/User";
-import {IImage} from "@/models/Image";
-import {IPost} from "@/models/Post";
+import {Link, LinkSchema} from '@/server/models/schemas/link';
+import {IUser} from "@/server/models/User";
+import {IImage} from "@/server/models/Media";
+import {IPost} from "@/server/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
-import {Section, SectionSchema} from "@/models/schemas/section";
-import {ICategory} from "@/models/Category";
+import {Section, SectionSchema} from "@/server/models/schemas/section";
+import {ICategory} from "@/server/models/Category";
 
 export interface IResume extends BaseDataModel {
     _id?: string;

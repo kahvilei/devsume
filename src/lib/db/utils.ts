@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db/connect";
 import {MongoServerError} from "mongodb";
-import {DataQuery} from "@/interfaces/api";
+import {DataQuery} from "@/server/models/schemas/data";
 
 export interface ResponseObject {
     success: boolean,

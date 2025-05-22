@@ -4,8 +4,8 @@ import ActionIcon from "@/app/_components/common/ActionIcon";
 import {Plus} from "lucide-react";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 import PopInOut from "@/app/_components/animations/PopInOut";
-import {Section} from "@/models/schemas/section";
-import {DataQuery, DataType} from "@/models/schemas/data";
+import {Section} from "@/server/models/schemas/section";
+import {DataQuery, DataType} from "@/server/models/schemas/data";
 
 interface ItemSectionEditorProps {
     max: number; // maximum number of sections allowed

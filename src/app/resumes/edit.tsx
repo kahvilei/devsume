@@ -1,11 +1,11 @@
-import {IResume} from "@/models/Resume";
+import {IResume} from "@/server/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import ItemSectionEditor from "@/app/_components/editor/common/ItemSectionEditor";
-import {Section} from "@/models/schemas/section";
-import {IPost} from "@/models/Post";
-import {ICategory} from "@/models/Category";
+import {Section} from "@/server/models/schemas/section";
+import {IPost} from "@/server/models/Post";
+import {ICategory} from "@/server/models/Category";
 
 interface EditResumeProps {
     resume?: IResume;

@@ -1,5 +1,5 @@
 "use server"
-import Resume, {IResume} from "@/models/Resume";
+import Resume, {IResume} from "@/server/models/Resume";
 import {createFailResponse, createSuccessResponse, dbOperation, ResponseObject} from "@/lib/db/utils";
 
 export const addResume = async (values: Partial<IResume>):Promise<ResponseObject> => {

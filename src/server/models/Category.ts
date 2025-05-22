@@ -1,6 +1,6 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
-import {withSlugGeneration} from "@/models/Post";
+import {withSlugGeneration} from "@/server/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
 
 export interface ICategory extends BaseDataModel {

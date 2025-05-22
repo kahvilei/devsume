@@ -1,5 +1,5 @@
 "use server"
-import User from "@/models/User";
+import User from "@/server/models/User";
 import bcrypt from "bcryptjs";
 import {createFailResponse, createSuccessResponse, dbOperation} from "@/lib/db/utils";
 

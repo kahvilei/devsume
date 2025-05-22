@@ -1,6 +1,6 @@
 import {ItemService} from "@/app/_data/ItemService";
 import ITEMS from "@/config/items";
-import {DataType} from "@/models/schemas/data";
+import {DataType} from "@/server/models/schemas/data";
 
 const CategoryService = new ItemService(ITEMS.categories)
 const PostService = new ItemService(ITEMS.posts)

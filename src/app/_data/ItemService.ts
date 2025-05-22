@@ -9,7 +9,7 @@ import {patchAndReturn} from "@/lib/http/patchAndDigest";
 import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
 import React from "react";
 import {convertQueryToString} from "@/lib/misc/convertQuery";
-import {DataQuery} from "@/models/schemas/data";
+import {DataQuery} from "@/server/models/schemas/data";
 
 interface QueryResult {
     data: utils.ResponseObject;

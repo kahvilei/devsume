@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {deleteCategory, getCategoryById, updateCategory} from "@/actions/categories";
+import {deleteCategory, getCategoryById, updateCategory} from "@/server/actions/categories";
 import {PageProps} from "@/interfaces/api";
 
 const get = async (request: NextRequest, { params }: PageProps) => {

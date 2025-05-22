@@ -17,7 +17,7 @@ import {AnimatePresence} from "motion/react";
 import Drawer from "../../animations/Drawer";
 import {DataService} from "@/app/_data";
 import {observer} from "mobx-react-lite"
-import {Data, DataFilter, DataQuery} from "@/models/schemas/data";
+import {Data, DataFilter, DataQuery} from "@/server/models/schemas/data";
 
 interface MultiSelectProps<T extends BaseDataModel> {
     values?: Data<T>;
@@ -114,12 +114,14 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                             }}
                             icon={<X/>}
                             color={"danger"}
+                            size={'sm'}
                             tooltip={"Delete this section"}
                         />
                     }
                     <ActionIcon
                         icon={<SettingsIcon/>}
                         onClick={() => setControlsOpen(!controlsOpen)}
+                        size={'sm'}
                         tooltip={controlsOpen ? "Hide controls" : "Show controls"}
                     />
                 </div>

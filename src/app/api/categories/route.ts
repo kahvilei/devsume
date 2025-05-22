@@ -1,4 +1,4 @@
-import {addCategory, getCategories} from "@/actions/categories";
+import {addCategory, getCategories} from "@/server/actions/categories";
 import {NextRequest, NextResponse} from "next/server";
 
 const get = async (request: NextRequest) => {

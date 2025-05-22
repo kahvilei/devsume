@@ -3,7 +3,7 @@ import {EditProps} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import {Save, X} from "lucide-react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
-import {ICategory} from "@/models/Category";
+import {ICategory} from "@/server/models/Category";
 
 
 export default function EditCategory({item: category = {title: ""}, onSaveItem: onSaveTag, onCancel}: EditProps<ICategory>) {

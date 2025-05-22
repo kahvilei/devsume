@@ -1,4 +1,4 @@
-import User from "@/models/User";
+import User from "@/server/models/User";
 import type { NextAuthOptions } from "next-auth";
 import credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { LinkSchema } from "./schemas/link";
+import { LinkSchema } from "@/server/models/schemas/link";
 import slugify from 'slugify';
 import {BaseDataModel} from "@/interfaces/data";
 

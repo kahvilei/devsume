@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { register } from "@/actions/user";
+import { register } from "@/server/actions/user";
 
 export default function Register() {
     const [error, setError] = useState<string>();

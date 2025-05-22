@@ -1,4 +1,5 @@
-import {DataQuery} from "@/interfaces/api";
+import {DataQuery} from "@/server/models/schemas/data";
+
 
 export const convertQueryToString = <T>(query: DataQuery<T>) => {
     let queryStr = "?";

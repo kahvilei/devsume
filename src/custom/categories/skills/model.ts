@@ -1,6 +1,6 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
-import {createCategoryModel, ICategory} from "@/models/Category";
+import {createCategoryModel, ICategory} from "@/server/models/Category";
 
 export interface ISkill extends ICategory {
     description?: string;

@@ -12,8 +12,7 @@ import {ContentVariant, Size} from "@/types/designTypes";
 import {MongoOperator} from "@/types/dataTypes";
 import {Button} from "@/app/_components/common/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
-import {AnimatePresence} from "motion/react";
-import {DataFilter, DataQuery} from "@/models/schemas/data";
+import {DataFilter, DataQuery} from "@/server/models/schemas/data";
 
 // Field types for specialized inputs
 type FieldType = 'text' | 'number' | 'date' | 'select';

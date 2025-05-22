@@ -1,12 +1,13 @@
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import React from "react";
-import {Tag} from "lucide-react";
-import {ICategory} from "@/models/Category";
+import {Tag, Image} from "lucide-react";
+import {ICategory} from "@/server/models/Category";
 import PreviewCategory from "@/app/(posts)/categories/preview";
 import EditCategory from "@/app/(posts)/categories/edit";
 import custom from "@/custom";
-import {IPost} from "@/models/Post";
-import {IResume} from "@/models/Resume";
+import {IPost} from "@/server/models/Post";
+import {IResume} from "@/server/models/Resume";
+import {IImage} from "@/server/models/Media";
 
 export interface ItemConfig<T extends BaseDataModel> {
   api: string;
@@ -31,12 +32,14 @@ interface CustomConfig<T extends BaseDataModel> extends ItemConfig<T> {
 export interface CustomConfigList {
   categories?: Partial<CustomConfig<ICategory>>[];
   posts?:  Partial<CustomConfig<IPost>>[];
+  media?: Partial<CustomConfig<IImage>>[];
   resumes?: Partial<CustomConfig<IResume>>[];
 }
 
 export interface ItemManifestList {
   categories: ItemConfig<ICategory>;
   posts: ItemConfig<IPost>;
+  media: ItemConfig<IImage>;
   resumes: ItemConfig<IResume>;
 }
 
@@ -56,6 +59,19 @@ const ITEMS: ItemManifestList = {
     },
     icon: <Tag/>,
     discriminators: (custom as CustomConfigList).categories??[]
+  },
+  media :{
+    api: "/api/media/images",
+    openEditInModal: true,
+    queryFields: {
+       title: "string",
+    },
+    names: {
+      singular: "image",
+      plural: "images"
+    },
+    icon: <Image/>,
+    discriminators: (custom as CustomConfigList).media??[]
   },
   posts: {
     api: "/api/posts/",
