@@ -17,6 +17,7 @@ export interface IMedia extends BaseDataModel{
         description: string;
         tags: string[];
     };
+    formData?: FormData; //only exists front-side for upload
 }
 export const MediaSchema = new mongoose.Schema({
     filename: { type: String, required: true },

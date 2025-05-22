@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import {makeAutoObservable} from "mobx";
 import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
 import {ItemConfig} from "@/config/items";
-import * as utils from "@/lib/db/utils";
 import {getAndReturn} from "@/lib/http/getAndDigest";
 import {postAndReturn} from "@/lib/http/postAndDigest";
 import {patchAndReturn} from "@/lib/http/patchAndDigest";
@@ -10,10 +9,16 @@ import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
 import React from "react";
 import {convertQueryToString} from "@/lib/misc/convertQuery";
 import {DataQuery} from "@/server/models/schemas/data";
+import {ResponseObject} from "@/lib/db/utils";
 
 interface QueryResult {
-    data: utils.ResponseObject;
+    data: ResponseObject;
     timestamp: number;
+}
+
+interface FailureObject {
+    error: string;
+    warning?: string;
 }
 
 export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
@@ -49,8 +54,8 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         makeAutoObservable(this);
     }
 
-    setErrorWarning(response: utils.ResponseObject) {
-        this.warning = response.warning;
+    setErrorWarning(response: ResponseObject | FailureObject) {
+        this.warning = response.warning ?? undefined;
         this.error = response.error;
     }
 
@@ -78,9 +83,9 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
 
     // Helper method for common operation pattern
     private async executeOperation(
-        operation: () => Promise<utils.ResponseObject>,
+        operation: () => Promise<ResponseObject | FailureObject>,
         updateCache = true
-    ): Promise<utils.ResponseObject> {
+    ): Promise<ResponseObject | FailureObject> {
         this.loading = true;
         try {
             const result = await operation();
@@ -95,11 +100,11 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         } catch (err) {
             this.error = err instanceof Error ? err.message : 'Unknown error';
             this.loading = false;
-            return {success: false};
+            return {error: (err instanceof Error ? err.message : 'Unknown error')}
         }
     }
 
-    async getQueryResult(query: DataQuery<T> | string): Promise<utils.ResponseObject> {
+    async getQueryResult(query: DataQuery<T> | string): Promise<ResponseObject | FailureObject> {
         const queryStr = this.getQueryString(query);
         const current = this.queries.get(queryStr);// 20 seconds
 
@@ -112,7 +117,7 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         return current.data;
     }
 
-    async fetchItems(query: DataQuery<T> | string): Promise<utils.ResponseObject> {
+    async fetchItems(query: DataQuery<T> | string): Promise<ResponseObject | FailureObject> {
         const queryStr = this.getQueryString(query);
 
         return this.executeOperation(async () => {
@@ -123,15 +128,15 @@ export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
         }, false);
     }
 
-    async createItem(item: T): Promise<utils.ResponseObject> {
+    async createItem(item: T): Promise<ResponseObject | FailureObject> {
         return this.executeOperation(() => postAndReturn<T>(this.api, item));
     }
 
-    async updateItem(item: T): Promise<utils.ResponseObject> {
+    async updateItem(item: T): Promise<ResponseObject | FailureObject> {
         return this.executeOperation(() => patchAndReturn<T>(this.api + item._id, item));
     }
 
-    async deleteItem(item: T): Promise<utils.ResponseObject> {
+    async deleteItem(item: T): Promise<ResponseObject | FailureObject> {
         return this.executeOperation(() => deleteAndReturn(this.api + item._id));
     }
 }

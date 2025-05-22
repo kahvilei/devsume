@@ -34,7 +34,6 @@ export const postAndReturn = async <T>(
     } catch (e) {
         const error = e as AxiosError;
         return {
-            success: false,
             error: error.toString()
         }
     }

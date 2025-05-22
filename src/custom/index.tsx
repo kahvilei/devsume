@@ -42,7 +42,7 @@ export const config = {
     ],
     media: [
         {
-            api: "/api/media/images",
+            api: "/api/media/image/",
             openEditInModal: true,
             queryFields: {
                 title: "string",

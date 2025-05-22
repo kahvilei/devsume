@@ -1,5 +1,5 @@
 import  mongoose, { Schema, model } from  "mongoose";
-import {BaseDataModel} from "@/interfaces/api";
+import {BaseDataModel} from "@/interfaces/data";
 
 export interface IUser extends BaseDataModel {
     _id: string;

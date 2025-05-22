@@ -1,5 +1,5 @@
 import {createController} from "@/lib/api/controller-factory";
-import service from "@/server/actions/resumes";
+import service from "@/server/services/resumes";
 
 const resumeController = createController(service);
 

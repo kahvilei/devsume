@@ -1,4 +1,4 @@
-import {getTagBySlug} from "@/server/actions/categories";
+import {getTagBySlug} from "@/server/services/categories";
 import { notFound } from "next/navigation";
 import {ISkill} from "@/custom/categories/skill/model";
 
