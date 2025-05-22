@@ -61,7 +61,7 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).categories??[]
   },
   media :{
-    api: "/api/media.ts/images",
+    api: "/api/media/media",
     openEditInModal: true,
     queryFields: {
        title: "string",
@@ -119,9 +119,6 @@ export const getParentKey = (key: string) => {
 export const getAllPossibleKeys = (keys: string[]) => {
   const newKeys = [];
   for (const [ikey, item] of Object.entries(ITEMS)) {
-    if (keys.includes(ikey)){
-      newKeys.push(ikey);
-    }
     for (const discriminator of item.discriminators ?? []) {
       if (keys.includes(ikey)){
         newKeys.push(discriminator.key);
@@ -134,9 +131,6 @@ export const getAllPossibleKeys = (keys: string[]) => {
 export const getAllConfigsOfType = (key: string) : ItemConfig<any>[] => {
   const configs: ItemConfig<any>[] = [];
     for (const [ikey, item] of Object.entries(ITEMS)) {
-        if (ikey === key) {
-            configs.push(item);
-        }
         if (item.discriminators) {
           for (const discriminator of item.discriminators) {
             if (discriminator.key === key || ikey === key) {

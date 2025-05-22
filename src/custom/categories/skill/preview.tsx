@@ -1,4 +1,4 @@
-import {ISkill} from "@/custom/categories/skills/model";
+import {ISkill} from "@/custom/categories/skill/model";
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";

@@ -3,7 +3,7 @@ import {EditProps} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import {Save, X} from "lucide-react";
 import ActionIcon from "@/app/_components/common/ActionIcon";
-import {ISkill} from "@/custom/categories/skills/model";
+import {ISkill} from "@/custom/categories/skill/model";
 
 
 export default function EditSkill({item: skill = {title: ""}, onSaveItem: onSaveTag, onCancel}: EditProps<ISkill>) {

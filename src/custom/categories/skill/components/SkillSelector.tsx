@@ -1,4 +1,4 @@
-import {ISkill} from "@/custom/categories/skills/model";
+import {ISkill} from "@/custom/categories/skill/model";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 import {Data} from "@/server/models/schemas/data";
 
@@ -14,7 +14,7 @@ export default function SkillSelector({values, title, onSelect, onRemove}: TagSe
         <MultiSelectFromDB
             values={values}
             title={title}
-            dataKey={"skills"}
+            dataKey={"skill"}
             onSelect={onSelect}
             onRemove={onRemove}
         />
