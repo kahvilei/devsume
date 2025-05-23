@@ -1,32 +1,25 @@
 import mongoose from 'mongoose';
-import { LinkSchema } from "@/server/models/schemas/link";
+import {Link, LinkSchema} from "@/server/models/schemas/link";
 import {withTimestamps} from "@/lib/models/withTimestamps";
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
-import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {Content, ContentBaseSchema} from "@/server/models/schemas/content";
 import {withDrafts} from "@/lib/models/withDrafts";
+import {withAutoCategories} from "@/lib/models/withAutoCategories";
 
-export interface IPost extends Item {
-    description: string;
+export interface IPost extends Content {
     content: string;
-    link: string,
-    useExternal: boolean, //if true, page is external, and we will not use content
-    links?: [],
-    hero: string,
-    published: boolean;
-    publishedAt: Date;
+    link: string;
+    useExternal: boolean; //if true, page is external, and we will not use content
+    links?: Link[];
 }
 
 // Base Post schema that captures common fields
 export const PostSchema = new mongoose.Schema({
-    ...ItemBaseSchema,
-    description: { type: String, required: true },
+    ...ContentBaseSchema,
     content: { type: String, required: true },
     link: { type: String, required: false },
     useExternal: { type: Boolean, default: false },
     links: [LinkSchema],
-    hero: { type: String, required: true },
-    published: { type: Boolean, default: false },
-    publishedAt: { type: Date, default: Date.now }
 });
 
 
@@ -36,6 +29,7 @@ export const applyPostBehaviors = (schema: mongoose.Schema, options: Record<stri
     withTimestamps(schema);
     withSlugGeneration(schema, slugSource);
     withDrafts(schema);
+    withAutoCategories(schema);
     return schema;
 };
 
