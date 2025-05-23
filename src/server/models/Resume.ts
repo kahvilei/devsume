@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import {Link, LinkSchema} from '@/server/models/schemas/link';
 import {IUser} from "@/server/models/User";
-import {IImage} from "@/server/models/Media";
+import {IMedia} from "@/server/models/Media";
 import {IPost} from "@/server/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
 import {Section, SectionSchema} from "@/server/models/schemas/section";
@@ -15,7 +15,7 @@ export interface IResume extends BaseDataModel {
     title: string;
     subtitle?: string;
     links?: Link[];
-    image?: IImage;
+    image?: IMedia;
     about?: string;
     categories?: Section<ICategory>[];
     posts?: Section<IPost>[];

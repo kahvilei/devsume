@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { LinkSchema } from "@/server/models/schemas/link";
-import slugify from 'slugify';
 import {BaseDataModel} from "@/interfaces/data";
+import {withTimestamps} from "@/lib/models/withTimestamps";
+import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
 
 
 export interface IPost extends BaseDataModel {
@@ -51,59 +52,11 @@ const PostSchema = new mongoose.Schema(
     }
 );
 
-// Add timestamps to schema
-export const withTimestamps = (schema: mongoose.Schema) => {
-    schema.add({
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date, default: Date.now }
-    });
-
-    schema.pre('save', function(next) {
-        this.updatedAt = new Date();
-        next();
-    });
-
-    return schema;
-};
-
-// Add page-link validation
-export const withPageLinkValidation = (schema: mongoose.Schema) => {
-    schema.pre('validate', function(next) {
-        if (this.hasPage && this.link) {
-            this.invalidate('link', 'Link cannot be set if hasPage is true');
-        }
-        next();
-    });
-
-    return schema;
-};
-
-// Add auto-slug generation
-export const withSlugGeneration = (schema: mongoose.Schema, sourceField:string = 'title') => {
-    schema.pre('validate', function(next) {
-        // Only generate a slug if it doesn't exist or if the source field has changed
-        if (!this.slug || this.isModified(sourceField)) {
-            // Convert the title (or other source field) to a slug
-            const baseSlug = slugify(this[sourceField] as string, {
-                lower: true,          // Convert to lowercase
-                strict: false,         // Remove special chars
-                trim: true            // Trim leading/trailing spaces
-            });
-
-            this.slug = baseSlug;
-        }
-        next();
-    });
-
-    return schema;
-};
-
 // Apply all common schema behaviors in one function
 export const applyPostBehaviors = (schema: mongoose.Schema, options: Record<string, string> = { slugSource: 'title'}) => {
     const { slugSource = 'title' } = options;
 
     withTimestamps(schema);
-    withPageLinkValidation(schema);
     withSlugGeneration(schema, slugSource);
 
     return schema;

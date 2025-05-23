@@ -1,8 +1,8 @@
 import { Media } from "@/server/models";
 import { createMediaServiceFactory } from "@/lib/db/media-service-factory";
-import { Document } from "mongoose";
+import {IMedia} from "@/server/models/Media";
 
-const mediaService = createMediaServiceFactory<Document>(
+const mediaService = createMediaServiceFactory<IMedia>(
     Media,
     "media",
     "Media",

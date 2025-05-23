@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import {IResume} from "@/server/models/Resume";
 import {IPost} from "@/server/models/Post";
-import {IImage} from "@/server/models/Media";
 import {BaseDataModel} from "@/interfaces/data";
 import {ICategory} from "@/server/models/Category";
+import {IMedia} from "@/server/models/Media";
 
-export type DataType = ICategory | IResume | IPost | IImage;
+export type DataType = ICategory | IResume | IPost | IMedia;
 export type DataFilter = string | number | string[] | number[];
 
 export interface DataQuery<T> {

@@ -72,13 +72,13 @@ export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceF
 /**
  * Enhanced media service factory with file upload capabilities
  */
-export const createMediaServiceFactory = <T extends Document & IMedia>( // Fixed: proper type constraint
-    defaultModel: Model<T>,
+export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper type constraint
+    defaultModel: Model<Document<T>>,
     customPath: string,
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
 ): MediaServiceFactory<T> => {
-    const modelCache = new Map<string, Model<T>>();
+    const modelCache = new Map<string, Model<Document<T>>>();
     const MAX_CACHE_SIZE = 100; // Prevent memory leak
 
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
@@ -173,7 +173,7 @@ export const createMediaServiceFactory = <T extends Document & IMedia>( // Fixed
     };
 
     // Base CRUD operations
-    const baseMethods = createServiceFactory<T, T>(defaultModel, customPath, entityName);
+    const baseMethods = createServiceFactory<T>(defaultModel, customPath, entityName);
 
     const mediaMethods: Omit<MediaServiceFactory<T>, keyof ServiceFactory<T>> = {
         // Upload single file

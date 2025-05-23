@@ -1,7 +1,7 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
-import {withSlugGeneration} from "@/server/models/Post";
 import {BaseDataModel} from "@/interfaces/data";
+import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
 
 export interface ICategory extends BaseDataModel {
     _id?: string;

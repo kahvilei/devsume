@@ -5,9 +5,7 @@ import {
     ResponseObject,
     PagContent
 } from "@/lib/db/utils";
-import { Model, Document, UpdateQuery } from "mongoose";
-import { DataQuery } from "@/server/models/schemas/data";
-import { BaseDataModel } from "@/interfaces/data";
+import { Model, UpdateQuery, Document } from "mongoose";
 import { createModelResolver } from "@/lib/db/model-resolver";
 import { dbOperation } from "@/lib/db/db-operation";
 
@@ -26,12 +24,12 @@ export interface ServiceFactory<TInterface> {
     clearCache: () => void;
 }
 
-export const createServiceFactory = <T extends Document & BaseDataModel, TInterface extends BaseDataModel>(
-    defaultModel: Model<T>,
+export const createServiceFactory = <T>(
+    defaultModel: Model<Document<T>>,
     customPath: string,
     entityName: string
-): ServiceFactory<TInterface> => {
-    const modelCache = new Map<string, Model<T>>();
+): ServiceFactory<T> => {
+    const modelCache = new Map<string, Model<Document<T>>>();
     const MAX_CACHE_SIZE = 100; // Prevent memory leak
 
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
@@ -110,7 +108,7 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         // Get entity by slug (no pagination needed)
         getBySlug: (slug: string, type?: string) => {
             return dbOperation(false, async () => {
-                if (!slug || typeof slug !== 'string') {
+                if (!slug) {
                     return createFailResponse('Invalid slug provided', 400);
                 }
 
@@ -146,7 +144,7 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         },
 
         // Add new entity (return updated total count)
-        add: (values: TInterface, type?: string) => {
+        add: (values: T, type?: string) => {
             return dbOperation(true, async () => {
                 if (!values || typeof values !== 'object') {
                     return createFailResponse('Invalid data provided', 400);
@@ -183,7 +181,7 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         },
 
         // Update entity
-        update: (id: string, value: Partial<TInterface>, type?: string) => {
+        update: (id: string, value: Partial<T>, type?: string) => {
             return dbOperation(true, async () => {
                 if (!validateId(id)) {
                     return createFailResponse('Invalid ID format', 400);
@@ -198,11 +196,11 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
 
                 // Remove undefined values
                 const cleanedValue = Object.entries(value).reduce((acc, [key, val]) => {
-                    if (val !== undefined) {
+                    if (val !== undefined && val !== null) {
                         acc[key] = val;
                     }
                     return acc;
-                }, {} as Record<string, any>);
+                }, {} as Record<string, object>);
 
                 const entity = await Model.findByIdAndUpdate(
                     id,
@@ -250,7 +248,7 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
         },
 
         // Batch operations with count info
-        addMany: (values: TInterface[], type?: string) => {
+        addMany: (values: T[], type?: string) => {
             return dbOperation(true, async () => {
                 if (!Array.isArray(values) || values.length === 0) {
                     return createFailResponse('Invalid array of data provided', 400);
@@ -276,7 +274,7 @@ export const createServiceFactory = <T extends Document & BaseDataModel, TInterf
                     );
                 } catch (error) {
                     if (error instanceof Error && 'writeErrors' in error) {
-                        const bulkError = error as any;
+                        const bulkError = error as Record<string, []>;
                         const insertedCount = bulkError.insertedDocs?.length || 0;
 
                         // Get updated total count even if some failed
