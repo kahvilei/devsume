@@ -6,7 +6,7 @@ import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import {getConfig, ItemManifestList} from "@/config/items";
-import {BaseDataModel} from "@/interfaces/data";
+import {Item} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";

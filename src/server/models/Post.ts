@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
 import { LinkSchema } from "@/server/models/schemas/link";
-import {BaseDataModel} from "@/interfaces/data";
 import {withTimestamps} from "@/lib/models/withTimestamps";
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
+import {Item} from "@/server/models/schemas/item";
 
-
-export interface IPost extends BaseDataModel {
-    title: string;
+export interface IPost extends Item {
     dates: {
         start: Date;
         end: Date;
     };
-    slug: string;
     postType: string;
     description: string;
     content: string;
@@ -25,7 +22,7 @@ export interface IPost extends BaseDataModel {
 }
 
 // Base Post schema that captures common fields
-export const PostSchemaFields = {
+export const PostSchema = new mongoose.Schema({
     title: { type: String, required: true },
     dates: {
         start: { type: Date },
@@ -42,25 +39,18 @@ export const PostSchemaFields = {
     image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     published: { type: Boolean, default: true },
     publishedAt: { type: Date },
-};
+});
 
-const PostSchema = new mongoose.Schema(
-    PostSchemaFields,
-    {
-        discriminatorKey: 'postType', // Field that determines which model to use
-        timestamps: true // Automatically adds createdAt and updatedAt
-    }
-);
 
 // Apply all common schema behaviors in one function
 export const applyPostBehaviors = (schema: mongoose.Schema, options: Record<string, string> = { slugSource: 'title'}) => {
     const { slugSource = 'title' } = options;
-
     withTimestamps(schema);
     withSlugGeneration(schema, slugSource);
-
     return schema;
 };
+
+applyPostBehaviors(PostSchema);
 
 // Helper function to create new post models
 export function createPostModel(typeName: string, schema: object) {

@@ -3,13 +3,11 @@ import {Link, LinkSchema} from '@/server/models/schemas/link';
 import {IUser} from "@/server/models/User";
 import {IMedia} from "@/server/models/Media";
 import {IPost} from "@/server/models/Post";
-import {BaseDataModel} from "@/interfaces/data";
+import {Item} from "@/server/models/schemas/item";
 import {Section, SectionSchema} from "@/server/models/schemas/section";
 import {ICategory} from "@/server/models/Category";
 
-export interface IResume extends BaseDataModel {
-    _id?: string;
-    slug?: string;
+export interface IResume extends Item {
     user?: IUser;
     name: string;
     title: string;

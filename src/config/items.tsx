@@ -1,4 +1,5 @@
-import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {EditProps, PreviewProps} from "@/interfaces/data";
+import {Item} from "@/server/models/schemas/item";
 import React from "react";
 import {Tag, Image} from "lucide-react";
 import {ICategory} from "@/server/models/Category";
@@ -9,7 +10,7 @@ import {IPost} from "@/server/models/Post";
 import {IResume} from "@/server/models/Resume";
 import {IMedia} from "@/server/models/Media";
 
-export interface ItemConfig<T extends BaseDataModel> {
+export interface ItemConfig<T extends Item> {
   api: string;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
@@ -25,7 +26,7 @@ export interface ItemConfig<T extends BaseDataModel> {
   discriminators?: Partial<CustomConfig<T>>[];
 }
 
-interface CustomConfig<T extends BaseDataModel> extends ItemConfig<T> {
+interface CustomConfig<T extends Item> extends ItemConfig<T> {
   key: string;
 }
 

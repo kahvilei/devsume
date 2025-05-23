@@ -1,12 +1,9 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
-import {BaseDataModel} from "@/interfaces/data";
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
+import {Item} from "@/server/models/schemas/item";
 
-export interface ICategory extends BaseDataModel {
-    _id?: string;
-    title: string;
-    slug?: string;
+export interface ICategory extends Item {
     tags?: string[]
 }
 

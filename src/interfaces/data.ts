@@ -1,10 +1,6 @@
+import {Item} from "@/server/models/schemas/data";
 
-export interface BaseDataModel {
-    _id?: string;
-    title: string;
-}
-
-export interface PreviewProps<T extends BaseDataModel> {
+export interface PreviewProps<T extends Item> {
     item: T;
     onClick?: () => void;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -14,7 +10,7 @@ export interface PreviewProps<T extends BaseDataModel> {
     setIsEditing?: (bool: boolean) => void;
 }
 
-export interface EditProps<T extends BaseDataModel> {
+export interface EditProps<T extends Item> {
     item: T;
     onSaveItem: (item: T) => void;
     onCancel: () => void;

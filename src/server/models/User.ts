@@ -1,7 +1,6 @@
 import  mongoose, { Schema, model } from  "mongoose";
-import {BaseDataModel} from "@/interfaces/data";
 
-export interface IUser extends BaseDataModel {
+export interface IUser {
     _id: string;
     email: string;
     password: string;

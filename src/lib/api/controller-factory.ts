@@ -1,12 +1,12 @@
 import { ServiceFactory } from "@/lib/db/service-factory";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { PageProps } from "@/interfaces/api";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { BaseDataModel } from "@/interfaces/data";
+import {Item} from "@/server/models/schemas/item";
 import { createFailResponse } from "@/lib/db/utils";
 
-export const createController = <TInterface extends BaseDataModel>(
+export const createController = <TInterface extends Item>(
     service: ServiceFactory<TInterface>,
 ) => {
     return {

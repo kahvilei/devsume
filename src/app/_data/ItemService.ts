@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {makeAutoObservable} from "mobx";
-import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {Item, EditProps, PreviewProps} from "@/interfaces/data";
 import {ItemConfig} from "@/config/items";
 import {getAndReturn} from "@/lib/http/getAndDigest";
 import {postAndReturn} from "@/lib/http/postAndDigest";

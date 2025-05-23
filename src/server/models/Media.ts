@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
-import {BaseDataModel} from "@/interfaces/data";
+import {Item} from "@/server/models/schemas/item";
 
-export interface IMedia extends BaseDataModel{
-    _id?: string;
+export interface IMedia extends Item{
     filename: string;
     originalName: string;
     path: string;
@@ -36,5 +35,24 @@ export const MediaSchema = new mongoose.Schema({
         tags: [{ type: String }]
     }
 });
+
+// Helper function to create new post models
+export function createMediaModel(typeName: string, schema: object) {
+    // Return if model already exists
+    if (mongoose.models[typeName]) {
+        return mongoose.models[typeName];
+    }
+
+    // If Category model doesn't exist yet, create it first
+    if (!mongoose.models.Media) {
+        mongoose.model('Media', MediaSchema);
+    }
+
+    // Create a discriminator model for this post type
+    return mongoose.models.Media.discriminator(
+        typeName,
+        new mongoose.Schema(schema)
+    );
+}
 
 export default mongoose.models.Media || mongoose.model('Media', MediaSchema);

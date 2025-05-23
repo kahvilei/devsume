@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
-import {BaseDataModel, EditProps, PreviewProps} from "@/interfaces/data";
+import {Item, EditProps, PreviewProps} from "@/interfaces/data";
 
 interface ItemOptionProps<T extends BaseDataModel> {
     item: T;
