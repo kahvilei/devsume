@@ -8,12 +8,12 @@ export interface ICollaborator extends ICategory {
     links: Link[];
 }
 
-const CollaboratorSchema = {
+export const Schema = {
     description: { type: String },
     img: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     links: [LinkSchema]
 };
 
-const Collaborator = createCategoryModel('Collaborator', CollaboratorSchema);
+const Collaborator = createCategoryModel('Collaborator', Schema);
 
 export default Collaborator;

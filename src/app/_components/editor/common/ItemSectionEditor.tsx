@@ -5,19 +5,20 @@ import {Plus} from "lucide-react";
 import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {Section} from "@/server/models/schemas/section";
-import {DataQuery, DataType} from "@/server/models/schemas/data";
+import {DataQuery} from "@/server/models/schemas/data";
+import {Item} from "@/server/models/schemas/item";
 
-interface ItemSectionEditorProps {
+interface ItemSectionEditorProps<T extends Item> {
     max: number; // maximum number of sections allowed
     sectionTypes: string[], //allowed data types for each section, each section must be one of these types
-    sectionData: Section<DataType>[], // pre-existing data for each section
-    onSave: (data: Section<DataType>[]) => void;
+    sectionData: Section<T>[], // pre-existing data for each section
+    onSave: (data: Section<T>[]) => void;
 }
 
 
-export default function ItemSectionEditor({max, sectionTypes, sectionData, onSave}: ItemSectionEditorProps) {
+export default function ItemSectionEditor<T extends Item>({max, sectionTypes, sectionData, onSave}: ItemSectionEditorProps<T>) {
 
-    const [sections, setSections] = useState<Section<DataType>[]>(sectionData);
+    const [sections, setSections] = useState<Section<T>[]>(sectionData);
 
     const handleSave = () => {
         onSave(sections);
@@ -25,13 +26,13 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
 
     const allAllowedTypes = getAllPossibleKeys(sectionTypes);
 
-    const handleAddSection = (newSection: Section<DataType>) => {
+    const handleAddSection = (newSection: Section<T>) => {
         if (sections.length < max) {
             setSections([...sections, newSection]);
         }
     }
 
-    const handleRemoveSection = (sectionToRemove: Section<DataType>) => {
+    const handleRemoveSection = (sectionToRemove: Section<T>) => {
         setSections(sections.filter(section => section !== sectionToRemove));
         handleSave();
     }
@@ -41,7 +42,7 @@ export default function ItemSectionEditor({max, sectionTypes, sectionData, onSav
         setSections(newSections);
     }
 
-    const handleUpdateSectionContent = (index: number, newSection: DataType[] | DataQuery<DataType>) => {
+    const handleUpdateSectionContent = (index: number, newSection: T[] | DataQuery<T>) => {
         const newSections = sections.map((section, i) => i === index ? {...section, data: newSection} : section);
         setSections(newSections);
     }

@@ -5,10 +5,10 @@ export interface ISkill extends ICategory {
     description?: string; // appears on a skill's page under the title before listing relevant projects/job experience
 }
 
-const SkillSchema ={
+export const Schema ={
     description: { type: String }
 };
 
-const Skill = createCategoryModel('Skill', SkillSchema);
+const Skill = createCategoryModel('Skill', Schema);
 
 export default Skill;

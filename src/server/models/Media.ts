@@ -38,6 +38,6 @@ export const MediaSchema = new mongoose.Schema({
     }
 });
 
-export const creatMediaModel = createModelFactory('Media', MediaSchema);
+export const createMediaModel = createModelFactory('Media', MediaSchema);
 
 export default mongoose.models.Media || mongoose.model('Media', MediaSchema);

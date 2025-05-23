@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import {DataEnum, DataQuery} from "@/server/models/schemas/data";
+import {Item} from "@/server/models/schemas/item";
 
 
 // Creating a schema definition that can be reused
@@ -13,8 +14,8 @@ export const SectionSchemaDefinition = {
 export const SectionSchema = new mongoose.Schema(SectionSchemaDefinition);
 
 // Export a type interface for TypeScript
-export interface Section<DataType>{
+export interface Section<T extends Item>{
     type: string,
-    data: DataType[] | DataQuery<DataType>
+    data: T[] | DataQuery<T>
     title: string;
 }
