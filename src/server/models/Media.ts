@@ -19,7 +19,7 @@ export interface IMedia extends Item{
     };
     formData?: FormData; //only exists front-side for upload
 }
-export const MediaSchema = new mongoose.Schema({
+export const MediaSchemaDefinition = {
     ...ItemBaseSchema,
     filename: { type: String, required: true },
     title: { type: String },
@@ -36,7 +36,9 @@ export const MediaSchema = new mongoose.Schema({
         description: { type: String },
         tags: [{ type: String }]
     }
-});
+};
+
+const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);
 
 export const createMediaModel = createModelFactory('Media', MediaSchema);
 

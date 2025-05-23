@@ -10,13 +10,15 @@ export interface IResume extends Content {
     about?: string;
 }
 
-const ResumeSchema = new mongoose.Schema({
+export const ResumeSchemaDefinition = {
     ...ContentBaseSchema,
     name: { type: String, required: true },
     subtitle: { type: String },
     links: [LinkSchema],
     about: { type: String },
-});
+};
+
+const ResumeSchema = new mongoose.Schema(ResumeSchemaDefinition);
 
 applyContentBehaviors(ResumeSchema);
 

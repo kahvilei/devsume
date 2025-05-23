@@ -2,16 +2,17 @@ import {EditProps, PreviewProps} from "@/interfaces/data";
 import {Item} from "@/server/models/schemas/item";
 import React from "react";
 import {Tag, Image} from "lucide-react";
-import {ICategory} from "@/server/models/Category";
+import {CategorySchemaDefinition, ICategory} from "@/server/models/Category";
 import PreviewCategory from "@/app/(posts)/categories/preview";
 import EditCategory from "@/app/(posts)/categories/edit";
 import custom from "@/custom";
-import {IPost} from "@/server/models/Post";
-import {IResume} from "@/server/models/Resume";
-import {IMedia} from "@/server/models/Media";
+import {IPost, PostSchemaDefinition} from "@/server/models/Post";
+import {IResume, ResumeSchemaDefinition} from "@/server/models/Resume";
+import {IMedia, MediaSchemaDefinition} from "@/server/models/Media";
 
 export interface ItemConfig<T extends Item> {
   api: string;
+  schema: object;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
   openEditInModal?: boolean;
@@ -47,6 +48,7 @@ export interface ItemManifestList {
 const ITEMS: ItemManifestList = {
   categories: {
     api: "/api/categories/category/",
+    schema: CategorySchemaDefinition,
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
     openEditInModal: false,
@@ -62,7 +64,8 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).categories??[]
   },
   media :{
-    api: "/api/media/media",
+    api: "/api/media/media/",
+    schema: MediaSchemaDefinition,
     openEditInModal: true,
     queryFields: {
        title: "string",
@@ -75,18 +78,20 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).media??[]
   },
   posts: {
-    api: "/api/posts/",
+    api: "/api/posts/post/",
+    schema: PostSchemaDefinition,
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).posts??[]
   },
   resumes: {
     api: "/api/resumes/",
+    schema: ResumeSchemaDefinition,
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).resumes??[]
   },
 }
 
-export const getConfig = (key: string) : ItemConfig<any>=> {
+export const getConfig = (key: string) : ItemConfig<Item>=> {
     for (const [ikey, item] of Object.entries(ITEMS)) {
         if (ikey === key) {
             return item;
@@ -129,8 +134,8 @@ export const getAllPossibleKeys = (keys: string[]) => {
   return newKeys;
 }
 
-export const getAllConfigsOfType = (key: string) : ItemConfig<any>[] => {
-  const configs: ItemConfig<any>[] = [];
+export const getAllConfigsOfType = (key: string) : ItemConfig<Item>[] => {
+  const configs: ItemConfig<Item>[] = [];
     for (const [ikey, item] of Object.entries(ITEMS)) {
         if (item.discriminators) {
           for (const discriminator of item.discriminators) {

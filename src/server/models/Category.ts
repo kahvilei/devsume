@@ -6,9 +6,11 @@ import {createModelFactory} from "@/lib/models/createModelFactory";
 
 export type ICategory = Item
 
-const CategorySchema = new mongoose.Schema({
+
+export const CategorySchemaDefinition = {
     ...ItemBaseSchema
-});
+};
+const CategorySchema = new mongoose.Schema(CategorySchemaDefinition);
 
 // Apply timestamps and auto-slug generation
 withSlugGeneration(CategorySchema);

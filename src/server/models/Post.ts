@@ -11,13 +11,15 @@ export interface IPost extends Content {
 }
 
 // Base Post schema that captures common fields
-export const PostSchema = new mongoose.Schema({
+export const PostSchemaDefinition = {
     ...ContentBaseSchema,
     content: { type: String, required: true },
     link: { type: String, required: false },
     useExternal: { type: Boolean, default: false },
     links: [LinkSchema],
-});
+};
+
+const PostSchema = new mongoose.Schema(PostSchemaDefinition);
 
 applyContentBehaviors(PostSchema);
 
