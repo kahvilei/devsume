@@ -1,6 +1,11 @@
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 import {IMedia} from "@/server/models/Media";
 import {ICategory} from "@/server/models/Category";
+import mongoose from "mongoose";
+import {withTimestamps} from "@/lib/models/withTimestamps";
+import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
+import {withDrafts} from "@/lib/models/withDrafts";
+import {withAutoCategories} from "@/lib/models/withAutoCategories";
 
 export interface Content extends Item {
     hero?: IMedia
@@ -22,3 +27,11 @@ export const ContentBaseSchema = {
     owner: { type: String },
     categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }]
 }
+
+export const applyContentBehaviors = (schema: mongoose.Schema) => {
+    withTimestamps(schema);
+    withSlugGeneration(schema);
+    withDrafts(schema);
+    withAutoCategories(schema);
+    return schema;
+};

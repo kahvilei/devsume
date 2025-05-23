@@ -3,11 +3,8 @@ import {Link, LinkSchema} from '@/server/models/schemas/link';
 import {IPost} from "@/server/models/Post";
 import {Section, SectionSchema} from "@/server/models/schemas/section";
 import {ICategory} from "@/server/models/Category";
-import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
-import {withDrafts} from "@/lib/models/withDrafts";
-import {withTimestamps} from "@/lib/models/withTimestamps";
-import {Content, ContentBaseSchema} from "@/server/models/schemas/content";
-import {withAutoCategories} from "@/lib/models/withAutoCategories";
+import {applyContentBehaviors, Content, ContentBaseSchema} from "@/server/models/schemas/content";
+import {createModelFactory} from "@/lib/models/createModelFactory";
 
 export interface IResume extends Content {
     name: string;
@@ -28,9 +25,8 @@ const ResumeSchema = new mongoose.Schema({
     posts: [SectionSchema]
 });
 
-withTimestamps(ResumeSchema);
-withSlugGeneration(ResumeSchema);
-withDrafts(ResumeSchema);
-withAutoCategories(ResumeSchema);
+applyContentBehaviors(ResumeSchema);
+
+export const createResumeModel = createModelFactory('Resume', ResumeSchema, applyContentBehaviors);
 
 export default mongoose.models.Resume || mongoose.model('Resume', ResumeSchema);

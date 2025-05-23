@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {createModelFactory} from "@/lib/models/createModelFactory";
 
 export interface IMedia extends Item{
     filename: string;
@@ -37,23 +38,6 @@ export const MediaSchema = new mongoose.Schema({
     }
 });
 
-// Helper function to create new post models
-export function createMediaModel(typeName: string, schema: object) {
-    // Return if model already exists
-    if (mongoose.models[typeName]) {
-        return mongoose.models[typeName];
-    }
-
-    // If Category model doesn't exist yet, create it first
-    if (!mongoose.models.Media) {
-        mongoose.model('Media', MediaSchema);
-    }
-
-    // Create a discriminator model for this post type
-    return mongoose.models.Media.discriminator(
-        typeName,
-        new mongoose.Schema(schema)
-    );
-}
+export const creatMediaModel = createModelFactory('Media', MediaSchema);
 
 export default mongoose.models.Media || mongoose.model('Media', MediaSchema);
