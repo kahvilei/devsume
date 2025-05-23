@@ -1,14 +1,13 @@
 // src/models/tag.ts
-import mongoose from 'mongoose';
 import {createCategoryModel, ICategory} from "@/server/models/Category";
 
 export interface ISkill extends ICategory {
-    description?: string;
+    description?: string; // appears on a skill's page under the title before listing relevant projects/job experience
 }
 
-const SkillSchema = new mongoose.Schema({
+const SkillSchema ={
     description: { type: String }
-});
+};
 
 const Skill = createCategoryModel('Skill', SkillSchema);
 

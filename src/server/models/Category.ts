@@ -13,6 +13,9 @@ const CategorySchema = new mongoose.Schema({
 // Apply timestamps and auto-slug generation
 withSlugGeneration(CategorySchema);
 
+//Creates a "discriminator" on the Category model allowing for custom Category types that inherit from the base Category model
+//This should be the default export of a model.ts file under custom/categories/[YOUR_RESUME_TYPE].
+//customBehaviours callback can be applied to add custom schema functions for validation, on delete, etc.
 export const createCategoryModel = createModelFactory('Category', CategorySchema, withSlugGeneration);
 
 export default mongoose.models.Category || mongoose.model('Category', CategorySchema);
