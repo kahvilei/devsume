@@ -3,3 +3,8 @@ export interface Item {
     slug?: string;
     title: string;
 }
+
+export const ItemBaseSchema = {
+    slug: { type: String, unique:true, required: true },
+    title: { type: String, required: true }
+}

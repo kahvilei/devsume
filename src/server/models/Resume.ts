@@ -3,14 +3,13 @@ import {Link, LinkSchema} from '@/server/models/schemas/link';
 import {IUser} from "@/server/models/User";
 import {IMedia} from "@/server/models/Media";
 import {IPost} from "@/server/models/Post";
-import {Item} from "@/server/models/schemas/item";
+import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 import {Section, SectionSchema} from "@/server/models/schemas/section";
 import {ICategory} from "@/server/models/Category";
 
 export interface IResume extends Item {
     user?: IUser;
     name: string;
-    title: string;
     subtitle?: string;
     links?: Link[];
     image?: IMedia;
@@ -20,10 +19,9 @@ export interface IResume extends Item {
 }
 
 const ResumeSchema = new mongoose.Schema({
+    ...ItemBaseSchema,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    slug: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    title: { type: String, required: true },
     subtitle: { type: String },
     links: [LinkSchema],
     image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }, // Reference to the Image model

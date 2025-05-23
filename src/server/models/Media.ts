@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Item} from "@/server/models/schemas/item";
+import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 
 export interface IMedia extends Item{
     filename: string;
@@ -19,6 +19,7 @@ export interface IMedia extends Item{
     formData?: FormData; //only exists front-side for upload
 }
 export const MediaSchema = new mongoose.Schema({
+    ...ItemBaseSchema,
     filename: { type: String, required: true },
     title: { type: String },
     originalName: { type: String, required: true },

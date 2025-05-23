@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { LinkSchema } from "@/server/models/schemas/link";
 import {withTimestamps} from "@/lib/models/withTimestamps";
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
-import {Item} from "@/server/models/schemas/item";
+import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 
 export interface IPost extends Item {
     dates: {
@@ -23,12 +23,11 @@ export interface IPost extends Item {
 
 // Base Post schema that captures common fields
 export const PostSchema = new mongoose.Schema({
-    title: { type: String, required: true },
+    ...ItemBaseSchema,
     dates: {
         start: { type: Date },
         end: { type: Date }
     },
-    slug: { type: String, unique: true },
     postType: { type: String, required: true },
     description: { type: String, required: true },
     content: { type: String },

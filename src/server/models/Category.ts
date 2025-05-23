@@ -1,15 +1,14 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
-import {Item} from "@/server/models/schemas/item";
+import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 
 export interface ICategory extends Item {
     tags?: string[]
 }
 
 const CategorySchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    slug: { type: String, unique: true },
+    ...ItemBaseSchema,
     tags: [{ type: String }]
 });
 
