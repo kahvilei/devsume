@@ -3,20 +3,15 @@ import { LinkSchema } from "@/server/models/schemas/link";
 import {withTimestamps} from "@/lib/models/withTimestamps";
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {withDrafts} from "@/lib/models/withDrafts";
 
 export interface IPost extends Item {
-    dates: {
-        start: Date;
-        end: Date;
-    };
-    postType: string;
     description: string;
     content: string;
-    hasPage: boolean;
     link: string,
-    tags?: [],
+    useExternal: boolean, //if true, page is external, and we will not use content
     links?: [],
-    image: string,
+    hero: string,
     published: boolean;
     publishedAt: Date;
 }
@@ -24,20 +19,14 @@ export interface IPost extends Item {
 // Base Post schema that captures common fields
 export const PostSchema = new mongoose.Schema({
     ...ItemBaseSchema,
-    dates: {
-        start: { type: Date },
-        end: { type: Date }
-    },
-    postType: { type: String, required: true },
     description: { type: String, required: true },
-    content: { type: String },
-    hasPage: { type: Boolean, default: false },
-    link: { type: String },
-    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+    content: { type: String, required: true },
+    link: { type: String, required: false },
+    useExternal: { type: Boolean, default: false },
     links: [LinkSchema],
-    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
-    published: { type: Boolean, default: true },
-    publishedAt: { type: Date },
+    hero: { type: String, required: true },
+    published: { type: Boolean, default: false },
+    publishedAt: { type: Date, default: Date.now }
 });
 
 
@@ -46,6 +35,7 @@ export const applyPostBehaviors = (schema: mongoose.Schema, options: Record<stri
     const { slugSource = 'title' } = options;
     withTimestamps(schema);
     withSlugGeneration(schema, slugSource);
+    withDrafts(schema);
     return schema;
 };
 

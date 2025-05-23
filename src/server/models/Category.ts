@@ -3,13 +3,10 @@ import mongoose from 'mongoose';
 import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 
-export interface ICategory extends Item {
-    tags?: string[]
-}
+export type ICategory = Item
 
 const CategorySchema = new mongoose.Schema({
-    ...ItemBaseSchema,
-    tags: [{ type: String }]
+    ...ItemBaseSchema
 });
 
 // Apply timestamps and auto-slug generation
