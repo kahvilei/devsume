@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
-import {createModelFactory} from "@/lib/models/createModelFactory";
+import {createModelFactoryWithAutoRef} from "@/lib/models/utils/createModelFactoryWithAutoRef";
 
 export interface IMedia extends Item{
     filename: string;
@@ -40,6 +40,10 @@ export const MediaSchemaDefinition = {
 
 const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);
 
-export const createMediaModel = createModelFactory('Media', MediaSchema);
+export const createMediaModel = createModelFactoryWithAutoRef(
+    'Media',
+    MediaSchema,
+    {},
+   );
 
 export default mongoose.models.Media || mongoose.model('Media', MediaSchema);

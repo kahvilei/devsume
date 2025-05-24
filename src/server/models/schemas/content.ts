@@ -1,10 +1,10 @@
 import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
 import {IMedia} from "@/server/models/Media";
 import mongoose from "mongoose";
-import {withTimestamps} from "@/lib/models/withTimestamps";
-import {withSlugGeneration} from "@/lib/models/withSlugGeneration";
-import {withDrafts} from "@/lib/models/withDrafts";
-import {withAutoCategories} from "@/lib/models/withAutoCategories";
+import {withTimestamps} from "@/lib/models/plugins/withTimestamps";
+import {withSlugGeneration} from "@/lib/models/plugins/withSlugGeneration";
+import {withDrafts} from "@/lib/models/plugins/withDrafts";
+import {withAutoCategories} from "@/lib/models/plugins/withAutoCategories";
 
 
 // Base type for Posts and Resumes
