@@ -1,5 +1,5 @@
 import axios, {AxiosError} from "axios";
-import {ResponseObject} from "@/lib/db/utils";
+import {createFailResponse, ResponseObject} from "@/lib/db/utils";
 
 export const deleteAndDigest = async <T>(
     url: string,
@@ -30,9 +30,6 @@ export const deleteAndReturn = async (url: string): Promise<ResponseObject> => {
         return response.data;
     } catch (e) {
         const error = e as AxiosError;
-        return {
-            success: false,
-            error: error.toString()
-        }
+        return createFailResponse(error.message);
     }
 }

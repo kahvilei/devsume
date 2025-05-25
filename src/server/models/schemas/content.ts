@@ -1,4 +1,4 @@
-import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {IBaseItem, ItemBaseSchema} from "@/server/models/schemas/IBaseItem";
 import {IMedia} from "@/server/models/Media";
 import mongoose from "mongoose";
 import {withTimestamps} from "@/lib/models/plugins/withTimestamps";
@@ -8,7 +8,7 @@ import {withAutoCategories} from "@/lib/models/plugins/withAutoCategories";
 
 
 // Base type for Posts and Resumes
-export interface Content extends Item {
+export interface Content extends IBaseItem {
     //the "key" image of content. served by default as the preview image and at the top of a content page
     hero?: IMedia
     //served by default as the meta-description and preview description

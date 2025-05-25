@@ -1,6 +1,6 @@
 // @/app/_components/editor/DataQueryEditor.tsx
 import React, {useEffect, useState} from "react";
-import {Item} from "@/interfaces/data";
+import {IBaseItem} from "@/interfaces/data";
 import {Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/common/ActionIcon";
 import Select, {DropdownOption} from "@/app/_components/common/Select";

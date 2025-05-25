@@ -3,7 +3,7 @@ import {IResume} from "@/server/models/Resume";
 import {IPost} from "@/server/models/Post";
 import {ICategory} from "@/server/models/Category";
 import {IMedia} from "@/server/models/Media";
-import {Item} from "@/server/models/schemas/item";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
 export type DataType = ICategory | IResume | IPost | IMedia;
 export type DataFilter = string | number | string[] | number[];
@@ -27,7 +27,7 @@ export const DataQuerySchemaDefinition = {
 
 export const DataQuerySchema = new mongoose.Schema(DataQuerySchemaDefinition);
 
-export type Data<T extends Item> = T[] | DataQuery<T>;
+export type Data<T extends IBaseItem> = T[] | DataQuery<T>;
 
 export const DataEnum = {
     type: DataQuerySchema || [mongoose.Schema.Types.ObjectId]

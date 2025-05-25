@@ -1,6 +1,6 @@
-import {Item} from "@/server/models/schemas/data";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-export interface PreviewProps<T extends Item> {
+export interface PreviewProps<T extends IBaseItem> {
     item: T;
     onClick?: () => void;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -10,9 +10,10 @@ export interface PreviewProps<T extends Item> {
     setIsEditing?: (bool: boolean) => void;
 }
 
-export interface EditProps<T extends Item> {
+export interface EditProps<T extends IBaseItem> {
     item: T;
     onSaveItem: (item: T) => void;
     onCancel: () => void;
     label: string;
 }
+

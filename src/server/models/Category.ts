@@ -1,10 +1,10 @@
 // src/models/tag.ts
 import mongoose from 'mongoose';
 import {withSlugGeneration} from "@/lib/models/plugins/withSlugGeneration";
-import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {IBaseItem, ItemBaseSchema} from "@/server/models/schemas/IBaseItem";
 import {createModelFactoryWithAutoRef} from "@/lib/models/utils/createModelFactoryWithAutoRef";
 
-export type ICategory = Item
+export type ICategory = IBaseItem
 
 
 export const CategorySchemaDefinition = {

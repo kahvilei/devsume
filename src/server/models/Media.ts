@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import {Item, ItemBaseSchema} from "@/server/models/schemas/item";
+import {IBaseItem, ItemBaseSchema} from "@/server/models/schemas/IBaseItem";
 import {createModelFactoryWithAutoRef} from "@/lib/models/utils/createModelFactoryWithAutoRef";
 
-export interface IMedia extends Item{
+export interface IMedia extends IBaseItem{
     filename: string;
     originalName: string;
     path: string;

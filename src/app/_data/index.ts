@@ -1,39 +1,52 @@
-import {ItemService} from "@/app/_data/ItemService";
-import ITEMS from "@/config/items";
-import {DataType} from "@/server/models/schemas/data";
+import { DataService } from "./ServiceStore";
 
-const CategoryService = new ItemService(ITEMS.categories)
-const PostService = new ItemService(ITEMS.posts)
-const ResumeService = new ItemService(ITEMS.resumes)
+// Export the unified DataService that handles all models and their discriminators
+export { DataService };
 
-const getCustomServices = () => {
-    const customServices: { [key: string]: ItemService<DataType> } = {};
+// Example usage:
 
-    // Iterate through all items
-    Object.values(ITEMS).forEach((itemConfig) => {
-        // Check if item has discriminators
-        if (itemConfig.discriminators && itemConfig.discriminators.length > 0) {
-            // Create services for each discriminator
-            itemConfig.discriminators.forEach((discriminator: { key: string | number; }) => {
-                if (discriminator.key) {
-                    // Create a new ItemService with merged config
-                    const mergedConfig = {
-                        ...itemConfig,
-                        ...discriminator
-                    };
-                    customServices[discriminator.key] = new ItemService(mergedConfig);
-                }
-            });
-        }
-    });
+// Fetch all categories (includes skills, collaborators, etc.)
+// const allCategories = await DataService.categories.getQueryResult('/api/categories/category/');
 
-    return customServices;
-};
+// Fetch only skills using the discriminator key
+// const skills = await DataService.fetchByType('skill', { title: 'JavaScript' });
 
+// Create a new skill
+// const newSkill = await DataService.createByType('skill', {
+//     title: 'React',
+//     description: 'Frontend framework',
+//     tags: ['frontend', 'javascript']
+// });
 
-export const DataService = {
-    categories: CategoryService,
-    posts: PostService,
-    resumes: ResumeService,
-    ...getCustomServices()
-}
+// Update an existing skill
+// const updatedSkill = await DataService.updateByType('skill', {
+//     _id: '123',
+//     title: 'React.js',
+//     description: 'Updated description'
+// });
+
+// Delete a skill
+// const deleted = await DataService.deleteByType('skill', { _id: '123' });
+
+// Get an item instance to access its methods
+// const itemInstance = DataService.getItemInstanceById('123');
+// if (itemInstance) {
+//     const PreviewComponent = itemInstance.getPreviewComponent();
+//     const EditComponent = itemInstance.getEditComponent();
+//     const displayName = itemInstance.getDisplayName();
+// }
+
+// Direct service access for parent-level operations
+// const categoryService = DataService.categories;
+// const allCategoriesResult = await categoryService.getQueryResult('/api/categories/category/', '?sort=title');
+
+// Check loading state
+// if (DataService.isLoading) {
+//     // Show loading indicator
+// }
+
+// Check for errors
+// const errors = DataService.errors;
+// if (errors.categories) {
+//     console.error('Category service error:', errors.categories);
+// }

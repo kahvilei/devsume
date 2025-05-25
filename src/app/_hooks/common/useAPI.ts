@@ -4,7 +4,7 @@ import {patchAndDigest} from "@/lib/http/patchAndDigest";
 import {deleteAndDigest} from "@/lib/http/deleteAndDigest";
 import {postAndDigest} from "@/lib/http/postAndDigest";
 import {DataQuery} from "@/interfaces/api";
-import {Item} from "@/interfaces/data";
+import {IBaseItem} from "@/interfaces/data";
 
 export function useAPI<T extends BaseDataModel>(url: string, query?: DataQuery<T>) {
     const [list, setList] = useState<T[]>([]);

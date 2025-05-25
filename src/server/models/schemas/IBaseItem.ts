@@ -1,8 +1,9 @@
-export interface Item {
+export interface IBaseItem {
     _id?: string;
     slug?: string;
     title: string;
     tags?: string[];
+    _t?: string;
 }
 
 export const ItemBaseSchema = {

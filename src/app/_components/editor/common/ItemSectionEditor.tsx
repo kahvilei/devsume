@@ -6,9 +6,9 @@ import MultiSelectFromDB from "@/app/_components/editor/common/MultiSelectFromDB
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {Section} from "@/server/models/schemas/section";
 import {DataQuery} from "@/server/models/schemas/data";
-import {Item} from "@/server/models/schemas/item";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-interface ItemSectionEditorProps<T extends Item> {
+interface ItemSectionEditorProps<T extends IBaseItem> {
     max: number; // maximum number of sections allowed
     sectionTypes: string[], //allowed data types for each section, each section must be one of these types
     sectionData: Section<T>[], // pre-existing data for each section
@@ -16,7 +16,7 @@ interface ItemSectionEditorProps<T extends Item> {
 }
 
 
-export default function ItemSectionEditor<T extends Item>({max, sectionTypes, sectionData, onSave}: ItemSectionEditorProps<T>) {
+export default function ItemSectionEditor<T extends IBaseItem>({max, sectionTypes, sectionData, onSave}: ItemSectionEditorProps<T>) {
 
     const [sections, setSections] = useState<Section<T>[]>(sectionData);
 

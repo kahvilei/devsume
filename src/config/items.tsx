@@ -1,5 +1,5 @@
 import {EditProps, PreviewProps} from "@/interfaces/data";
-import {Item} from "@/server/models/schemas/item";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import React from "react";
 import {Tag, Image} from "lucide-react";
 import {CategorySchemaDefinition, ICategory} from "@/server/models/Category";
@@ -10,7 +10,7 @@ import {IPost, PostSchemaDefinition} from "@/server/models/Post";
 import {IResume, ResumeSchemaDefinition} from "@/server/models/Resume";
 import {IMedia, MediaSchemaDefinition} from "@/server/models/Media";
 
-export interface ItemConfig<T extends Item> {
+export interface ItemConfig<T extends IBaseItem> {
   api: string;
   schema: object;
   preview?: React.FC<PreviewProps<T>>;
@@ -27,7 +27,7 @@ export interface ItemConfig<T extends Item> {
   discriminators?: Partial<CustomConfig<T>>[];
 }
 
-interface CustomConfig<T extends Item> extends ItemConfig<T> {
+interface CustomConfig<T extends IBaseItem> extends ItemConfig<T> {
   key: string;
 }
 
@@ -91,7 +91,7 @@ const ITEMS: ItemManifestList = {
   },
 }
 
-export const getConfig = (key: string) : ItemConfig<Item>=> {
+export const getConfig = (key: string) : ItemConfig<IBaseItem>=> {
     for (const [ikey, item] of Object.entries(ITEMS)) {
         if (ikey === key) {
             return item;
@@ -134,8 +134,8 @@ export const getAllPossibleKeys = (keys: string[]) => {
   return newKeys;
 }
 
-export const getAllConfigsOfType = (key: string) : ItemConfig<Item>[] => {
-  const configs: ItemConfig<Item>[] = [];
+export const getAllConfigsOfType = (key: string) : ItemConfig<IBaseItem>[] => {
+  const configs: ItemConfig<IBaseItem>[] = [];
     for (const [ikey, item] of Object.entries(ITEMS)) {
         if (item.discriminators) {
           for (const discriminator of item.discriminators) {

@@ -6,7 +6,6 @@ import ItemOption from "@/app/_components/editor/items/ItemOption";
 import ItemEdit from "@/app/_components/editor/items/ItemEdit";
 import Modal from "@/app/_components/common/Modal";
 import {getConfig, ItemManifestList} from "@/config/items";
-import {Item} from "@/interfaces/data";
 import EditableText from "@/app/_components/editor/text/EditableText";
 import BinaryToggle from "@/app/_components/common/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
@@ -18,8 +17,10 @@ import Drawer from "../../animations/Drawer";
 import {DataService} from "@/app/_data";
 import {observer} from "mobx-react-lite"
 import {Data, DataFilter, DataQuery} from "@/server/models/schemas/data";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
+import {Item} from "@/app/_data/Item";
 
-interface MultiSelectProps<T extends BaseDataModel> {
+interface MultiSelectProps<T extends IBaseItem> {
     values?: Data<T>;
     title: string;
     dataKey: string;
@@ -28,7 +29,7 @@ interface MultiSelectProps<T extends BaseDataModel> {
     onRemove?: () => void;
 }
 
-export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
+export const MultiSelectFromDB = observer(<T extends IBaseItem>({
     values = [],
     title,
     dataKey,
@@ -61,15 +62,16 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
 
     const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
 
-    const service = DataService[dataKey as keyof typeof DataService];
-    const [list, setList] = useState<T[]>([]);
+    const service = DataService.getService(dataKey as keyof ItemManifestList);
+    const api = manifest.api;
+    const [list, setList] = useState<Item<T>[]>([]);
     useEffect(() => {
-        service.getQueryResult(query).then(
+        service.getQueryResult(manifest.api, query).then(
             (results) => {
-                setList((results?.content)as T[]??[]);
+                setList((results?.content) as unknown as Item<T>[]);
             }
         );
-    }, [query, service, service.lastItemChange]);
+    }, [manifest.api, query, service]);
 
     // Use the selection hook to manage selected items
     const {
@@ -77,11 +79,11 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
         toggleItem,
         isSelected,
         setSelectedItems
-    } = useSelection<T>(isDynamic ? list : (Array.isArray(values) ? values : []), list);
+    } = useSelection<Item<T>>(isDynamic ? list : (Array.isArray(values) ? values : []), list);
 
 
     const handleAddItemSave = async (item: T) => {
-        await service.createItem(item);
+        await service.createItem(api, item);
         setIsAdding(false);
     };
 
@@ -157,17 +159,6 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                                     ]}
                                 />
                             </div>
-                            {isAdding && !openEditInModal && (
-                                <div className="buttons">
-                                    <h4>Add new {manifest.names?.singular??"item"}</h4>
-                                    <ItemEdit
-                                        label="Add a new item"
-                                        Form={EditComponent}
-                                        onSave={handleAddItemSave}
-                                        onCancel={() => setIsAdding(false)}
-                                    />
-                                </div>
-                            )}
                             {isDynamic && (
                                 <DataQueryEditor
                                     query={query}
@@ -182,16 +173,16 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                             {!isDynamic ? (
                                 <ul role="listbox" className="divider">
                                     <AnimatePresence>
-                                        {list.map((option: T) => (
-                                            <PopInOut key={option._id} layout={false}>
+                                        {list.map((option: Item<T>) => (
+                                            <PopInOut key={option.getData()._id} layout={false}>
                                                 <ItemOption
-                                                    item={option}
+                                                    item={option.getData()}
                                                     onSelect={() => toggleItem(option)}
-                                                    onEdit={(item) => service.updateItem(item)}
+                                                    onEdit={(item) => service.updateItem(api, item)}
                                                     isSelected={isSelected(option)}
-                                                    onDelete={(item) => service.deleteItem(item)}
-                                                    Renderer={PreviewComponent}
-                                                    Form={EditComponent}
+                                                    onDelete={(item) => service.deleteItem(api, item)}
+                                                    Renderer={option.getPreviewComponent()}
+                                                    Form={option.getEditComponent()}
                                                     openEditInModal={openEditInModal}
                                                 />
                                             </PopInOut>
@@ -236,14 +227,14 @@ export const MultiSelectFromDB = observer(<T extends BaseDataModel>({
                 >
                     <AnimatePresence>
                         {(isDynamic ? list : selectedItems).map((option) => (
-                            <PopInOut key={option._id}>
+                            <PopInOut key={option.getData()._id}>
                                 <ItemOption
-                                    item={option}
+                                    item={option.getData()}
                                     onSelect={!isDynamic ? () => toggleItem(option) : undefined}
-                                    onEdit={(item) => service.updateItem(item)}
-                                    onDelete={(item) => service.deleteItem(item)}
-                                    Renderer={PreviewComponent}
-                                    Form={EditComponent}
+                                    onEdit={(item) => service.updateItem(api,item)}
+                                    onDelete={(item) => service.deleteItem(api,item)}
+                                    Renderer={option.getPreviewComponent()}
+                                    Form={option.getEditComponent()}
                                     openEditInModal={openEditInModal}
                                 />
                             </PopInOut>

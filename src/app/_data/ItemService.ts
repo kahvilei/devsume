@@ -1,142 +1,343 @@
-import mongoose from "mongoose";
-import {makeAutoObservable} from "mobx";
-import {Item, EditProps, PreviewProps} from "@/interfaces/data";
-import {ItemConfig} from "@/config/items";
-import {getAndReturn} from "@/lib/http/getAndDigest";
-import {postAndReturn} from "@/lib/http/postAndDigest";
-import {patchAndReturn} from "@/lib/http/patchAndDigest";
-import {deleteAndReturn} from "@/lib/http/deleteAndDigest";
-import React from "react";
-import {convertQueryToString} from "@/lib/misc/convertQuery";
-import {DataQuery} from "@/server/models/schemas/data";
-import {ResponseObject} from "@/lib/db/utils";
+import { makeAutoObservable } from "mobx";
+import { Item } from "./Item";
+import { ItemConfig } from "@/config/items";
+import { getAndReturn } from "@/lib/http/getAndDigest";
+import { postAndReturn } from "@/lib/http/postAndDigest";
+import { patchAndReturn } from "@/lib/http/patchAndDigest";
+import { deleteAndReturn } from "@/lib/http/deleteAndDigest";
+import { convertQueryToString } from "@/lib/misc/convertQuery";
+import { DataQuery } from "@/server/models/schemas/data";
+import {createFailResponse, PagContent, ResponseObject} from "@/lib/db/utils";
+import {IBaseItem, IBaseItem as ItemInterface} from "@/server/models/schemas/IBaseItem";
 
-interface QueryResult {
-    data: ResponseObject;
+interface QueryCacheEntry {
+    ids: string[];
     timestamp: number;
-}
-
-interface FailureObject {
-    error: string;
+    pagination?: PagContent;
+    error?: string;
     warning?: string;
 }
 
-export class ItemService<T extends BaseDataModel> implements ItemConfig<T> {
-    api: string;
-    model?: mongoose.Model<T>;
-    preview?: React.FC<PreviewProps<T>>;
-    edit?: React.FC<EditProps<T>>;
-    openEditInModal?: boolean;
-    queryFields?: {
-        [key: string]: string
-    }
-    names?: {
-        singular: string;
-        plural: string;
-    }
+export interface ClientServiceResponse<T extends IBaseItem> {
+    content?: Item<T>[] | Item<T> | null;
+    error?: string;
+    warning?: string;
+    pagination?: PagContent;
+}
 
-    MAX_CACHE_AGE = 20000;
-    MAX_CACHE_QUERIES = 100;
+export class ItemService<T extends ItemInterface> {
+    private parentConfig: ItemConfig<T>;
+    private parentType: string;
 
-    lastItemChange = Date.now();
-    queries = new Map<string, QueryResult>();
+    // Cache for query results (stores only IDs)
+    private queryCache = new Map<string, QueryCacheEntry>();
+
+    // Cache for actual items
+    private itemsMap = new Map<string, Item<T>>();
+
+    // Configuration
+    private MAX_CACHE_AGE = 20000;
+    private MAX_CACHE_QUERIES = 100;
+
+    // State
     loading = false;
     error: string | undefined = undefined;
     warning: string | undefined = undefined;
 
-    constructor(config: ItemConfig<T>) {
-        this.api = config.api;
-        this.preview = config.preview;
-        this.edit = config.edit;
-        this.openEditInModal = config.openEditInModal;
-        this.queryFields = config.queryFields;
-        this.names = config.names;
+    constructor(parentType: string, parentConfig: ItemConfig<T>) {
+        this.parentType = parentType;
+        this.parentConfig = parentConfig;
         makeAutoObservable(this);
     }
 
-    setErrorWarning(response: ResponseObject | FailureObject) {
+    // Set error and warning from response
+    private setErrorWarning(response: ResponseObject) {
         this.warning = response.warning ?? undefined;
         this.error = response.error;
     }
 
-    cacheClean() {
-        if (this.queries.size > this.MAX_CACHE_QUERIES) {
-            //sort by query age, then remove the oldest half of max
-            const sortedQueries = Array.from(this.queries.entries())
+    // Clean old queries from cache
+    private cacheClean() {
+        if (this.queryCache.size > this.MAX_CACHE_QUERIES) {
+            const sortedQueries = Array.from(this.queryCache.entries())
                 .sort((a, b) => a[1].timestamp - b[1].timestamp);
 
-            // Remove the oldest half of MAX_CACHE_QUERIES
             const removeCount = Math.floor(this.MAX_CACHE_QUERIES / 2);
 
-            // Remove oldest entries
             for (let i = 0; i < removeCount && i < sortedQueries.length; i++) {
-                this.queries.delete(sortedQueries[i][0]);
+                this.queryCache.delete(sortedQueries[i][0]);
             }
         }
     }
 
-
-    // Helper method to process query into a string
-    private getQueryString(query: DataQuery<T> | string): string {
-        return typeof query === 'string' ? query : convertQueryToString(query);
+    // Invalidate all queries (called after any CRUD operation)
+    private invalidateAllQueries() {
+        this.queryCache.clear();
     }
 
-    // Helper method for common operation pattern
+    // Build full cache key from API path and query
+    private buildCacheKey(apiPath: string, query: DataQuery<T> | string): string {
+        const queryStr = typeof query === 'string' ? query : convertQueryToString(query);
+        return apiPath + queryStr;
+    }
+
+    // Update items in the map from response data
+    private updateItemsMap(items: T[]): string[] {
+        const ids: string[] = [];
+
+        for (const itemData of items) {
+            if (itemData._id) {
+                const existingItem = this.itemsMap.get(itemData._id);
+
+                if (existingItem) {
+                    // Update existing item
+                    existingItem.updateData(itemData);
+                } else {
+                    // Create new item
+                    const newItem = new Item<T>(itemData);
+                    this.itemsMap.set(itemData._id, newItem);
+                }
+
+                ids.push(itemData._id);
+            }
+        }
+
+        return ids;
+    }
+
+    // Build response from cache key
+    private buildResponseFromCache(cacheKey: string): ClientServiceResponse<T> {
+        const cached = this.queryCache.get(cacheKey);
+
+        if (!cached) {
+            return { error: 'Cache entry not found' };
+        }
+
+        // If there was an error cached, return it
+        if (cached.error) {
+            return {
+                error: cached.error,
+                warning: cached.warning
+            };
+        }
+
+        const items: Item<T>[] = [];
+        const missingIds: string[] = [];
+
+        for (const id of cached.ids) {
+            const item = this.itemsMap.get(id);
+            if (item) {
+                items.push(item);
+            } else {
+                missingIds.push(id);
+            }
+        }
+
+        // If any items are missing, we need to refetch
+        if (missingIds.length > 0) {
+            return { error: 'Cache miss for some items' };
+        }
+
+        return {
+            content: items,
+            pagination: cached.pagination,
+            warning: cached.warning
+        };
+    }
+
+    // Convert server response to client response
+    private async buildClientResponse(serverResponsePromise: Promise<ResponseObject>): Promise<ClientServiceResponse<T>> {
+        const serverResponse = await serverResponsePromise;
+
+        if (serverResponse.error) {
+            return {
+                error: serverResponse.error,
+                warning: serverResponse.warning
+            };
+        }
+
+        // Handle empty/null content
+        if (!serverResponse.content) {
+            return {
+                content: null,
+                pagination: serverResponse.pagination,
+                warning: serverResponse.warning
+            };
+        }
+
+        // Handle array of items
+        if (Array.isArray(serverResponse.content)) {
+            const items: Item<T>[] = [];
+            for (const itemData of serverResponse.content) {
+                if (itemData._id) {
+                    const item = this.itemsMap.get(itemData._id);
+                    if (item) {
+                        items.push(item);
+                    }
+                }
+            }
+            return {
+                content: items,
+                pagination: serverResponse.pagination,
+                warning: serverResponse.warning
+            };
+        }
+
+        // Handle single item
+        if ((serverResponse.content as IBaseItem)._id) {
+            const item = this.itemsMap.get((serverResponse.content as IBaseItem)._id??'');
+            return {
+                content: item || null,
+                pagination: serverResponse.pagination,
+                warning: serverResponse.warning
+            };
+        }
+
+        return {
+            content: null,
+            warning: serverResponse.warning,
+            pagination: serverResponse.pagination
+        };
+    }
+
+    // Helper for executing operations
     private async executeOperation(
-        operation: () => Promise<ResponseObject | FailureObject>,
-        updateCache = true
-    ): Promise<ResponseObject | FailureObject> {
+        operation: () => Promise<ResponseObject>,
+        invalidateCache = true
+    ): Promise<ResponseObject> {
         this.loading = true;
         try {
             const result = await operation();
             this.setErrorWarning(result);
 
-            if (updateCache) {
-                this.lastItemChange = Date.now();
+            if (invalidateCache && !result.error) {
+                this.invalidateAllQueries();
             }
 
             this.loading = false;
             return result;
         } catch (err) {
-            this.error = err instanceof Error ? err.message : 'Unknown error';
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             this.loading = false;
-            return {error: (err instanceof Error ? err.message : 'Unknown error')}
+            return createFailResponse({error: `Client error: ${errorMessage}`});
         }
     }
 
-    async getQueryResult(query: DataQuery<T> | string): Promise<ResponseObject | FailureObject> {
-        const queryStr = this.getQueryString(query);
-        const current = this.queries.get(queryStr);// 20 seconds
+    // Get query results (with caching)
+    async getQueryResult(apiPath: string, query: DataQuery<T> | string = ''): Promise<ClientServiceResponse<T>> {
+        const cacheKey = this.buildCacheKey(apiPath, query);
+        const cached = this.queryCache.get(cacheKey);
 
-        if (!current ||
-            Date.now() - current.timestamp > this.MAX_CACHE_AGE ||
-            current.timestamp < this.lastItemChange) {
-            return this.fetchItems(query);
+        // Check if cache is valid
+        if (cached && Date.now() - cached.timestamp < this.MAX_CACHE_AGE) {
+            const response = this.buildResponseFromCache(cacheKey);
+            if (!response.error || response.error === cached.error) {
+                // Return cached response if valid or if it's the same error as cached
+                return response;
+            }
         }
 
-        return current.data;
+        // Fetch if not cached or invalid
+        return this.fetchItems(apiPath, query);
     }
 
-    async fetchItems(query: DataQuery<T> | string): Promise<ResponseObject | FailureObject> {
-        const queryStr = this.getQueryString(query);
+    // Fetch items from API
+    async fetchItems(apiPath: string, query: DataQuery<T> | string = ''): Promise<ClientServiceResponse<T>> {
+        const queryStr = typeof query === 'string' ? query : convertQueryToString(query);
+        const cacheKey = this.buildCacheKey(apiPath, query);
 
-        return this.executeOperation(async () => {
-            const data = await getAndReturn(this.api + queryStr);
-            this.cacheClean();
-            this.queries.set(queryStr, {data, timestamp: Date.now()});
-            return data;
+        const serverResponsePromise = this.executeOperation(async () => {
+            const response = await getAndReturn(apiPath + queryStr);
+
+            if (!response.error && response.content) {
+                // Update items map and get IDs
+                const ids = this.updateItemsMap(response.content as T[]);
+
+                // Cache the query result with all metadata
+                this.cacheClean();
+                this.queryCache.set(cacheKey, {
+                    ids,
+                    timestamp: Date.now(),
+                    pagination: response.pagination,
+                    warning: response.warning
+                });
+            } else {
+                // Cache error responses too
+                this.queryCache.set(cacheKey, {
+                    ids: [],
+                    timestamp: Date.now(),
+                    error: response.error,
+                    warning: response.warning
+                });
+            }
+
+            return response;
         }, false);
+
+        return this.buildClientResponse(serverResponsePromise);
     }
 
-    async createItem(item: T): Promise<ResponseObject | FailureObject> {
-        return this.executeOperation(() => postAndReturn<T>(this.api, item));
+    // Create a new item
+    async createItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+        const serverResponsePromise = this.executeOperation(async () => {
+            const response = await postAndReturn<T>(apiPath, item);
+
+            // Update items map if successful
+            if (!response.error && response.content) {
+                this.updateItemsMap([response.content as T]);
+            }
+
+            return response;
+        });
+
+        return this.buildClientResponse(serverResponsePromise);
     }
 
-    async updateItem(item: T): Promise<ResponseObject | FailureObject> {
-        return this.executeOperation(() => patchAndReturn<T>(this.api + item._id, item));
+    // Update an existing item
+    async updateItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+        const serverResponsePromise = this.executeOperation(async () => {
+            const response = await patchAndReturn<T>(apiPath + item._id, item);
+
+            // Update items map if successful
+            if (!response.error && response.content) {
+                this.updateItemsMap([response.content as T]);
+            }
+
+            return response;
+        });
+
+        return this.buildClientResponse(serverResponsePromise);
     }
 
-    async deleteItem(item: T): Promise<ResponseObject | FailureObject> {
-        return this.executeOperation(() => deleteAndReturn(this.api + item._id));
+    // Delete an item
+    async deleteItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+        const serverResponsePromise = this.executeOperation(async () => {
+            const response = await deleteAndReturn(apiPath + item._id);
+
+            // Remove from items map if successful
+            if (!response.error && item._id) {
+                this.itemsMap.delete(item._id);
+            }
+
+            return response;
+        });
+
+        return this.buildClientResponse(serverResponsePromise);
+    }
+
+    // Get a specific item by ID
+    getItemById(id: string): Item<T> | undefined {
+        return this.itemsMap.get(id);
+    }
+
+    // Get all cached items
+    getAllCachedItems(): Item<T>[] {
+        return Array.from(this.itemsMap.values());
+    }
+
+    // Clear all caches
+    clearAllCaches() {
+        this.queryCache.clear();
+        this.itemsMap.clear();
     }
 }

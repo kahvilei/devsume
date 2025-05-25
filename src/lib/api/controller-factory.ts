@@ -3,10 +3,10 @@ import { NextRequest } from "next/server";
 import { PageProps } from "@/interfaces/api";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import {Item} from "@/server/models/schemas/item";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import { createFailResponse } from "@/lib/db/utils";
 
-export const createController = <TInterface extends Item>(
+export const createController = <TInterface extends IBaseItem>(
     service: ServiceFactory<TInterface>,
 ) => {
     return {

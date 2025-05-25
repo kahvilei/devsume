@@ -1,5 +1,5 @@
 import axios, {AxiosError} from "axios";
-import {ResponseObject} from "@/lib/db/utils";
+import {createFailResponse, ResponseObject} from "@/lib/db/utils";
 
 export const postAndDigest = async <T>(
     url: string,
@@ -33,8 +33,6 @@ export const postAndReturn = async <T>(
         return response.data;
     } catch (e) {
         const error = e as AxiosError;
-        return {
-            error: error.toString()
-        }
+        return createFailResponse(error.message);
     }
 }

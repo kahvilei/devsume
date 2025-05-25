@@ -1,5 +1,5 @@
 import React from "react";
-import {Item, EditProps} from "@/interfaces/data";
+import {IBaseItem, EditProps} from "@/interfaces/data";
 
 interface ItemEditProps<T extends BaseDataModel> {
     item?: T;
