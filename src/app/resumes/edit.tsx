@@ -1,7 +1,7 @@
 import {IResume} from "@/server/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
-import EditableText from "@/app/_components/editor/text/EditableText";
+import EditableText from "@/app/_components/common/input/EditableText";
 
 interface EditResumeProps {
     resume?: IResume;

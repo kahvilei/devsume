@@ -1,6 +1,6 @@
 // @/app/_components/editor/common/NumberSelect.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
 import {Hash} from "lucide-react";
 import {Size} from "@/types/designTypes";
 

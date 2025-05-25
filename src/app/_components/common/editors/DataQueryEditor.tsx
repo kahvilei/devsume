@@ -2,15 +2,15 @@
 import React, {useEffect, useState} from "react";
 import {IBaseItem} from "@/interfaces/data";
 import {Plus, X} from "lucide-react";
-import {ActionIcon} from "@/app/_components/common/ActionIcon";
-import Select, {DropdownOption} from "@/app/_components/common/Select";
-import NumberSelect from "@/app/_components/common/NumberSelect";
-import DateSelect from "@/app/_components/common/DateSelect";
-import TextInput from "@/app/_components/common/TextInput";
-import {Chip} from "@/app/_components/common/Chip";
+import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
+import Select, {DropdownOption} from "@/app/_components/common/select/Select";
+import NumberSelect from "@/app/_components/common/input/NumberSelect";
+import DateSelect from "@/app/_components/common/input/DateSelect";
+import TextInput from "@/app/_components/common/input/TextInput";
+import {Chip} from "@/app/_components/common/display/Chip";
 import {ContentVariant, Size} from "@/types/designTypes";
 import {MongoOperator} from "@/types/dataTypes";
-import {Button} from "@/app/_components/common/Button";
+import {Button} from "@/app/_components/common/buttons/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {DataFilter, DataQuery} from "@/server/models/schemas/data";
 

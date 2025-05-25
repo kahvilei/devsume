@@ -1,5 +1,5 @@
 import React from "react";
-import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
 import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface ActionIconProps {

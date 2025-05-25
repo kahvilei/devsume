@@ -1,7 +1,7 @@
 'use client'
 import {AnimatePresence} from "motion/react";
 import React, {useContext} from "react";
-import OverlayContext from "@/app/_data/OverlayContext";
+import OverlayContext from "@/app/_data/Overlay/OverlayContext";
 
 export const OverlayContainer: React.FC = () => {
     const {overlay} = useContext(OverlayContext);

@@ -283,7 +283,7 @@ main {
     padding: var(--spacing-xs) 0 0 0;
 }
 
-/* Interactive elements */
+/* Interactive display */
 @utility interactive {
     @apply cursor-pointer transition-all;
     transition-duration: var(--transition-duration-normal);

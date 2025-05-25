@@ -1,8 +1,8 @@
 import React from "react";
 import {EditProps} from "@/interfaces/data";
-import EditableText from "@/app/_components/editor/text/EditableText";
+import EditableText from "@/app/_components/common/input/EditableText";
 import {Save, X} from "lucide-react";
-import ActionIcon from "@/app/_components/common/ActionIcon";
+import ActionIcon from "@/app/_components/common/buttons/ActionIcon";
 import {ICategory} from "@/server/models/Category";
 
 

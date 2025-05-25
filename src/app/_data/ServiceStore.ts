@@ -1,11 +1,11 @@
-import { ItemService } from "./ItemService";
+import { ItemService } from "./Items/ItemService";
 import ITEMS, {ItemManifestList} from "@/config/items";
 import { ICategory } from "@/server/models/Category";
 import { IPost } from "@/server/models/Post";
 import { IResume } from "@/server/models/Resume";
 import { IMedia } from "@/server/models/Media";
 import { IBaseItem as ItemInterface } from "@/server/models/schemas/IBaseItem";
-import {Item} from "@/app/_data/Item";
+import {Item} from "@/app/_data/Items/Item";
 
 interface ServiceMap {
     categories: ItemService<ICategory>;

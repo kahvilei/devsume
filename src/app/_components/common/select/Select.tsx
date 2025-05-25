@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Tooltip, { TooltipPosition } from "@/app/_components/common/Tooltip";
+import Tooltip, { TooltipPosition } from "@/app/_components/common/layouts/Tooltip";
 import { Size } from "@/types/designTypes";
 import useOverlay from "@/app/_hooks/common/useOverlay";
-import PortalOverlay, {PortalOverlayProps} from "@/app/_components/common/PortalOverlay";
+import PortalOverlay, {PortalOverlayProps} from "@/app/_components/common/layouts/PortalOverlay";
 
 export interface DropdownOption {
     value: string;

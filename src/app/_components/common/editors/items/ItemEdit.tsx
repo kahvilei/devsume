@@ -1,7 +1,8 @@
 import React from "react";
-import {IBaseItem, EditProps} from "@/interfaces/data";
+import {EditProps} from "@/interfaces/data";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-interface ItemEditProps<T extends BaseDataModel> {
+interface ItemEditProps<T extends IBaseItem> {
     item?: T;
     label: string;
     onSave: (item: T) => void;
@@ -9,7 +10,7 @@ interface ItemEditProps<T extends BaseDataModel> {
     Form?: React.FC<EditProps<T>>;
 }
 
-export default function ItemEdit<T extends BaseDataModel>(
+export default function ItemEdit<T extends IBaseItem>(
     {
         item,
         label,

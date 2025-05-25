@@ -1,6 +1,6 @@
 // @/app/_components/common/Pill.tsx
 import React from 'react';
-import {Chip} from "@/app/_components/common/Chip";
+import {Chip} from "@/app/_components/common/display/Chip";
 import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface PillProps {

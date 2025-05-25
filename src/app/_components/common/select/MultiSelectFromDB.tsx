@@ -1,16 +1,16 @@
 
 import React, {useEffect, useState} from "react";
-import {AlertMessage} from "@/app/_components/common/AlertMessage";
+import {AlertMessage} from "@/app/_components/common/display/AlertMessage";
 import {useSelection} from "@/app/_hooks/common/useSelection";
-import ItemOption from "@/app/_components/editor/items/ItemOption";
-import ItemEdit from "@/app/_components/editor/items/ItemEdit";
-import Modal from "@/app/_components/common/Modal";
+import ItemOption from "@/app/_components/common/editors/items/ItemOption";
+import ItemEdit from "@/app/_components/common/editors/items/ItemEdit";
+import Modal from "@/app/_components/common/layouts/Modal";
 import {getConfig, ItemManifestList} from "@/config/items";
-import EditableText from "@/app/_components/editor/text/EditableText";
-import BinaryToggle from "@/app/_components/common/BinaryToggle";
+import EditableText from "@/app/_components/common/input/EditableText";
+import BinaryToggle from "@/app/_components/common/buttons/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
-import {ActionIcon} from "@/app/_components/common/ActionIcon";
-import {DataQueryEditor} from "@/app/_components/editor/common/DataQueryEditor";
+import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
+import {DataQueryEditor} from "@/app/_components/common/editors/DataQueryEditor";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {AnimatePresence} from "motion/react";
 import Drawer from "../../animations/Drawer";
@@ -18,7 +18,7 @@ import {DataService} from "@/app/_data";
 import {observer} from "mobx-react-lite"
 import {Data, DataFilter, DataQuery} from "@/server/models/schemas/data";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
-import {Item} from "@/app/_data/Item";
+import {Item} from "@/app/_data/Items/Item";
 
 interface MultiSelectProps<T extends IBaseItem> {
     values?: Data<T>;
@@ -200,7 +200,6 @@ export const MultiSelectFromDB = observer(<T extends IBaseItem>({
                                 >
                                     <ItemEdit
                                         label="Add a new item"
-                                        Form={EditComponent}
                                         onSave={handleAddItemSave}
                                         onCancel={() => setIsAdding(false)}
                                     />

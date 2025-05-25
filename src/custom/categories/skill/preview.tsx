@@ -1,7 +1,7 @@
 import {ISkill} from "@/custom/categories/skill/model";
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
-import {ActionIcon} from "@/app/_components/common/ActionIcon";
+import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
 
 export default function PreviewSkill(

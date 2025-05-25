@@ -1,9 +1,10 @@
 import React, {useState} from "react";
-import ItemEdit from "@/app/_components/editor/items/ItemEdit";
-import Modal from "@/app/_components/common/Modal";
-import {IBaseItem, EditProps, PreviewProps} from "@/interfaces/data";
+import ItemEdit from "@/app/_components/common/editors/items/ItemEdit";
+import Modal from "@/app/_components/common/layouts/Modal";
+import {EditProps, PreviewProps} from "@/interfaces/data";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-interface ItemOptionProps<T extends BaseDataModel> {
+interface ItemOptionProps<T extends IBaseItem> {
     item: T;
     isSelected?: boolean;
     onSelect?: (item: T) => void;
@@ -14,7 +15,7 @@ interface ItemOptionProps<T extends BaseDataModel> {
     openEditInModal?: boolean;
 }
 
-export default function ItemOption<T extends BaseDataModel>(
+export default function ItemOption<T extends IBaseItem>(
     {
         item,
         isSelected,

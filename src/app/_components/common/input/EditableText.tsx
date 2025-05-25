@@ -1,5 +1,5 @@
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
 import {ContentVariant} from "@/types/designTypes";
 
 interface EditableTextProps {

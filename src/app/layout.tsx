@@ -4,8 +4,8 @@ import "./globals.css";
 import { Provider } from  "./provider";
 import Header from "@/app/_layouts/header";
 import Footer from "@/app/_layouts/footer";
-import {OverlayContainer} from "@/app/_components/common/OverlayContainer";
-import {OverlayProvider} from "@/app/_data/OverlayContext";
+import {OverlayContainer} from "@/app/_components/common/layouts/OverlayContainer";
+import {OverlayProvider} from "@/app/_data/Overlay/OverlayContext";
 
 
 export const metadata: Metadata = {

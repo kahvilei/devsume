@@ -1,6 +1,6 @@
 // @/app/_components/editor/common/TextInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
 import {Size} from "@/types/designTypes";
 
 
