@@ -14,6 +14,7 @@ export interface DataQuery<T> {
     }
     sort?: string;
     limit?: number;
+    skip?: number;
 }
 
 export const DataQuerySchemaDefinition = {
@@ -22,7 +23,8 @@ export const DataQuerySchemaDefinition = {
         default: {}
     },
     sort: String,
-    limit: Number
+    limit: Number,
+    skip: Number
 }
 
 export const DataQuerySchema = new mongoose.Schema(DataQuerySchemaDefinition);

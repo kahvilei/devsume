@@ -28,12 +28,7 @@ export interface ClientServiceResponse<T extends IBaseItem> {
 }
 
 export class ItemService<T extends ItemInterface> {
-    getSingularName(dataKey: string) {
-        throw new Error("Method not implemented.");
-    }
-    getQueryFields(dataKey: string): { [key: string]: string; } {
-        throw new Error("Method not implemented.");
-    }
+
     private parentConfig: ItemConfig<T>;
     private parentType: string;
 
@@ -104,6 +99,19 @@ export class ItemService<T extends ItemInterface> {
         return config.preview;
     }
 
+    getSingularName(key: string) {
+        const config = this.getConfig(key);
+        return config.names?.singular ?? 'Item';
+    }
+    getQueryFields(key: string): { [key: string]: string; } {
+        const config = this.getConfig(key);
+        return config.queryFields ?? {};
+    }
+
+    getPluralName(dataKey: string) {
+        const config = this.getConfig(dataKey);
+        return config.names?.plural ?? 'Items';
+    }
     // Invalidate all queries (called after any CRUD operation)
     private invalidateAllQueries() {
         this.queryCache.clear();
@@ -383,7 +391,4 @@ export class ItemService<T extends ItemInterface> {
         this.itemsMap.clear();
     }
 
-    getPluralName(dataKey: string) {
-        
-    }
 }
