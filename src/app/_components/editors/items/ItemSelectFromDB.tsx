@@ -95,7 +95,7 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
 
         const fetchData = async () => {
             try {
-                const results = await service.getQueryResult({limit: searchPageSize, skip: (searchPageSize * searchPage), filter: { title: searchTitleQuery}},type);
+                const results = await service.getQueryResult({limit: searchPageSize, skip: (searchPageSize * searchPage), filter: ((searchTitleQuery !=="")?{ title: searchTitleQuery}:{})},type);
                 if (!isCancelled && results?.content) {
                     setList(results.content as unknown as Item<T>[]);
                     setPageCount(results?.pagination?.pages ?? 1);
@@ -113,7 +113,7 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
         return () => {
             isCancelled = true;
         };
-    }, [service, type]);
+    }, [service, type, searchPageSize, searchPage, searchTitleQuery]);
 
     // Notify parent of selection changes
     useEffect(() => {
@@ -183,14 +183,14 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
                                     defaultOpen={false}
                                 />
                             ) : (
-                                <div className="flex items-center gap-xs">
+                                <div className="flex flex-col items-center gap-xs">
                                     <TextInput label={"Search for items"} value={searchTitleQuery} onChange={setSearchTitleQuery} placeholder={`Search ${pluralName}`} />
                                     <ItemMultipleSelect
                                         items={list}
                                         selected={selectedItems}
                                         onSelect={setSelectedItems}
                                     />
-                                    <Paginator pages={pageCount} onSelect={setSearchPage}/>
+                                    <Paginator pages={pageCount} onSelect={setSearchPage} currentPage={searchPage}/>
                                 </div>
                             )}
 

@@ -104,7 +104,5 @@ export const withAutoCategories = (schema: mongoose.Schema, config?: string[]) =
         }
     });
 
-    schema.index({ _auto_categories: 1 });
-
     return schema;
 };

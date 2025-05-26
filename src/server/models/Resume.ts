@@ -20,8 +20,6 @@ export const ResumeSchemaDefinition = {
 
 const ResumeSchema = new mongoose.Schema(ResumeSchemaDefinition);
 
-applyContentBehaviors(ResumeSchema);
-
 //Creates a "discriminator" on the Resume model allowing for custom Resume types that inherit from the base Post model
 //This should be the default export of a model.ts file under custom/resumes/[YOUR_RESUME_TYPE].
 //customBehaviours callback can be applied to add custom schema functions for validation, on delete, etc.
@@ -29,5 +27,7 @@ export const createResumeModel = createModelFactoryWithAutoRef('Resume',
     ResumeSchema,
     {},
     applyContentBehaviors);
+
+applyContentBehaviors(ResumeSchema);
 
 export default mongoose.models.Resume || mongoose.model('Resume', ResumeSchema);

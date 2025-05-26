@@ -2,17 +2,18 @@ import {EditProps, PreviewProps} from "@/interfaces/data";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import React from "react";
 import {Tag, Image} from "lucide-react";
-import {CategorySchemaDefinition, ICategory} from "@/server/models/Category";
+
 import PreviewCategory from "@/app/(posts)/categories/preview";
 import EditCategory from "@/app/(posts)/categories/edit";
 import custom from "@/custom";
-import {IPost, PostSchemaDefinition} from "@/server/models/Post";
-import {IResume, ResumeSchemaDefinition} from "@/server/models/Resume";
-import {IMedia, MediaSchemaDefinition} from "@/server/models/Media";
+
+import {IPost} from "@/server/models/Post";
+import {IResume} from "@/server/models/Resume";
+import {IMedia} from "@/server/models/Media";
+import {ICategory} from "@/server/models/Category";
 
 export interface ItemConfig<T extends IBaseItem> {
   api: string;
-  schema: object;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
   openEditInModal?: boolean;
@@ -48,7 +49,6 @@ export interface ItemManifestList {
 const ITEMS: ItemManifestList = {
   categories: {
     api: "/api/categories/category/",
-    schema: CategorySchemaDefinition,
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
     openEditInModal: false,
@@ -65,7 +65,6 @@ const ITEMS: ItemManifestList = {
   },
   media :{
     api: "/api/media/media/",
-    schema: MediaSchemaDefinition,
     openEditInModal: true,
     queryFields: {
        title: "string",
@@ -79,13 +78,11 @@ const ITEMS: ItemManifestList = {
   },
   posts: {
     api: "/api/posts/post/",
-    schema: PostSchemaDefinition,
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).posts??[]
   },
   resumes: {
     api: "/api/resumes/",
-    schema: ResumeSchemaDefinition,
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).resumes??[]
   },

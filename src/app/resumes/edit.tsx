@@ -2,6 +2,7 @@ import {IResume} from "@/server/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import WysiwygText from "@/app/_components/input/WysiwygText";
+import ItemSelectFromDB from "@/app/_components/editors/items/ItemSelectFromDB";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -48,6 +49,10 @@ export default function EditResume({resume}: EditResumeProps) {
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
                     toolTipPosition={"right"}
                 />
+                <ItemSelectFromDB
+                    type={"categories"}
+                    onSelect={() => {}}
+                    />
             </section>
 
         </section>

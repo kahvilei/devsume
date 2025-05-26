@@ -21,8 +21,6 @@ export const PostSchemaDefinition = {
 
 const PostSchema = new mongoose.Schema(PostSchemaDefinition);
 
-applyContentBehaviors(PostSchema);
-
 //Creates a "discriminator" on the Post model allowing for custom Post types that inherit from the base Post model
 //This should be the default export of a model.ts file under custom/posts/[YOUR_POST_TYPE].
 //customBehaviours callback can be applied to add custom schema functions for validation, on delete, etc.
@@ -32,5 +30,7 @@ export const createPostModel = createModelFactoryWithAutoRef(
     {},
     applyContentBehaviors
 );
+
+applyContentBehaviors(PostSchema);
 
 export default mongoose.models.Post || mongoose.model('Post', PostSchema);
