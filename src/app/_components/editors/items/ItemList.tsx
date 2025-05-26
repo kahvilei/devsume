@@ -1,35 +1,29 @@
 import ItemPreview from "@/app/_components/editors/items/ItemPreview";
 import {Item} from "@/app/_data/Items/Item";
+import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-interface ItemListProps {
-    items: Item<any>[];
-    onSelect?: (item: Item<any>) => void;
+interface ItemListProps<T extends IBaseItem> {
+    items: Item<T>[];
 }
 
-export const ItemList = (
+export const ItemList = <T extends IBaseItem>(
     {
         items,
-        onSelect = () => {}
-    }: ItemListProps,
-) => {
+    }: ItemListProps<T>) => {
+
     return (
-        <div>
+        <ul role="listbox" className="item-list">
             {items.map(item =>
                 <li
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        onSelect(item);
-                    }}
                     key={item.getData()._id}
-                    role="option"
                     aria-label={item.getData().title}
-                    className="flex items-center justify-between item-selector item cursor-pointer"
-                    aria-selected={isSelected}
+                    className="flex items-center justify-between item cursor-pointer"
                 >
-                    <ItemPreview key={item.getData().id} item={item} onClick={onSelect}/>
+                    <ItemPreview
+                        item={item}
+                    />
                 </li>
             )}
-        </div>
-    )
-}
+        </ul>
+    );
+};
