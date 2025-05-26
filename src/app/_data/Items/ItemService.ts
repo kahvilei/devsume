@@ -28,6 +28,12 @@ export interface ClientServiceResponse<T extends IBaseItem> {
 }
 
 export class ItemService<T extends ItemInterface> {
+    getSingularName(dataKey: string) {
+        throw new Error("Method not implemented.");
+    }
+    getQueryFields(dataKey: string): { [key: string]: string; } {
+        throw new Error("Method not implemented.");
+    }
     private parentConfig: ItemConfig<T>;
     private parentType: string;
 
@@ -375,5 +381,9 @@ export class ItemService<T extends ItemInterface> {
     clearAllCaches() {
         this.queryCache.clear();
         this.itemsMap.clear();
+    }
+
+    getPluralName(dataKey: string) {
+        
     }
 }
