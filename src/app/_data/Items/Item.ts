@@ -17,8 +17,8 @@ export class Item<T extends ItemInterface = ItemInterface> {
 
     constructor(data: T, type?: string) {
         this.data = data;
-        this.store = DataService.getService(type??(data as T)._t??"categories") as unknown as ItemService<T>;
-        this.discriminatorType = (data as T)._t || type || "categories";
+        this.store = DataService.getService(type??(data as T).__t??"categories") as unknown as ItemService<T>;
+        this.discriminatorType = (data as T).__t || type || "categories";
         this.edit = this.store.getEditElement(this.discriminatorType);
         this.preview = this.store.getPreviewElement(this.discriminatorType);
         makeAutoObservable(this);

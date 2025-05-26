@@ -4,12 +4,13 @@ import PreviewSkill from "@/custom/categories/skill/preview";
 import EditSkill from "@/custom/categories/skill/edit";
 import {ISkill} from "@/custom/categories/skill/model";
 import {Lightbulb, UserRound} from "lucide-react";
+import PreviewCollaborator from "@/custom/categories/collaborator/preview";
 
 export const config = {
     categories: [
         {
             api: "/api/categories/skill/",
-            key: "skill",
+            key: "Skill",
             preview: PreviewSkill as React.FC<PreviewProps<ISkill>>,
             edit: EditSkill as React.FC<EditProps<ISkill>>,
             openEditInModal: false,
@@ -26,7 +27,9 @@ export const config = {
         },
         {
             api: "/api/categories/collaborator/",
-            key: "collaborators",
+            key: "Collaborator",
+            preview: PreviewCollaborator as React.FC<PreviewProps<ISkill>>,
+            edit: EditSkill as React.FC<EditProps<ISkill>>,
             openEditInModal: false,
             queryFields: {
                 title: "string",
@@ -43,6 +46,7 @@ export const config = {
     media: [
         {
             api: "/api/media/image/",
+            key: "Image",
             openEditInModal: true,
             queryFields: {
                 title: "string",

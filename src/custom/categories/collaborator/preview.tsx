@@ -4,23 +4,23 @@ import React from "react";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
 
-export default function PreviewSkill(
+export default function PreviewCollaborator(
     {
         item,
         onClick = () => {
             window.location.href = `/tags/${item.getData().slug}`
         },
         size = "md",
-        className = 'rounded-full primary btn-shadow-filled',
+        className = 'rounded-full secondary btn-shadow-filled',
         disabled = false,
         setIsEditing,
     }: PreviewProps<ISkill>) {
-    const tag = item.getData();
+    const collaborator = item.getData();
     return (
         <div
             role="button"
             tabIndex={0}
-            className={`tag ${size} ${className} ${disabled ? 'disabled' : ''}`}
+            className={`pill ${size} ${className} ${disabled ? 'disabled' : ''}`}
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
@@ -33,7 +33,8 @@ export default function PreviewSkill(
                 e.stopPropagation();
             }}
         >
-            <span className="tag-label">{tag.title}</span>
+            <span className="tag-label">{collaborator.title}</span>
+            <span className="tag-label">{collaborator.description}</span>
             <span className={"flex gap-xxs"}>
             {setIsEditing &&
                 <ActionIcon

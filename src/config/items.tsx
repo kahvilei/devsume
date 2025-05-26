@@ -51,7 +51,7 @@ const ITEMS: ItemManifestList = {
     api: "/api/categories/category/",
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
-    openEditInModal: false,
+    openEditInModal: true,
     queryFields: {
       title: "string",
       tags: "string"

@@ -8,9 +8,9 @@ import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 export type DataType = ICategory | IResume | IPost | IMedia;
 export type DataFilter = string | number | string[] | number[];
 
-export interface DataQuery<T> {
+export interface DataQuery {
     filter?: {
-        [K in keyof T]?: DataFilter;
+        [k: string]: DataFilter;
     }
     sort?: string;
     limit?: number;
@@ -29,7 +29,7 @@ export const DataQuerySchemaDefinition = {
 
 export const DataQuerySchema = new mongoose.Schema(DataQuerySchemaDefinition);
 
-export type Data<T extends IBaseItem> = T[] | DataQuery<T>;
+export type Data<T extends IBaseItem> = T[] | DataQuery;
 
 export const DataEnum = {
     type: DataQuerySchema || [mongoose.Schema.Types.ObjectId]

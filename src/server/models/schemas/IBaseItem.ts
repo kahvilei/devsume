@@ -3,7 +3,7 @@ export interface IBaseItem {
     slug?: string;
     title: string;
     tags?: string[];
-    _t?: string;
+    __t?: string;
 }
 
 export const ItemBaseSchema = {

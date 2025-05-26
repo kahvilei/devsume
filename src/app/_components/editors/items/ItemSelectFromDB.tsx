@@ -49,18 +49,18 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
 
 
     // Initialize query from values if it's a Data, or create an empty one
-    const initialQuery = useMemo<DataQuery<T>>(() => {
+    const initialQuery = useMemo<DataQuery>(() => {
         if (initialIsDynamic && typeof values === 'object' && values !== null) {
-            return values as DataQuery<T>;
+            return values as DataQuery;
         }
         return {
             filter: {} as Record<keyof T, DataFilter>,
             sort: undefined,
             limit: undefined
-        } as DataQuery<T>;
+        } as DataQuery;
     }, [initialIsDynamic, values]);
 
-    const [query, setQuery] = useState<DataQuery<T>>(initialQuery);
+    const [query, setQuery] = useState<DataQuery>(initialQuery);
 
     const service = useMemo(() =>
         DataService.getService(type as keyof ItemManifestList),
@@ -95,7 +95,7 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
 
         const fetchData = async () => {
             try {
-                const results = await service.getQueryResult({limit: searchPageSize, skip: (searchPageSize * searchPage), filter: ((searchTitleQuery !=="")?{ title: searchTitleQuery}:{})},type);
+                const results = await service.getQueryResult({limit: searchPageSize, skip: (searchPageSize * searchPage), filter: ((searchTitleQuery !=="")?{ 'title.regex': searchTitleQuery}:{})},type);
                 if (!isCancelled && results?.content) {
                     setList(results.content as unknown as Item<T>[]);
                     setPageCount(results?.pagination?.pages ?? 1);
@@ -124,14 +124,14 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
     }, [isDynamic, query, selectedItems, onSelect]);
 
     const handleReset = useCallback(() => {
-        const emptyValue = isDynamic ? {} as DataQuery<T> : [];
+        const emptyValue = isDynamic ? {} as DataQuery : [];
         onSelect(emptyValue as Data<T>);
         setSelectedItems([]);
         setQuery({
             filter: {} as Record<keyof T, DataFilter>,
             sort: undefined,
             limit: undefined
-        } as DataQuery<T>);
+        } as DataQuery);
     }, [isDynamic, onSelect]);
 
     const displayItems = isDynamic ? queryResults : selectedItems;
