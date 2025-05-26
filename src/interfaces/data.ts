@@ -1,18 +1,17 @@
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
+import {Item} from "@/app/_data/Items/Item";
 
 export interface PreviewProps<T extends IBaseItem> {
-    item: T;
+    item: Item<T>;
     onClick?: () => void;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     className?: string;
     disabled?: boolean;
-    onDelete?: (item: T) => void;
     setIsEditing?: (bool: boolean) => void;
 }
 
 export interface EditProps<T extends IBaseItem> {
-    item: T;
-    onSaveItem: (item: T) => void;
+    item: Item<T>;
     onCancel: () => void;
     label: string;
 }

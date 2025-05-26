@@ -4,7 +4,7 @@ import "./globals.css";
 import { Provider } from  "./provider";
 import Header from "@/app/_layouts/header";
 import Footer from "@/app/_layouts/footer";
-import {OverlayContainer} from "@/app/_components/common/layouts/OverlayContainer";
+import {OverlayContainer} from "@/app/_components/layouts/OverlayContainer";
 import {OverlayProvider} from "@/app/_data/Overlay/OverlayContext";
 
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface ActionIconProps {
@@ -21,7 +21,7 @@ interface ActionIconProps {
  * ActionIcon Component - A versatile button with an icon that supports tooltips
  *
  * This component provides a simple, reusable button that displays an icon and triggers
- * an action when clicked. It includes tooltip support and respects the Clarity design system.
+ * an action when clicked. It includes tooltip support.
  */
 export const ActionIcon: React.FC<ActionIconProps> =
     ({

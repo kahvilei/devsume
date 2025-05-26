@@ -1,8 +1,8 @@
 import React from "react";
 import {EditProps} from "@/interfaces/data";
-import EditableText from "@/app/_components/common/input/EditableText";
+import WysiwygText from "@/app/_components/input/WysiwygText";
 import {Save, X} from "lucide-react";
-import ActionIcon from "@/app/_components/common/buttons/ActionIcon";
+import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {ISkill} from "@/custom/categories/skill/model";
 
 
@@ -28,10 +28,10 @@ export default function EditSkill({item: skill = {title: ""}, onSaveItem: onSave
             >
                 <div className='tag md primary btn-shadow-filled rounded-full no-hover flex-between'>
                     <span className="tag-label flex gap-xxs">
-                        <EditableText value={title} label={'skill name'} placeholder={'Name'}
-                                      onUpdate={(value: string) => setTitle(value)} required/>
-                        <EditableText value={description} label={'skill description'} placeholder={'Description'}
-                                      onUpdate={(value: string) => setDescription(value)}/>
+                        <WysiwygText value={title} label={'skill name'} placeholder={'Name'}
+                                     onUpdate={(value: string) => setTitle(value)} required/>
+                        <WysiwygText value={description} label={'skill description'} placeholder={'Description'}
+                                     onUpdate={(value: string) => setDescription(value)}/>
                     </span>
                     <span className={"flex gap-xxs"}>
                         <ActionIcon

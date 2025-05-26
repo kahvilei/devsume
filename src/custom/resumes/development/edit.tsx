@@ -1,7 +1,7 @@
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
-import EditableText from "@/app/_components/common/input/EditableText";
-import ItemSectionEditor from "@/app/_components/common/editors/ItemSectionEditor";
+import WysiwygText from "@/app/_components/input/WysiwygText";
+import ItemSectionEditor from "@/app/_components/editors/ItemSectionEditor";
 import {Section} from "@/server/models/schemas/section";
 import {ICategory} from "@/server/models/Category";
 import {IDevelopmentResume} from "@/custom/resumes/development/model";
@@ -19,21 +19,21 @@ export default function EditResume({resume}: EditResumeProps) {
         <section className="resume">
             <section className="right">
                 <section className="title-description">
-                    <EditableText
+                    <WysiwygText
                         order="h1"
                         value={resumeData?.name}
                         label="Name"
                         placeholder="Enter name"
                         onUpdate={(value: string) => setResumeData({...resumeData, name: (value || "")})}
                     />
-                    <EditableText
+                    <WysiwygText
                         order="h2"
                         value={resumeData?.title}
                         label="Title/position"
                         placeholder="Enter title/position"
                         onUpdate={(value: string) => setResumeData({...resumeData, title: (value || "")})}
                     />
-                    <EditableText
+                    <WysiwygText
                         order="body"
                         label="Subtitle/short description"
                         value={resumeData?.subtitle}
@@ -54,7 +54,7 @@ export default function EditResume({resume}: EditResumeProps) {
                 </section>
             </section>
             <section className="left">
-                <EditableText
+                <WysiwygText
                     order="body"
                     label="About you"
                     value={resumeData?.about}

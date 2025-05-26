@@ -1,6 +1,6 @@
-// @/app/_components/editor/common/NumberSelect.tsx
+// @/app/_components/editor/common/NumberInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {Hash} from "lucide-react";
 import {Size} from "@/types/designTypes";
 
@@ -21,11 +21,11 @@ export interface NumberFieldProps {
 }
 
 /**
- * NumberSelect component - A styled number input with icon and tooltip support
+ * NumberInput component - A styled number input with icon and tooltip support
  *
  * Provides a consistent interface for number inputs with validation.
  */
-const NumberSelect: React.FC<NumberFieldProps> =
+const NumberInput: React.FC<NumberFieldProps> =
     ({
          label,
          value,
@@ -79,4 +79,4 @@ const NumberSelect: React.FC<NumberFieldProps> =
         return numberContent;
     };
 
-export default NumberSelect;
+export default NumberInput;

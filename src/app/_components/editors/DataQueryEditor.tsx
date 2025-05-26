@@ -2,15 +2,15 @@
 import React, {useEffect, useState} from "react";
 import {IBaseItem} from "@/interfaces/data";
 import {Plus, X} from "lucide-react";
-import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
-import Select, {DropdownOption} from "@/app/_components/common/select/Select";
-import NumberSelect from "@/app/_components/common/input/NumberSelect";
-import DateSelect from "@/app/_components/common/input/DateSelect";
-import TextInput from "@/app/_components/common/input/TextInput";
-import {Chip} from "@/app/_components/common/display/Chip";
+import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
+import Select, {DropdownOption} from "@/app/_components/select/Select";
+import NumberInput from "@/app/_components/input/NumberInput";
+import DateInput from "@/app/_components/input/DateInput";
+import TextInput from "@/app/_components/input/TextInput";
+import {Chip} from "@/app/_components/display/Chip";
 import {ContentVariant, Size} from "@/types/designTypes";
 import {MongoOperator} from "@/types/dataTypes";
-import {Button} from "@/app/_components/common/buttons/Button";
+import {Button} from "@/app/_components/buttons/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {DataFilter, DataQuery} from "@/server/models/schemas/data";
 
@@ -204,7 +204,7 @@ export function DataQueryEditor<T extends BaseDataModel>
                     <div className="query-section-content">
                         <h4>Limit</h4>
                         <div className="limit-input-group">
-                            <NumberSelect
+                            <NumberInput
                                 label="Limit"
                                 value={localQuery.limit?.toString() || ''}
                                 onChange={handleLimitChange}
@@ -308,7 +308,7 @@ export function FilterField(
         switch (fieldType) {
             case 'number':
                 return (
-                    <NumberSelect
+                    <NumberInput
                         label="Value"
                         value={value}
                         onChange={(value) => handleFilterValueChange(value)}
@@ -317,7 +317,7 @@ export function FilterField(
                 );
             case 'date':
                 return (
-                    <DateSelect
+                    <DateInput
                         label="Value"
                         value={value}
                         onChange={(value) => handleFilterValueChange(value)}

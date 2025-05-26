@@ -1,5 +1,5 @@
 import React from "react";
-import Tooltip from "@/app/_components/common/layouts/Tooltip";
+import Tooltip from "@/app/_components/layouts/Tooltip";
 import {ButtonVariant, RadiusSize, Size} from "@/types/designTypes";
 
 interface BinaryToggleProps {

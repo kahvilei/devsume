@@ -1,9 +1,6 @@
-// @/app/_components/editor/common/TextInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {Size} from "@/types/designTypes";
-
-
 
 export interface TextFieldProps {
     label: string;

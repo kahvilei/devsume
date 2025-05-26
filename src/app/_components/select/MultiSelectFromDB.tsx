@@ -1,19 +1,19 @@
 
 import React, {useEffect, useState} from "react";
-import {AlertMessage} from "@/app/_components/common/display/AlertMessage";
+import {AlertMessage} from "@/app/_components/display/AlertMessage";
 import {useSelection} from "@/app/_hooks/common/useSelection";
-import ItemOption from "@/app/_components/common/editors/items/ItemOption";
-import ItemEdit from "@/app/_components/common/editors/items/ItemEdit";
-import Modal from "@/app/_components/common/layouts/Modal";
+import ItemPreview from "@/app/_components/editors/items/ItemPreview";
+import ItemEdit from "@/app/_components/editors/items/ItemEdit";
+import Modal from "@/app/_components/layouts/Modal";
 import {getConfig, ItemManifestList} from "@/config/items";
-import EditableText from "@/app/_components/common/input/EditableText";
-import BinaryToggle from "@/app/_components/common/buttons/BinaryToggle";
+import WysiwygText from "@/app/_components/input/WysiwygText";
+import BinaryToggle from "@/app/_components/buttons/BinaryToggle";
 import {Database, ListPlus, MoveDown, Plus, SettingsIcon, Undo, X} from "lucide-react";
-import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
-import {DataQueryEditor} from "@/app/_components/common/editors/DataQueryEditor";
+import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
+import {DataQueryEditor} from "@/app/_components/editors/DataQueryEditor";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {AnimatePresence} from "motion/react";
-import Drawer from "../../animations/Drawer";
+import Drawer from "../animations/Drawer";
 import {DataService} from "@/app/_data";
 import {observer} from "mobx-react-lite"
 import {Data, DataFilter, DataQuery} from "@/server/models/schemas/data";
@@ -101,7 +101,7 @@ export const MultiSelectFromDB = observer(<T extends IBaseItem>({
             <div className="controls">
                 <div className="header">
                     <div className="flex-grow">
-                        <EditableText
+                        <WysiwygText
                             order={'h4'}
                             value={title}
                             label={(manifest.names?.singular ?? dataKey) + " section title"}
@@ -175,7 +175,7 @@ export const MultiSelectFromDB = observer(<T extends IBaseItem>({
                                     <AnimatePresence>
                                         {list.map((option: Item<T>) => (
                                             <PopInOut key={option.getData()._id} layout={false}>
-                                                <ItemOption
+                                                <ItemPreview
                                                     item={option.getData()}
                                                     onSelect={() => toggleItem(option)}
                                                     onEdit={(item) => service.updateItem(api, item)}
@@ -227,7 +227,7 @@ export const MultiSelectFromDB = observer(<T extends IBaseItem>({
                     <AnimatePresence>
                         {(isDynamic ? list : selectedItems).map((option) => (
                             <PopInOut key={option.getData()._id}>
-                                <ItemOption
+                                <ItemPreview
                                     item={option.getData()}
                                     onSelect={!isDynamic ? () => toggleItem(option) : undefined}
                                     onEdit={(item) => service.updateItem(api,item)}

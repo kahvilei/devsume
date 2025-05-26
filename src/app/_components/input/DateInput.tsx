@@ -1,6 +1,6 @@
-// @/app/_components/editor/common/DateSelect.tsx
+// @/app/_components/editor/common/DateInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {Calendar} from "lucide-react";
 import {ContentVariant, Size} from "@/types/designTypes";
 
@@ -22,11 +22,11 @@ export interface DateFieldProps {
 }
 
 /**
- * DateSelect component - A styled date input with icon and tooltip support
+ * DateInput component - A styled date input with icon and tooltip support
  *
  * Provides a consistent interface for date inputs with validation.
  */
-const DateSelect: React.FC<DateFieldProps> =
+const DateInput: React.FC<DateFieldProps> =
     ({
          label,
          value,
@@ -79,4 +79,4 @@ const DateSelect: React.FC<DateFieldProps> =
         return dateContent;
     };
 
-export default DateSelect;
+export default DateInput;

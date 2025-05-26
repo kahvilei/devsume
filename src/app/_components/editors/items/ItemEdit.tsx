@@ -1,41 +1,36 @@
 import React from "react";
 import {EditProps} from "@/interfaces/data";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
+import {Item} from "@/app/_data/Items/Item";
 
 interface ItemEditProps<T extends IBaseItem> {
-    item?: T;
+    item: Item<T>;
     label: string;
-    onSave: (item: T) => void;
     onCancel?: () => void;
-    Form?: React.FC<EditProps<T>>;
 }
 
 export default function ItemEdit<T extends IBaseItem>(
     {
         item,
         label,
-        onSave,
         onCancel = () => {
         },
-        Form,
     }: ItemEditProps<T>) {
-    // Create a default item if none provided
-    const editItem = item || ({title: ""} as T);
 
     // Default form component
-    const DefaultForm: React.FC<EditProps<T>> = ({item, onSaveItem, onCancel}) => (
+    const DefaultEditor: React.FC<EditProps<T>> = ({item, onCancel}) => (
         <form aria-label={label}>
-            <div>{item.title}</div>
-            <button onClick={() => onSaveItem(item)}>Save</button>
+            <div>{item.getData().title}</div>
+            <button onClick={() => item.save()}>Save</button>
             <button onClick={onCancel}>Cancel</button>
         </form>
     );
 
-    const FormComponent = Form || DefaultForm;
+    const EditorComponent = item.edit || DefaultEditor;
 
     return (
         <div>
-            <FormComponent item={editItem} onSaveItem={onSave} label={label} onCancel={onCancel}/>
+            <EditorComponent item={item} label={label} onCancel={onCancel}/>
         </div>
     );
 }

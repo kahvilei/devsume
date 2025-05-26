@@ -9,6 +9,8 @@ import { convertQueryToString } from "@/lib/misc/convertQuery";
 import { DataQuery } from "@/server/models/schemas/data";
 import {createFailResponse, PagContent, ResponseObject} from "@/lib/db/utils";
 import {IBaseItem, IBaseItem as ItemInterface} from "@/server/models/schemas/IBaseItem";
+import React from "react";
+import {EditProps, PreviewProps} from "@/interfaces/data";
 
 interface QueryCacheEntry {
     ids: string[];
@@ -70,6 +72,32 @@ export class ItemService<T extends ItemInterface> {
         }
     }
 
+    getConfig = (key: string) : ItemConfig<T>=> {
+        if (this.parentConfig.discriminators) {
+            for (const discriminator of this.parentConfig.discriminators) {
+                if (discriminator.key === key) {
+                    return {...this.parentConfig, ...discriminator};
+                }
+            }
+        }
+        return this.parentConfig;
+    }
+
+    getApiPath = (key: string) : string => {
+        const config = this.getConfig(key);
+        return config.api;
+    }
+
+    getEditElement = (key: string) : React.FC<EditProps<T>> | undefined => {
+        const config = this.getConfig(key);
+        return config.edit;
+    }
+
+    getPreviewElement = (key: string) : React.FC<PreviewProps<T>> | undefined => {
+        const config = this.getConfig(key);
+        return config.preview;
+    }
+
     // Invalidate all queries (called after any CRUD operation)
     private invalidateAllQueries() {
         this.queryCache.clear();
@@ -91,7 +119,7 @@ export class ItemService<T extends ItemInterface> {
 
                 if (existingItem) {
                     // Update existing item
-                    existingItem.updateData(itemData);
+                    existingItem.setData(itemData);
                 } else {
                     // Create new item
                     const newItem = new Item<T>(itemData);
@@ -224,7 +252,8 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Get query results (with caching)
-    async getQueryResult(apiPath: string, query: DataQuery<T> | string = ''): Promise<ClientServiceResponse<T>> {
+    async getQueryResult(query: DataQuery<T> | string = '', type?: string): Promise<ClientServiceResponse<T>> {
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const cacheKey = this.buildCacheKey(apiPath, query);
         const cached = this.queryCache.get(cacheKey);
 
@@ -237,12 +266,13 @@ export class ItemService<T extends ItemInterface> {
             }
         }
 
-        // Fetch if not cached or invalid
-        return this.fetchItems(apiPath, query);
+        // Fetch if isn't cached or invalid
+        return this.fetchItems(query, type);
     }
 
     // Fetch items from API
-    async fetchItems(apiPath: string, query: DataQuery<T> | string = ''): Promise<ClientServiceResponse<T>> {
+    async fetchItems(query: DataQuery<T> | string = '', type?: string): Promise<ClientServiceResponse<T>> {
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const queryStr = typeof query === 'string' ? query : convertQueryToString(query);
         const cacheKey = this.buildCacheKey(apiPath, query);
 
@@ -278,7 +308,8 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Create a new item
-    async createItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+    async createItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await postAndReturn<T>(apiPath, item);
 
@@ -293,8 +324,12 @@ export class ItemService<T extends ItemInterface> {
         return this.buildClientResponse(serverResponsePromise);
     }
 
-    // Update an existing item
-    async updateItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+    // Update an existing item, falls back to create if there is no id
+    async updateItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
+        if (!item._id) {
+            return this.createItem(item, type);
+        }
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await patchAndReturn<T>(apiPath + item._id, item);
 
@@ -310,7 +345,8 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Delete an item
-    async deleteItem(apiPath: string, item: T): Promise<ClientServiceResponse<T>> {
+    async deleteItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await deleteAndReturn(apiPath + item._id);
 

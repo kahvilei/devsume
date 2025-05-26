@@ -1,6 +1,6 @@
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
-import {ActionIcon} from "@/app/_components/common/buttons/ActionIcon";
+import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
 import {ICategory} from "@/server/models/Category";
 

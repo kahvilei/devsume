@@ -1,90 +1,56 @@
-import React from "react";
-import { EditProps, PreviewProps } from "@/interfaces/data";
 import { IBaseItem as ItemInterface } from "@/server/models/schemas/IBaseItem";
-import { getConfig } from "@/config/items";
+import {ItemService} from "@/app/_data/Items/ItemService";
+import {makeAutoObservable} from "mobx";
+import React from "react";
+import {EditProps, PreviewProps} from "@/interfaces/data";
+import {DataService} from "@/app/_data";
 
 export class Item<T extends ItemInterface = ItemInterface> {
     private data: T;
     private readonly discriminatorType: string;
+    readonly store: ItemService<T>;
+    readonly edit?: React.FC<EditProps<T>>;
+    readonly preview?: React.FC<PreviewProps<T>>;
+    error: string | null = null;
+    loading: boolean = false;
+    warning: string | null = null;
 
-    constructor(data: T) {
+    constructor(data: T, type?: string) {
         this.data = data;
-        // Extract discriminator type from _t field, fallback to parent type
-        this.discriminatorType = (data as T)._t || this.inferParentType();
+        this.store = DataService.getService(type??(data as T)._t??"categories") as unknown as ItemService<T>;
+        this.discriminatorType = (data as T)._t || type || "categories";
+        this.edit = this.store.getEditElement(this.discriminatorType);
+        this.preview = this.store.getPreviewElement(this.discriminatorType);
+        makeAutoObservable(this);
     }
 
-    // Infer parent type from API path if _t is not available
-    private inferParentType(): string {
-        // This would be set by the service when creating the item
-        return 'categories'; // fallback
+    setData(data: T) {
+        this.data = data;
     }
 
-    // Get the configuration for this item's type
-    private getConfig() {
-        return getConfig(this.discriminatorType);
-    }
-
-    // Get raw data
     getData(): T {
         return this.data;
     }
 
-    // Get discriminator type
-    getType(): string {
-        return this.discriminatorType;
-    }
-
-    // Update raw data
-    updateData(data: Partial<T>): void {
-        this.data = { ...this.data, ...data };
-    }
-
-    // Get the preview component for this item type
-    getPreviewComponent(): React.FC<PreviewProps<T>> | undefined {
-        const config = this.getConfig();
-        return config.preview as unknown as React.FC<PreviewProps<T>>;
-    }
-
-    // Get the edit component for this item type
-    getEditComponent(): React.FC<EditProps<T>> | undefined {
-        const config = this.getConfig();
-        return config.edit as unknown as React.FC<EditProps<T>>;
-    }
-
-    // Get display name for this item type
-    getDisplayName(plural = false): string {
-        const config = this.getConfig();
-        if (config.names) {
-            return plural ? config.names.plural : config.names.singular;
+    async save() {
+        this.loading = true;
+        const response = await this.store.updateItem(this.data)
+        if (response.error){
+            this.error = response.error;
         }
-        return this.discriminatorType;
+        if (response.warning){
+            this.warning = response.warning;
+        }
+        this.loading = false;
     }
 
-    // Get icon for this item type
-    getIcon(): React.ReactNode {
-        const config = this.getConfig();
-        return config.icon;
+    async setDataAndSave(data: T) {
+        this.data = data;
+        await this.save();
     }
 
-    // Check if should open in modal
-    shouldOpenInModal(): boolean {
-        const config = this.getConfig();
-        return config.openEditInModal || false;
+    async delete() {
+        await this.store.deleteItem(this.data);
     }
 
-    // Get API endpoint for this specific item type
-    getApiEndpoint(): string {
-        const config = this.getConfig();
-        return config.api;
-    }
-
-    // Utility method to get ID
-    getId(): string {
-        return this.data._id || '';
-    }
-
-    // Utility method to get slug
-    getSlug(): string {
-        return (this.data as T).slug || '';
-    }
 }

@@ -1,8 +1,8 @@
 import React from "react";
 import {EditProps} from "@/interfaces/data";
-import EditableText from "@/app/_components/common/input/EditableText";
+import WysiwygText from "@/app/_components/input/WysiwygText";
 import {Save, X} from "lucide-react";
-import ActionIcon from "@/app/_components/common/buttons/ActionIcon";
+import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {ICategory} from "@/server/models/Category";
 
 
@@ -27,8 +27,8 @@ export default function EditCategory({item: category = {title: ""}, onSaveItem: 
             >
                 <div className='tag md primary btn-shadow-filled rounded-full no-hover flex-between'>
                     <span className="tag-label flex gap-xxs">
-                        <EditableText value={title} label={'categories name'} placeholder={'Name'}
-                                      onUpdate={(value: string) => setTitle(value)} required/>
+                        <WysiwygText value={title} label={'categories name'} placeholder={'Name'}
+                                     onUpdate={(value: string) => setTitle(value)} required/>
                     </span>
                     <span className={"flex gap-xxs"}>
                         <ActionIcon

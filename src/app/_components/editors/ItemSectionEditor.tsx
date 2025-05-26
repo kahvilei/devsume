@@ -1,8 +1,8 @@
 import {getAllPossibleKeys, getConfig} from "@/config/items";
 import {useState} from "react";
-import ActionIcon from "@/app/_components/common/buttons/ActionIcon";
+import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {Plus} from "lucide-react";
-import MultiSelectFromDB from "@/app/_components/common/select/MultiSelectFromDB";
+import MultiSelectFromDB from "@/app/_components/select/MultiSelectFromDB";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {Section} from "@/server/models/schemas/section";
 import {DataQuery} from "@/server/models/schemas/data";

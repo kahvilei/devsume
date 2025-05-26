@@ -1,5 +1,5 @@
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/common/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {ContentVariant} from "@/types/designTypes";
 
 interface EditableTextProps {
@@ -14,7 +14,7 @@ interface EditableTextProps {
     variant?: ContentVariant
 }
 
-export default function EditableText(
+export default function WysiwygText(
     {
         order = "body",
         value = '',

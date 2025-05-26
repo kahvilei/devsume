@@ -1,5 +1,5 @@
 import {ISkill} from "@/custom/categories/skill/model";
-import MultiSelectFromDB from "@/app/_components/common/select/MultiSelectFromDB";
+import MultiSelectFromDB from "@/app/_components/select/MultiSelectFromDB";
 import {Data} from "@/server/models/schemas/data";
 
 interface TagSelectProps {

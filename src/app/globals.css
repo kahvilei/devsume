@@ -909,7 +909,7 @@ main {
     }
 
     /*
-        EditableText Component
+        WysiwygText Component
     */
     .editable-text {
         @apply interactive;
