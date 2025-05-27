@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertMessage } from "@/app/_components/display/AlertMessage";
-import ItemEdit from "@/app/_components/editors/items/ItemEdit";
-import Modal from "@/app/_components/layouts/Modal";
 import { ItemManifestList } from "@/config/items";
 import BinaryToggle from "@/app/_components/buttons/BinaryToggle";
-import { Database, ListPlus, MoveDown, SettingsIcon, Undo } from "lucide-react";
+import {Database, ListPlus,Undo, X} from "lucide-react";
 import { ActionIcon } from "@/app/_components/buttons/ActionIcon";
 import { DataQueryEditor } from "@/app/_components/editors/DataQueryEditor";
 import { DataService } from "@/app/_data";
@@ -16,6 +14,7 @@ import { ItemMultipleSelect } from "@/app/_components/editors/items/ItemSelectLi
 import { ItemList } from "@/app/_components/editors/items/ItemList";
 import TextInput from "@/app/_components/input/TextInput";
 import Paginator from "@/app/_components/input/Paginator";
+import {ItemAddAnyOfTypeButton} from "@/app/_components/editors/items/ItemAddButton";
 
 interface ItemSelectProps<T extends IBaseItem> {
     values?: Data<T>;
@@ -35,8 +34,7 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
     }: ItemSelectProps<T>
 ) => {
     const [controlsOpen, setControlsOpen] = useState<boolean>(false);
-    const [isAdding, setIsAdding] = useState<boolean>(false);
-    const [selectedItems, setSelectedItems] = useState<Item<T>[]>([]);
+    const [selectedItems, setSelectedItems] = useState<Item<T>[]>(Array.isArray(values)?values as unknown as Item<T>[]:[]);
     const [queryResults, setQueryResults] = useState<Item<T>[]>([]);
     const [list, setList] = useState<Item<T>[]>([]);
     const [searchPage, setSearchPage] = useState<number>(0);
@@ -67,11 +65,8 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
         [type]
     );
 
-    // Initialize selectedItems from values if not dynamic
     useEffect(() => {
-        if (!isDynamic && Array.isArray(values)) {
-            setSelectedItems(values as unknown as Item<T>[]);
-        } else if (isDynamic) {
+          if (isDynamic) {
             const fetchData = async () => {
                 try {
                     const results = await service.getQueryResult(query,type);
@@ -84,9 +79,9 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
                 }
             };
 
-            fetchData();
+            fetchData().then();
         }
-    }, [isDynamic, query]);
+    }, [isDynamic, query, service, type]);
 
 
     // Fetch list based on query
@@ -108,12 +103,12 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
             }
         };
 
-        fetchData();
+        fetchData().then();
 
         return () => {
             isCancelled = true;
         };
-    }, [service, type, searchPageSize, searchPage, searchTitleQuery]);
+    }, [service, type, searchPageSize, searchPage, searchTitleQuery, service.lastUpdated]);
 
     // Notify parent of selection changes
     useEffect(() => {
@@ -137,31 +132,13 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
     const displayItems = isDynamic ? queryResults : selectedItems;
     const hasItems = displayItems.length > 0;
     const pluralName = service.getPluralName(type) ?? "items";
-    const singularName = service.getSingularName(type) ?? type;
-
     return (
         <div className="multi-selector">
-            <div className="controls">
-                <div className="header">
-                    <ActionIcon
-                        icon={<SettingsIcon />}
-                        onClick={() => setControlsOpen(!controlsOpen)}
-                        size="sm"
-                        tooltip={controlsOpen ? "Hide controls" : "Show controls"}
-                    />
-                </div>
-
-                <div className={`selector ${controlsOpen ? "open" : "closed"}`}>
-                    {controlsOpen && (
-                        <div>
-                            <div className="buttons">
-                                <ActionIcon
-                                    onClick={handleReset}
-                                    icon={<Undo />}
-                                    color="info"
-                                    size="sm"
-                                    tooltip="Reset filters"
-                                />
+            <div className={`selector ${controlsOpen ? "open" : "closed"}`}>
+                {controlsOpen && (
+                    <div>
+                        <div className="buttons">
+                            <div>
                                 <BinaryToggle
                                     state={isDynamic}
                                     onToggle={() => setIsDynamic(!isDynamic)}
@@ -172,61 +149,61 @@ export const ItemSelectFromDB = observer(<T extends IBaseItem>(
                                         <Database key="query" />
                                     ]}
                                 />
+                                <ActionIcon
+                                    onClick={handleReset}
+                                    icon={<Undo />}
+                                    color="info"
+                                    size="sm"
+                                    tooltip="Reset filters"
+                                />
+                                <ItemAddAnyOfTypeButton
+                                    type={type}
+                                    size="sm"
+                                    color="primary"
+                                />
+
                             </div>
 
-                            {isDynamic ? (
-                                <DataQueryEditor
-                                    query={query}
-                                    onSave={setQuery}
-                                    queryFields={service.getQueryFields(type)}
-                                    showEditToggle={true}
-                                    defaultOpen={false}
-                                />
-                            ) : (
-                                <div className="flex flex-col items-center gap-xs">
-                                    <TextInput label={"Search for items"} value={searchTitleQuery} onChange={setSearchTitleQuery} placeholder={`Search ${pluralName}`} />
-                                    <ItemMultipleSelect
-                                        items={list}
-                                        selected={selectedItems}
-                                        onSelect={setSelectedItems}
-                                    />
-                                    <Paginator pages={pageCount} onSelect={setSearchPage} currentPage={searchPage}/>
-                                </div>
-                            )}
+                            <ActionIcon
+                                icon={<X />}
+                                onClick={() => setControlsOpen(!controlsOpen)}
+                                size="sm"
+                                tooltip={controlsOpen ? "Hide controls" : "Show controls"}
+                            />
 
                         </div>
-                    )}
-                </div>
+                        {isDynamic ? (
+                            <DataQueryEditor
+                                query={query}
+                                onSave={setQuery}
+                                queryFields={service.getQueryFields(type)}
+                                showEditToggle={true}
+                                defaultOpen={false}
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center gap-xs">
+                                <TextInput label={"Search for items"} value={searchTitleQuery} onChange={setSearchTitleQuery} placeholder={`Search ${pluralName}`} />
+                                <ItemMultipleSelect
+                                    items={list}
+                                    selected={selectedItems}
+                                    onSelect={setSelectedItems}
+                                />
+                                <Paginator pages={pageCount} onSelect={setSearchPage} currentPage={searchPage}/>
+                            </div>
+                        )}
 
-                <div className="connector">
-                    <MoveDown height="1rem" />
-                </div>
-            </div>
-
-            <div aria-label={label} aria-haspopup="listbox" className="content">
-                {!hasItems && (
-                    <div className="item-selector-placeholder">
-                        No {pluralName} selected. Click settings to add new items or edit the query.
                     </div>
                 )}
-                <ItemList items={displayItems} />
             </div>
-
+            <div onClick={() => setControlsOpen(!controlsOpen)} aria-label={label} aria-haspopup="listbox" className="content-style-1 with-hover">
+                    {!hasItems && (
+                        <div className="item-selector-placeholder">
+                            No {pluralName} selected. Click here to add new items or edit the query.
+                        </div>
+                    )}
+                    <ItemList items={displayItems} />
+                </div>
             <AlertMessage error={service.error} warning={service.warning}/>
-
-            {isAdding && (
-                <Modal
-                    isOpen={isAdding}
-                    onClose={() => setIsAdding(false)}
-                    title={`Create a new ${singularName}`}
-                >
-                    <ItemEdit
-                        item={new Item({ title: "" }, type)}
-                        label="Add a new item"
-                        onCancel={() => setIsAdding(false)}
-                    />
-                </Modal>
-            )}
         </div>
     );
 });

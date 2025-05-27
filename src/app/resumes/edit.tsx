@@ -38,6 +38,10 @@ export default function EditResume({resume}: EditResumeProps) {
                         placeholder="Write a subtitle/short description"
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
+                    <ItemSelectFromDB
+                        type={"Category"}
+                        onSelect={() => {}}
+                    />
                 </section>
             </section>
             <section className="left">
@@ -50,7 +54,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     toolTipPosition={"right"}
                 />
                 <ItemSelectFromDB
-                    type={"categories"}
+                    type={"Category"}
                     onSelect={() => {}}
                     />
             </section>

@@ -6,14 +6,18 @@ import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {ICategory} from "@/server/models/Category";
 
 
-export default function EditCategory({item: category = {title: ""}, onSaveItem: onSaveTag, onCancel}: EditProps<ICategory>) {
+export default function EditCategory({item, onCancel}: EditProps<ICategory>) {
 
+    const category = item.getData();
     const [title, setTitle] = React.useState(category.title);
 
     //if value has an _id, it's an existing categories
     const handleSaveTag = () => {
         console.log(category);
-        onSaveTag({...category, title})
+        category.title = title;
+        item.save().then(() => {
+            onCancel();
+        });
     };
 
     return (

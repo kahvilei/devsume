@@ -6,18 +6,17 @@ import {ICategory} from "@/server/models/Category";
 
 export default function PreviewCategory(
     {
-        item: category,
+        item,
         onClick = () => {
-            window.location.href = `/categories/${category.slug}`
+            window.location.href = `/categories/${item.getData().slug}`
         },
         size = "md",
         className = 'rounded-full primary btn-shadow-filled',
         disabled = false,
-        onDelete,
         setIsEditing,
     }: PreviewProps<ICategory>) {
+    const category = item.getData();
     return (
-
         <div
             role="button"
             tabIndex={0}
@@ -47,9 +46,9 @@ export default function PreviewCategory(
                     radius="rounded-full"
                 />
             }
-                {onDelete &&
+                {item.delete &&
                     <ActionIcon
-                        onClick={() => onDelete(category)}
+                        onClick={() => item.delete()}
                         icon={<Trash/>}
                         tooltip="Delete category permanently"
                         size="xs"

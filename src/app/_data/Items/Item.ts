@@ -34,7 +34,7 @@ export class Item<T extends ItemInterface = ItemInterface> {
 
     async save() {
         this.loading = true;
-        const response = await this.store.updateItem(this.data)
+        const response = await this.store.updateItem(this.data, this.discriminatorType)
         if (response.error){
             this.error = response.error;
         }

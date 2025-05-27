@@ -11,6 +11,7 @@ interface BinaryToggleProps {
     size?: Size;
     radius?: RadiusSize;
     variant?: ButtonVariant;
+    orientation?: "horizontal" | "vertical";
 }
 
 export default function BinaryToggle(
@@ -22,6 +23,7 @@ export default function BinaryToggle(
         size = "md",
         radius = "rounded-full",
         variant = "btn-shadow-spread",
+        orientation = "horizontal",
     }: BinaryToggleProps
 ) {
 
@@ -32,7 +34,7 @@ export default function BinaryToggle(
 
     return (
         <div className={`binary-toggle-wrap`}>
-            <div className={`binary-toggle ${size} ${radius} ${variant}`} role="radiogroup">
+            <div className={`binary-toggle ${orientation} ${size} ${radius} ${variant}`} role="radiogroup">
                 <label className="toggle-switch">
                     <span
                         aria-checked={!state}
@@ -70,6 +72,7 @@ export default function BinaryToggle(
                     </span>
                     <span className="toggle-slider"></span>
                 </label>
-            </div></div>
+            </div>
+        </div>
     );
 }

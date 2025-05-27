@@ -29,8 +29,8 @@ export interface ClientServiceResponse<T extends IBaseItem> {
 
 export class ItemService<T extends ItemInterface> {
 
-    private parentConfig: ItemConfig<T>;
-    private parentType: string;
+    private readonly parentConfig: ItemConfig<T>;
+    private readonly parentType: string;
 
     // Cache for query results (stores only IDs)
     private queryCache = new Map<string, QueryCacheEntry>();
@@ -46,6 +46,7 @@ export class ItemService<T extends ItemInterface> {
     loading = false;
     error: string | undefined = undefined;
     warning: string | undefined = undefined;
+    lastUpdated: number | undefined = undefined;
 
     constructor(parentType: string, parentConfig: ItemConfig<T>) {
         this.parentType = parentType;
@@ -71,6 +72,17 @@ export class ItemService<T extends ItemInterface> {
                 this.queryCache.delete(sortedQueries[i][0]);
             }
         }
+    }
+
+    getKeysOfType = (key: string) : string[] => {
+        const types = [];
+        for (const discriminator of this.parentConfig.discriminators as ItemConfig<T>[]) {
+            if (discriminator.key === key || key === this.parentType) {
+                types.push(discriminator.key)
+            }
+        }
+        console.log(types);
+        return types;
     }
 
     getConfig = (key: string) : ItemConfig<T>=> {
@@ -118,7 +130,7 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Build full cache key from API path and query
-    private buildCacheKey(apiPath: string, query: DataQuery<T> | string): string {
+    private buildCacheKey(apiPath: string, query: DataQuery | string): string {
         const queryStr = typeof query === 'string' ? query : convertQueryToString(query);
         return apiPath + queryStr;
     }
@@ -256,6 +268,7 @@ export class ItemService<T extends ItemInterface> {
                 this.invalidateAllQueries();
             }
 
+            this.lastUpdated = Date.now();
             this.loading = false;
             return result;
         } catch (err) {
@@ -266,7 +279,7 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Get query results (with caching)
-    async getQueryResult(query: DataQuery<T> | string = '', type?: string): Promise<ClientServiceResponse<T>> {
+    async getQueryResult(query: DataQuery | string = '', type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const cacheKey = this.buildCacheKey(apiPath, query);
         const cached = this.queryCache.get(cacheKey);
@@ -285,7 +298,7 @@ export class ItemService<T extends ItemInterface> {
     }
 
     // Fetch items from API
-    async fetchItems(query: DataQuery<T> | string = '', type?: string): Promise<ClientServiceResponse<T>> {
+    async fetchItems(query: DataQuery | string = '', type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const queryStr = typeof query === 'string' ? query : convertQueryToString(query);
         const cacheKey = this.buildCacheKey(apiPath, query);
@@ -364,7 +377,7 @@ export class ItemService<T extends ItemInterface> {
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await deleteAndReturn(apiPath + item._id);
 
-            // Remove from items map if successful
+            // Remove from item map if successful
             if (!response.error && item._id) {
                 this.itemsMap.delete(item._id);
             }
@@ -391,4 +404,7 @@ export class ItemService<T extends ItemInterface> {
         this.itemsMap.clear();
     }
 
+    getIcon(type: string) {
+        return this.getConfig(type).icon;
+    }
 }

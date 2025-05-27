@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-    color-scheme: light dark;
+    color-scheme: dark;
 }
 /*
   Tailwind Theme Configuration
@@ -18,11 +18,11 @@
 
     --devsume-colors-disabled: #b3bec5;
 
-    --devsume-colors-dark: #67433b;
+    --devsume-colors-dark: #1e212f;
     --devsume-colors-light: #fffbf4;
 
-    --devsume-colors-background: light-dark(var(--devsume-colors-dark), var(--devsume-colors-light));
-    --devsume-colors-foreground: light-dark(var(--devsume-colors-light), var(--devsume-colors-dark));
+    --devsume-colors-background: light-dark(var(--devsume-colors-light), var(--devsume-colors-dark));
+    --devsume-colors-foreground: light-dark(var(--devsume-colors-dark), var(--devsume-colors-light));
 
     --devsume-colors-headings: var(--devsume-colors-foreground);
     --devsume-colors-link: var(--devsume-colors-primary);
@@ -73,7 +73,6 @@
     --devsume-content-style-outline-1: none;
     --devsume-content-style-border-radius-1: var(--devsume-radius-default);
     --devsume-content-style-padding-1: var(--devsume-spacing-xs);
-    --devsume-content-style-hover-border-1: var(--devsume-border-subtle);
 
     /* Style 2: Style that uses dynamic border */
     --devsume-content-style-border-2: var(--devsume-border);
@@ -136,6 +135,9 @@
     --color-headings: var(--devsume-colors-headings);
     --color-link: var(--devsume-colors-link);
     --color-overlay: var(--devsume-colors-overlay);
+
+    --color-dark: var(--devsume-colors-dark);
+    --color-light: var(--devsume-colors-light);
 
     /* Typography */
     --text-h1: 3rem;
@@ -336,6 +338,42 @@ main {
     }
 }
 
+@keyframes stretchYTop {
+    0% {
+        background-color: var(--color-secondary);
+        transform: translateX(0) scaleY(1);
+    }
+    40% {
+        transform: translateY(calc(40% + var(--spacing-xxs))) scaleY(.9);
+    }
+    70% {
+        transform: translateY(calc(80% + 1.5 * var(--spacing-xxs))) scaleY(1.3);
+    }
+    100% {
+        background-color: var(--color-primary);
+        transform: translateY(calc(100% + var(--spacing-xxs))) scaleY(1);
+    }
+}
+
+@keyframes stretchYBottom {
+    0% {
+        background-color: var(--color-primary);
+        transform: translateY(calc(100% + var(--spacing-xxs))) scaleY(1);
+    }
+    40% {
+
+        transform: translateY(calc(60% + var(--spacing-xxs))) scaleY(.9);
+    }
+    70% {
+
+        transform: translateY(calc(20% + 0.5 * var(--spacing-xxs))) scaleY(1.3);
+    }
+    100% {
+        background-color: var(--color-secondary);
+        transform: translateY(0) scaleY(1);
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -370,6 +408,7 @@ main {
 }
 
 @utility content-style-* {
+    @apply transition-all;
     background-color: --value(--devsume-content-style-bg-color-*);
     color: --value(--devsume-content-style-fg-color-*);
     border-radius: --value(--devsume-content-style-border-radius-*);
@@ -542,23 +581,23 @@ main {
 
         &.btn-shadow-filled {
             background-color: currentColor;
-            box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) 0 0 0 0;
+            box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-dark) 35%) 0 0 0 0;
             right: 0;
             bottom: 0;
-            border-color: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%);
+            border-color: color-mix(in srgb,currentColor, var(--devsume-colors-dark) 35%);
 
-            span {
-                @apply text-background;
+            span, svg {
+                color: var(--devsume-colors-light);
             }
 
             &:not(.no-hover):hover {
                 right: .25rem;
                 bottom: .25rem;
-                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) .25rem .25rem 0 0;
+                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-dark) 35%) .25rem .25rem 0 0;
             }
 
             &:active {
-                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-foreground) 35%) 0 0 0 0;
+                box-shadow: color-mix(in srgb,currentColor, var(--devsume-colors-dark) 35%) 0 0 0 0;
                 right: 0;
                 bottom: 0;
             }
@@ -675,7 +714,7 @@ main {
     .binary-toggle {
         @apply rounded-full relative;
         @apply interactive flex items-center justify-center transition-all p-xs gap-xs;
-        @apply h-5 ;
+        @apply h-5;
         @apply p-xxs text-xs;
 
         border-width: var(--spacing-border-width);
@@ -738,6 +777,46 @@ main {
         &&:has(.toggle-1:hover) {
             transform: rotateY(-15deg);
         }
+
+        &.vertical {
+            @apply h-full;
+            @apply w-4;
+
+            .toggle-switch {
+                @apply flex-col;
+
+                .toggle-slider {
+                    @apply w-full;
+                    border-radius: inherit;
+                    background-color: currentColor;
+                    position: absolute;
+                    z-index: 0;
+                    top: 0;
+                    bottom: calc(50% + var(--spacing-xxs) / 2);
+                    transform: translateY(0);
+                }
+            }
+
+            .toggle-option {
+                @apply w-full;
+            }
+
+            .toggle-2[aria-checked="true"] ~ .toggle-slider {
+                animation-name: stretchYTop;
+            }
+
+            &:has(.toggle-2:hover) {
+                transform: rotateX(15deg);
+            }
+
+            .toggle-1[aria-checked="true"] ~ .toggle-slider {
+                animation-name: stretchYBottom;
+            }
+
+            &&:has(.toggle-1:hover) {
+                transform: rotateX(-15deg);
+            }
+        }
     }
 
     /*
@@ -748,27 +827,20 @@ main {
     }
 
     /*
-        MultiSelectFromDB Component
+        ItemSelectFromDB Component
     */
     .multi-selector {
-        @apply rounded flex flex-col gap-xs w-full relative;
+        @apply rounded flex flex-col w-full relative;
 
         ul {
             @apply flex flex-wrap gap-xs p-0 m-0;
             list-style: none;
         }
 
-        /* Controls section */
-
-        .controls {
-            @apply transition-all relative;
-            height: min-content;
-        }
-
         /* Header area */
 
         .header {
-            @apply flex-between flex-top gap-xs;
+            @apply flex-row flex-top gap-xs;
 
             .editable-text-wrap {
                 height: 100%;
@@ -778,28 +850,32 @@ main {
         /* Selector dropdown */
 
         .selector {
-            @apply flex flex-col mt-xs gap-xs h-0 px-xs w-full overflow-hidden transition-all outline-1;
+            @apply flex flex-col gap-xs px-xs h-0 w-full overflow-hidden transition-all;
             transition-duration: var(--transition-duration-normal);
 
             &.open {
-                @apply h-auto p-xs content-style-3 overflow-visible;
+                @apply h-auto p-xs mb-xs content-style-3 overflow-visible;
             }
 
             &>div {
-                @apply flex flex-col mt-xs gap-xs;
+                @apply flex flex-col gap-xs;
             }
         }
 
         /* Content area */
 
         .content {
-            @apply content-style-1 p-xs;
+            @apply content-style-1 p-xs cursor-pointer;
         }
 
         /* Button container */
 
         .buttons {
-            @apply separator-b gap-xs w-full flex-center;
+            @apply separator-b gap-xs w-full flex-between;
+
+            &>div {
+                @apply flex flex-row gap-xs;
+            }
         }
 
         .item-selector-placeholder {
@@ -815,11 +891,6 @@ main {
             }
         }
 
-        .connector {
-            @apply h-2;
-            @apply left-2 bottom-[calc(-1.9*var(--spacing-xs))];
-            position: absolute;
-        }
     }
 
     /*
@@ -945,7 +1016,7 @@ main {
         @apply fixed inset-0 z-50 flex-center;
 
         .modal-backdrop {
-            @apply fixed inset-0 background-fg opacity-50;
+            @apply fixed inset-0 bg-dark opacity-70;
         }
 
         .modal-container {

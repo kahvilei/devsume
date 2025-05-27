@@ -8,10 +8,10 @@ import { IBaseItem as ItemInterface } from "@/server/models/schemas/IBaseItem";
 import {Item} from "@/app/_data/Items/Item";
 
 interface ServiceMap {
-    categories: ItemService<ICategory>;
-    posts: ItemService<IPost>;
-    resumes: ItemService<IResume>;
-    media: ItemService<IMedia>;
+    Category: ItemService<ICategory>;
+    Post: ItemService<IPost>;
+    Resume: ItemService<IResume>;
+    Media: ItemService<IMedia>;
 }
 
 class ServiceStore {
@@ -22,10 +22,10 @@ class ServiceStore {
     constructor(items: ItemManifestList = ITEMS) {
         // Initialize services for each parent type
         this.services = {
-            categories: new ItemService<ICategory>('categories', items.categories),
-            posts: new ItemService<IPost>('posts', items.posts),
-            resumes: new ItemService<IResume>('resumes', items.resumes),
-            media: new ItemService<IMedia>('media', items.media)
+            Category: new ItemService<ICategory>('Category', items.categories),
+            Post: new ItemService<IPost>('Post', items.posts),
+            Resume: new ItemService<IResume>('Resume', items.resumes),
+            Media: new ItemService<IMedia>('Media', items.media)
         };
         this.items = items;
     }
@@ -38,9 +38,9 @@ class ServiceStore {
         }
 
         // Check discriminators
-        for (const [parentKey, config] of Object.entries(this.items)) {
-            if (config.discriminators) {
-                for (const discriminator of config.discriminators) {
+        for (const [parentKey, service] of Object.entries(this.services)) {
+            if (service.parentConfig.discriminators) {
+                for (const discriminator of service.parentConfig.discriminators) {
                     if (discriminator.key === key) {
                         return parentKey as keyof ServiceMap;
                     }

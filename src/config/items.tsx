@@ -14,6 +14,7 @@ import {ICategory} from "@/server/models/Category";
 
 export interface ItemConfig<T extends IBaseItem> {
   api: string;
+  key: string;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
   openEditInModal?: boolean;
@@ -48,6 +49,7 @@ export interface ItemManifestList {
 
 const ITEMS: ItemManifestList = {
   categories: {
+    key: "Category",
     api: "/api/categories/category/",
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
@@ -64,6 +66,7 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).categories??[]
   },
   media :{
+    key: "Media",
     api: "/api/media/media/",
     openEditInModal: true,
     queryFields: {
@@ -77,11 +80,13 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).media??[]
   },
   posts: {
+    key: "Post",
     api: "/api/posts/post/",
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).posts??[]
   },
   resumes: {
+    key: "Resume",
     api: "/api/resumes/",
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).resumes??[]

@@ -1,4 +1,4 @@
-import ItemPreview from "@/app/_components/editors/items/ItemPreview";
+import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
 import {Item} from "@/app/_data/Items/Item";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 

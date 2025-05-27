@@ -4,20 +4,21 @@ import Modal from "@/app/_components/layouts/Modal";
 import {PreviewProps} from "@/interfaces/data";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import {Item} from "@/app/_data/Items/Item";
+import {observer} from "mobx-react-lite";
 
 interface ItemOptionProps<T extends IBaseItem> {
-    item:  Item<T>;
+    item: Item<T>;
     onClick?: (item: Item<T>) => void;
     openEditInModal?: boolean;
 }
 
-export default function ItemPreview<T extends IBaseItem>(
+export const ItemPreview = observer(<T extends IBaseItem>(
     {
         item,
         onClick = () => {
         },
         openEditInModal = false,
-    }: ItemOptionProps<T>) {
+    }: ItemOptionProps<T>) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
 
@@ -65,4 +66,4 @@ export default function ItemPreview<T extends IBaseItem>(
             )}
         </>
     );
-}
+});
