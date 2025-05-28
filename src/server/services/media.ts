@@ -7,8 +7,8 @@ const mediaService = createMediaServiceFactory<IMedia>(
     "media",
     "Media",
     {
-        uploadDir: 'uploads',
-        baseUrl: '/api/media.ts',
+        uploadDir: 'public/uploads',
+        baseUrl: '/uploads',
         maxFileSize: 50 * 1024 * 1024, // 50MB for media.ts files
         allowedMimeTypes: [
             // Images

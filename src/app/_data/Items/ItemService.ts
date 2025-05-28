@@ -81,7 +81,6 @@ export class ItemService<T extends ItemInterface> {
                 types.push(discriminator.key)
             }
         }
-        console.log(types);
         return types;
     }
 

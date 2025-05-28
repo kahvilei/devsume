@@ -29,6 +29,6 @@ const ProjectAutoRefConfig = {
     }
 };
 
-const Project = createPostModel('Project', ProjectSchemaDefinition, ProjectAutoRefConfig);
+const Project = createPostModel('Project', ProjectSchemaDefinition, undefined, ProjectAutoRefConfig);
 
 export default Project;

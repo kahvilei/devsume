@@ -13,8 +13,8 @@ export const createController = <TInterface extends IBaseItem>(
         get: async (request: NextRequest, { params }: PageProps) => {
             try {
                 const query = request.nextUrl.searchParams;
-                const type = (await params).type;
-                return await service.get(query, type);
+                const type = (await params)?.type ?? undefined;
+                return await service.get(query, type??undefined);
             } catch (error) {
                 console.error('GET error:', error);
                 return createFailResponse('Failed to fetch data', 500);
@@ -30,6 +30,10 @@ export const createController = <TInterface extends IBaseItem>(
 
                 const document = await request.json();
                 const type = (await params).type;
+
+                if (!type) {
+                    return createFailResponse('Type parameter is required', 400);
+                }
                 return await service.add(document, type);
             } catch (error) {
                 console.error('POST error:', error);
@@ -49,7 +53,7 @@ export const createController = <TInterface extends IBaseItem>(
                     return createFailResponse('Slug parameter is required', 400);
                 }
 
-                return await service.getBySlug(slug, type);
+                return await service.getBySlug(slug, type??undefined);
             } catch (error) {
                 console.error('GET by slug error:', error);
                 return createFailResponse('Failed to fetch resource', 500);
@@ -71,13 +75,13 @@ export const createController = <TInterface extends IBaseItem>(
                 }
 
                 const document = await request.json();
-                return await service.update(id, document, type);
+                return await service.update(id, document, type??undefined);
             } catch (error) {
                 console.error('PATCH error:', error);
                 if (error instanceof SyntaxError) {
                     return createFailResponse('Invalid JSON in request body', 400);
                 }
-                return createFailResponse('Failed to update resource', 500);
+                return createFailResponse('Failed to upload resource', 500);
             }
         },
 
@@ -95,7 +99,7 @@ export const createController = <TInterface extends IBaseItem>(
                     return createFailResponse('ID parameter is required', 400);
                 }
 
-                return await service.delete(id, type);
+                return await service.delete(id, type??undefined);
             } catch (error) {
                 console.error('DELETE error:', error);
                 return createFailResponse('Failed to delete resource', 500);

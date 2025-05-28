@@ -188,7 +188,7 @@ export const createServiceFactory = <T>(
                 }
 
                 if (!value || typeof value !== 'object') {
-                    return createFailResponse('Invalid update data provided', 400);
+                    return createFailResponse('Invalid upload data provided', 400);
                 }
 
                 manageCacheSize();

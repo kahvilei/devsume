@@ -11,6 +11,9 @@ import {IPost} from "@/server/models/Post";
 import {IResume} from "@/server/models/Resume";
 import {IMedia} from "@/server/models/Media";
 import {ICategory} from "@/server/models/Category";
+import {IImage} from "@/custom/media/image/model";
+import PreviewImage from "@/custom/media/image/preview";
+import EditImage from "@/custom/media/image/edit";
 
 export interface ItemConfig<T extends IBaseItem> {
   api: string;
@@ -50,7 +53,7 @@ export interface ItemManifestList {
 const ITEMS: ItemManifestList = {
   categories: {
     key: "Category",
-    api: "/api/categories/category/",
+    api: "/api/categories/",
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
     openEditInModal: true,
@@ -67,7 +70,9 @@ const ITEMS: ItemManifestList = {
   },
   media :{
     key: "Media",
-    api: "/api/media/media/",
+    api: "/api/media/",
+    preview: PreviewImage as React.FC<PreviewProps<IImage>>,
+    edit: EditImage as React.FC<EditProps<IImage>>,
     openEditInModal: true,
     queryFields: {
        title: "string",
@@ -81,7 +86,7 @@ const ITEMS: ItemManifestList = {
   },
   posts: {
     key: "Post",
-    api: "/api/posts/post/",
+    api: "/api/posts/",
     openEditInModal: true,
     discriminators: (custom as CustomConfigList).posts??[]
   },

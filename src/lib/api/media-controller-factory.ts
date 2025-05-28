@@ -79,7 +79,7 @@ export const createMediaController = <TInterface extends IMedia>(
         get: async (request: NextRequest, { params }: PageProps) => {
             try {
                 const query = request.nextUrl.searchParams;
-                const type = (await params).type;
+                const type = (await params)?.type ?? undefined;
                 return await service.get(query, type);
             } catch (error) {
                 console.error('GET error:', error);
@@ -96,6 +96,9 @@ export const createMediaController = <TInterface extends IMedia>(
 
                 const document = await request.json();
                 const type = (await params).type;
+                if (!type) {
+                    return createFailResponse('Type parameter is required', 400);
+                }
                 return await service.add(document, type);
             } catch (error) {
                 console.error('POST error:', error);
@@ -108,7 +111,7 @@ export const createMediaController = <TInterface extends IMedia>(
 
         getBySlug: async (request: NextRequest, { params }: PageProps) => {
             try {
-                const type = (await params).type;
+                const type = (await params)?.type ?? undefined;
                 const slug = (await params).slug;
 
                 if (!slug) {
@@ -129,7 +132,7 @@ export const createMediaController = <TInterface extends IMedia>(
                     return createFailResponse('Unauthorized', 401);
                 }
 
-                const type = (await params).type;
+                const type = (await params)?.type ?? undefined;
                 const id = (await params).slug;
 
                 if (!id) {
@@ -143,7 +146,7 @@ export const createMediaController = <TInterface extends IMedia>(
                 if (error instanceof SyntaxError) {
                     return createFailResponse('Invalid JSON in request body', 400);
                 }
-                return createFailResponse('Failed to update media', 500);
+                return createFailResponse('Failed to upload media', 500);
             }
         },
 
@@ -154,7 +157,7 @@ export const createMediaController = <TInterface extends IMedia>(
                     return createFailResponse('Unauthorized', 401);
                 }
 
-                const type = (await params).type;
+                const type = (await params)?.type ?? undefined;
                 const id = (await params).slug;
 
                 if (!id) {
@@ -182,7 +185,7 @@ export const createMediaController = <TInterface extends IMedia>(
                 }
 
                 const formData = await request.formData();
-                const type = (await params)?.type;
+                const type = (await params)?.type ?? undefined;
 
                 // Validate form data
                 if (!formData || Array.from(formData.entries()).length === 0) {
@@ -228,7 +231,7 @@ export const createMediaController = <TInterface extends IMedia>(
                 }
 
                 const formData = await request.formData();
-                const type = (await params)?.type;
+                const type = (await params)?.type ?? undefined;
                 const id = (await params).slug;
 
                 if (!id) {
@@ -260,36 +263,5 @@ export const createMediaController = <TInterface extends IMedia>(
                 return createFailResponse('Failed to fetch media with thumbnails', 500);
             }
         },
-
-        // Batch upload helper
-        uploadBatch: async (request: NextRequest, { params }: PageProps) => {
-            try {
-                const session = await getServerSession(authOptions);
-                if (!session) {
-                    return createFailResponse('Unauthorized', 401);
-                }
-
-                const contentType = request.headers.get('content-type') || '';
-                if (!contentType.includes('multipart/form-data')) {
-                    return createFailResponse('Content-Type must be multipart/form-data', 400);
-                }
-
-                const formData = await request.formData();
-                const type = (await params)?.type;
-
-                const metadata = extractMetadataFromFormData(formData);
-                const files = await extractFilesFromFormData(formData);
-
-                if (files.length === 0) {
-                    return createFailResponse('No files provided', 400);
-                }
-
-                return await service.uploadFiles(files, metadata, type);
-            } catch (error) {
-                console.error('Batch upload error:', error);
-                const errorMessage = error instanceof Error ? error.message : 'Batch upload failed';
-                return createFailResponse(errorMessage, 500);
-            }
-        }
     };
 };

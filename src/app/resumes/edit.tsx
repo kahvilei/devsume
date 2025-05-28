@@ -39,7 +39,7 @@ export default function EditResume({resume}: EditResumeProps) {
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
                     <ItemSelectFromDB
-                        type={"Category"}
+                        type={"Media"}
                         onSelect={() => {}}
                     />
                 </section>

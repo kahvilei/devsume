@@ -15,7 +15,7 @@ export function useSelection<T>(
     const [selectedItems, setSelectedItems] = useState<T[]>(initialItems);
 
     useEffect(() => {
-        // Update selected items to only include items from the source list, also update values within the selected items
+        // Update selected items to only include items from the source list, also upload values within the selected items
         let newSelectedItems = sourceList.filter(i => selectedItems.some(s => s[idField] === i[idField]));
         newSelectedItems = newSelectedItems.map(i => i = sourceList.find(s => s[idField] === i[idField])!);
         setSelectedItems(newSelectedItems);

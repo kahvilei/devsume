@@ -102,7 +102,7 @@ export const getMongooseParams = (query: URLSearchParams) => {
 };
 
 // Format query for display
-export const formatQuerySummary = <T>(query: DataQuery<T>): string => {
+export const formatQuerySummary = (query: DataQuery): string => {
     const parts: string[] = [];
 
     if (query.filter && Object.keys(query.filter).length > 0) {

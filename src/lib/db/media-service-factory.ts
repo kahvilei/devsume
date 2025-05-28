@@ -5,7 +5,6 @@ import { IMedia } from "@/server/models/Media";
 import fs from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp'; // For image processing
-import { v4 as uuidv4 } from 'uuid';
 import { createModelResolver } from "@/lib/db/model-resolver";
 import { dbOperation } from "@/lib/db/db-operation";
 import { createServiceFactory, ServiceFactory } from "@/lib/db/service-factory";
@@ -189,8 +188,13 @@ export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper ty
                     validateFile(file);
                     manageCacheSize();
 
-                    const mediaId = uuidv4();
-                    uploadDir = await ensureUploadDir(mediaId);
+                    const baseSlug = metadata.title || path.basename(file.originalname, path.extname(file.originalname));
+                    const slug = baseSlug
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+
+                    uploadDir = await ensureUploadDir(slug);
 
                     // Generate unique filename
                     const ext = path.extname(file.originalname);
@@ -201,19 +205,19 @@ export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper ty
                     await fs.writeFile(filePath, file.buffer);
 
                     // Generate thumbnails
-                    const thumbnails = await generateThumbnails(filePath, mediaId, file.mimetype);
+                    const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
 
                     // Generate blur data URL for images
                     const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
 
                     // Create database record matching your existing schema
                     const mediaData: Partial<IMedia> = {
-                        _id: mediaId,
                         filename,
                         title: metadata.title,
                         originalName: file.originalname,
                         path: filePath,
-                        url: `${mediaConfig.baseUrl}/${mediaId}`,
+                        url: `${mediaConfig.baseUrl}/${slug}/${filename}`,
+                        slug: slug,
                         size: file.size,
                         mimetype: file.mimetype,
                         alt: metadata.alt || '',
@@ -247,86 +251,18 @@ export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper ty
             });
         },
 
-        // Upload multiple files
         uploadFiles: (
             files: InternalFile[],
             metadata: MediaMetadata = {},
             type?: string
         ) => {
             return dbOperation(true, async () => {
-                if (!files || files.length === 0) {
-                    return createFailResponse('No files provided', 400);
-                }
-
-                const uploadedFiles = [];
-                const errors = [];
-
+                const responses = []
                 for (const file of files) {
-                    try {
-                        // Call uploadFile directly without dbOperation wrapper since we're already in one
-                        validateFile(file);
-                        manageCacheSize();
-
-                        const mediaId = uuidv4();
-                        const uploadDir = await ensureUploadDir(mediaId);
-
-                        try {
-                            const ext = path.extname(file.originalname);
-                            const filename = `original${ext}`;
-                            const filePath = path.join(uploadDir, filename);
-
-                            await fs.writeFile(filePath, file.buffer);
-
-                            const thumbnails = await generateThumbnails(filePath, mediaId, file.mimetype);
-                            const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
-
-                            const mediaData: Partial<IMedia> = {
-                                _id: mediaId,
-                                filename,
-                                title: metadata.title,
-                                originalName: file.originalname,
-                                path: filePath,
-                                url: `${mediaConfig.baseUrl}/${mediaId}`,
-                                size: file.size,
-                                mimetype: file.mimetype,
-                                alt: metadata.alt || '',
-                                caption: metadata.caption || '',
-                                blurDataUrl,
-                                createdAt: new Date(),
-                                metadata: {
-                                    description: metadata.description || '',
-                                    tags: metadata.tags || []
-                                }
-                            };
-
-                            const Model = await resolveModel(type);
-                            const entity = new Model(mediaData);
-                            await entity.save();
-
-                            uploadedFiles.push({
-                                ...entity.toObject(),
-                                thumbnails
-                            });
-                        } catch (error) {
-                            await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
-                            throw error;
-                        }
-                    } catch (error) {
-                        errors.push({
-                            file: file.originalname,
-                            error: error instanceof Error ? error.message : 'Unknown error'
-                        });
-                    }
+                    const res = await mediaMethods.uploadFile(file, metadata, type);
+                    responses.push(res);
                 }
-
-                if (uploadedFiles.length === 0) {
-                    return createFailResponse('All uploads failed', 400);
-                }
-
-                return createSuccessResponse({
-                    uploaded: uploadedFiles,
-                    errors: errors.length > 0 ? errors : undefined
-                });
+                return createSuccessResponse(responses)
             });
         },
 
@@ -417,7 +353,7 @@ export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper ty
                     );
 
                     if (!updatedEntity) {
-                        throw new Error('Failed to update entity');
+                        throw new Error('Failed to upload entity');
                     }
 
                     const responseData = {
