@@ -11,7 +11,7 @@ export default function PreviewCollaborator(
             window.location.href = `/tags/${item.getData().slug}`
         },
         size = "md",
-        className = 'rounded-full secondary btn-shadow-filled',
+        className = 'rounded btn-shadow-spread',
         disabled = false,
         setIsEditing,
     }: PreviewProps<ISkill>) {
@@ -40,10 +40,10 @@ export default function PreviewCollaborator(
                 <ActionIcon
                     onClick={() => setIsEditing(true)}
                     icon={<Pencil/>}
-                    tooltip={"Edit tag"}
+                    tooltip={"Edit collaborator"}
                     size="xs"
                     variant="btn-light"
-                    color="background"
+                    color="foreground"
                     radius="rounded-full"
                 />
             }
@@ -51,10 +51,10 @@ export default function PreviewCollaborator(
                 <ActionIcon
                     onClick={() => item.delete()}
                     icon={<Trash/>}
-                    tooltip="Delete tag"
+                    tooltip="Delete collaborator"
                     size="xs"
                     variant="btn-light"
-                    color="background"
+                    color="foreground"
                     radius="rounded-full"
                 />
             }

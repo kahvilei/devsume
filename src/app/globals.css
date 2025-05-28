@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-    color-scheme: dark;
+    color-scheme: light;
 }
 /*
   Tailwind Theme Configuration
@@ -1020,25 +1020,13 @@ main {
         }
 
         .modal-container {
-            @apply background-bg rounded-lg content-style-3 z-10 max-w-content mx-auto p-sm;
+            @apply flex flex-col gap-xs background-bg content-style-3 z-10 w-40 max-w-content p-xs;
             max-height: calc(100vh - 2rem);
-            overflow-x: visible;
             overflow-y: auto;
+            overflow-x: hidden;
 
             .modal-header {
-                @apply flex-between p-sm;
-            }
-
-            .modal-close {
-                @apply interactive rounded-full p-1;
-            }
-
-            .modal-body {
-                @apply p-sm;
-            }
-
-            .modal-footer {
-                @apply flex-between p-sm;
+                @apply flex-right;
             }
         }
     }

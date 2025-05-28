@@ -17,7 +17,6 @@ export const ItemPreview = observer(<T extends IBaseItem>(
         item,
         onClick = () => {
         },
-        openEditInModal = false,
     }: ItemOptionProps<T>) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -27,18 +26,18 @@ export const ItemPreview = observer(<T extends IBaseItem>(
 
     // Use provided Renderer or default
     const ItemRenderer = item.preview || DefaultRenderer;
+    const openEditInModal = true;
 
     return (
         <>
-            {!isEditing && (
-                <ItemRenderer
-                    item={item}
-                    setIsEditing={setIsEditing}
-                    onClick={() => {
-                        onClick(item);
-                    }}
-                />
-            )}
+            <ItemRenderer
+                item={item}
+                setIsEditing={setIsEditing}
+                onClick={() => {
+                    onClick(item);
+                }}
+            />
+
 
             {/* Render edit form */}
             {isEditing && (
