@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useId, useRef} from 'react';
 import Tooltip, { TooltipPosition } from "@/app/_components/layouts/Tooltip";
 import { Size } from "@/types/designTypes";
-import useOverlay from "@/app/_hooks/common/useOverlay";
-import PortalOverlay, {PortalOverlayProps} from "@/app/_components/layouts/PortalOverlay";
+import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
 
 export interface DropdownOption {
     value: string;
@@ -48,41 +47,33 @@ const Select: React.FC<SelectFieldProps> =
      }) => {
         const [selectedLabel, setSelectedLabel] = useState('' as React.ReactNode);
 
-        // Use our custom overlay hook
-        const {
-            isOpen,
-            toggle,
-            close,
-            triggerRef,
-            overlayProps
-        } = useOverlay({
-            placement: 'bottom',
-            matchWidth: true,
-            zIndex: 1, // Use the same z-index as in your CSS
-        });
-
         // Find selected option label when value changes
         useEffect(() => {
             const option = options.find(opt => opt.value === value);
             setSelectedLabel(option ? option.label : '');
         }, [value, options]);
 
+        const [selectOpen, setSelectOpen] = useState(false);
+        const triggerRef = useRef<HTMLDivElement>(null);
+
         // Handle keyboard navigation
         const handleKeyDown = (event: React.KeyboardEvent) => {
             if (disabled) return;
 
             if (event.key === 'Enter' || event.key === ' ') {
-                toggle();
+                setSelectOpen(!selectOpen);
                 event.preventDefault();
             } else if (event.key === 'Escape') {
-                close();
-            } else if (event.key === 'ArrowDown' && isOpen) {
+                setSelectOpen(false);
+                event.preventDefault();
+                event.stopPropagation();
+            } else if (event.key === 'ArrowDown' && selectOpen) {
                 event.preventDefault();
                 event.stopPropagation();
                 const currentIndex = options.findIndex(opt => opt.value === value);
                 const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
                 onChange(options[nextIndex].value);
-            } else if (event.key === 'ArrowUp' && isOpen) {
+            } else if (event.key === 'ArrowUp' && selectOpen) {
                 event.preventDefault();
                 event.stopPropagation();
                 const currentIndex = options.findIndex(opt => opt.value === value);
@@ -91,9 +82,11 @@ const Select: React.FC<SelectFieldProps> =
             }
         };
 
+        const overlayKey = useId();
+
         const handleOptionClick = (optionValue: string) => {
             onChange(optionValue);
-            close();
+            setSelectOpen(false);
         };
 
         const selectContent = (
@@ -103,13 +96,13 @@ const Select: React.FC<SelectFieldProps> =
             >
                 <div
                     ref={triggerRef}
-                    className={`select-trigger ${size} ${isOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
-                    onClick={disabled ? undefined : toggle}
+                    className={`select-trigger ${size} ${selectOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
+                    onClick={disabled ? undefined : () => setSelectOpen(!selectOpen)}
                     onKeyDown={handleKeyDown}
                     tabIndex={disabled ? -1 : 0}
                     role="combobox"
                     aria-label={label}
-                    aria-expanded={isOpen}
+                    aria-expanded={selectOpen}
                     aria-controls="select-options"
                     aria-required={required}
                     aria-haspopup="listbox"
@@ -125,14 +118,20 @@ const Select: React.FC<SelectFieldProps> =
                             viewBox="0 0 10 6"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className={isOpen ? 'rotate' : ''}
+                            className={selectOpen ? 'rotate' : ''}
                         >
                             <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </span>
                 </div>
 
-                <PortalOverlay {...overlayProps as PortalOverlayProps} className="select-dropdown">
+                <PortalOverlay
+                    targetRef={triggerRef as React.RefObject<HTMLElement>}
+                    isOpen={selectOpen}
+                    overlayKey={overlayKey}
+                    onClickOutside={() => setSelectOpen(false)}
+                    placement="bottom"
+                    className="select-dropdown">
                     <div
                         id="select-options"
                         role="listbox"

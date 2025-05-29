@@ -1,6 +1,8 @@
 import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
 import {Item} from "@/app/_data/Items/Item";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
+import {AnimatePresence} from "motion/react";
+import PopInOut from "@/app/_components/animations/PopInOut";
 
 type SingleSelectValue<T extends IBaseItem> = Item<T> | undefined;
 type MultipleSelectValue<T extends IBaseItem> = Item<T>[];
@@ -43,25 +45,29 @@ export const ItemSelectList = <T extends IBaseItem>(
 
     return (
         <ul role="listbox" className="item-select-list">
+            <AnimatePresence>
             {items.map(item =>
-                <li
-                    key={item.getData()._id}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleClick(item);
-                    }}
-                    role="option"
-                    aria-label={item.getData().title}
-                    aria-selected={isSelected(item)}
-                    className="flex items-center justify-between item-selector item cursor-pointer"
-                >
-                    <ItemPreview
-                        item={item}
-                        onClick={() => handleClick(item)}
-                    />
-                </li>
+                <PopInOut key={item.getData()._id}>
+                    <li
+
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleClick(item);
+                        }}
+                        role="option"
+                        aria-label={item.getData().title}
+                        aria-selected={isSelected(item)}
+                        className="flex items-center justify-between item-selector item cursor-pointer"
+                    >
+                        <ItemPreview
+                            item={item}
+                            onClick={() => handleClick(item)}
+                        />
+                    </li>
+                </PopInOut>
             )}
+            </AnimatePresence>
         </ul>
     );
 };

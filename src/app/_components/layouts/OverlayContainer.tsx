@@ -1,13 +1,14 @@
-'use client'
-import {AnimatePresence} from "motion/react";
-import React, {useContext} from "react";
+"use client";
+import { AnimatePresence } from "motion/react";
+import React, { useContext } from "react";
 import OverlayContext from "@/app/_data/Overlay/OverlayContext";
 
 export const OverlayContainer: React.FC = () => {
-    const {overlay} = useContext(OverlayContext);
+    const { overlays } = useContext(OverlayContext);
+
     return (
         <AnimatePresence>
-            {overlay}
+            {overlays.map((overlay) => overlay.content)}
         </AnimatePresence>
-    )
-}
+    );
+};

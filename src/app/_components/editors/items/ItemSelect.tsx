@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from "react";
 import { Database, ListPlus, Undo, X, Edit3 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { IBaseItem } from "@/server/models/schemas/IBaseItem";
@@ -127,6 +127,7 @@ export const ItemSelect = observer(<T extends IBaseItem>(
     }, [selectMode, enableQuery, isDynamic, onSelect]);
 
     const displayValue = isDynamic ? queryResults : selectMode === "single" ? selectedItem : selectedItems;
+    const overlayKey = useId();
 
     const controls = (
         <div className={`selector-controls ${controlsOpen ? "open" : "closed"}`}>
@@ -213,7 +214,7 @@ export const ItemSelect = observer(<T extends IBaseItem>(
                     icon={<Edit3 />}
                     size="sm"
                     variant="btn-default"
-                    className="absolute top-1 right-1 z-10 rounded-full background-bg"
+                    className="absolute top-1 right-1 rounded-full background-bg"
                     tooltip="Edit Selection"
                     onClick={() => setControlsOpen(!controlsOpen)}
                 />
@@ -224,6 +225,7 @@ export const ItemSelect = observer(<T extends IBaseItem>(
                 <PortalOverlay
                     targetRef={renderBoxRef as React.RefObject<HTMLElement>}
                     isOpen={controlsOpen}
+                    overlayKey={overlayKey}
                     onClickOutside={() => setControlsOpen(false)}
                     placement="bottom"
                     className="popover-controls"
