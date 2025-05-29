@@ -1020,7 +1020,7 @@ main {
         }
 
         .modal-container {
-            @apply flex flex-col gap-xs background-bg content-style-3 z-10 w-40 max-w-content p-xs;
+            @apply flex flex-col gap-xs background-bg content-style-3 z-10 max-w-content p-xs;
             max-height: calc(100vh - 2rem);
             overflow-y: auto;
             overflow-x: hidden;

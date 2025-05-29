@@ -44,13 +44,26 @@ export class Item<T extends ItemInterface = ItemInterface> {
         this.loading = false;
     }
 
+    async setDataAndSaveAsForm(data: T) {
+        this.data = data;
+        this.loading = true;
+        const response = await this.store.updateItemAsForm(this.data, this.discriminatorType)
+        if (response.error){
+            this.error = response.error;
+        }
+        if (response.warning){
+            this.warning = response.warning;
+        }
+        this.loading = false;
+    }
+
     async setDataAndSave(data: T) {
         this.data = data;
         await this.save();
     }
 
     async delete() {
-        await this.store.deleteItem(this.data);
+        await this.store.deleteItem(this.data, this.discriminatorType);
     }
 
 }

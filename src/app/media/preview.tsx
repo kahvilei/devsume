@@ -1,27 +1,28 @@
 import React, {useState} from "react";
 import {PreviewProps} from "@/interfaces/data";
-import {IImage} from "@/custom/media/image/model";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
 import {Download, Maximize2, Pencil, Trash} from "lucide-react";
 import Modal from "@/app/_components/layouts/Modal";
+import {IMedia} from "@/server/models/Media";
+import Image from "next/image";
 
-export default function PreviewImage(
+export default function PreviewMedia(
     {
         item,
         onClick = () => {
         },
-        size = "md",
+        size = "xs",
         className = '',
         disabled = false,
         setIsEditing,
-    }: PreviewProps<IImage>) {
-    const image = item.getData();
+    }: PreviewProps<IMedia>) {
+    const media = item.getData();
     const [showFullsize, setShowFullsize] = useState(false);
     const [imageError, setImageError] = useState(false);
 
     // Size mappings for the preview
     const sizeClasses = {
-        xs: 'h-16 w-16',
+        xs: 'h-16',
         sm: 'h-24 w-24',
         md: 'h-32 w-32',
         lg: 'h-48 w-48',
@@ -30,12 +31,12 @@ export default function PreviewImage(
 
     const handleDownload = async () => {
         try {
-            const response = await fetch(image.url);
+            const response = await fetch(media.url);
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = image.originalName || image.filename || 'image';
+            a.download = media.originalName || media.filename || 'image';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -46,7 +47,7 @@ export default function PreviewImage(
     };
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this image?')) {
+        if (window.confirm('Are you sure you want to delete this media?')) {
             await item.delete();
         }
     };
@@ -80,10 +81,14 @@ export default function PreviewImage(
             >
                 {/* Image */}
                 {!imageError ? (
-                    <img
-                        src={image.url}
-                        alt={image.alt || image.title}
+                    <Image
+                        src={media.url}
+                        alt={media.alt || media.title}
+                        width={parseInt(media.width??"100")}
+                        height={parseInt(media.height??"100")}
                         className="w-full h-full object-cover"
+                        placeholder="blur"
+                        blurDataURL={media.url}
                         onError={() => setImageError(true)}
                         loading="lazy"
                     />
@@ -149,10 +154,7 @@ export default function PreviewImage(
                 {/* Image info tooltip */}
                 <div
                     className="absolute bottom-0 left-0 right-0 bg-dark/80 text-background text-xs p-xxs opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="truncate">{image.title}</div>
-                    <div className="text-[10px] opacity-70">
-                        {formatFileSize(image.size)} • {image.width && image.height && `${image.width}×${image.height}`}
-                    </div>
+                    <div className="truncate">{media.title}</div>
                 </div>
             </div>
 
@@ -160,26 +162,29 @@ export default function PreviewImage(
             {showFullsize && (
                 <Modal isOpen={showFullsize} onClose={() => setShowFullsize(false)}>
                     <div className="flex flex-col gap-xs">
-                        <h2 className="text-h3">{image.title}</h2>
+                        <h2 className="text-h3">{media.title}</h2>
 
                         <div className="relative max-h-[70vh] overflow-auto">
-                            <img
-                                src={image.url}
-                                alt={image.alt || image.title}
-                                className="w-full h-auto"
+                            <Image
+                                src={media.url}
+                                alt={media.alt || media.title}
+                                width={parseInt(media.width??"100")}
+                                height={parseInt(media.height??"100")}
+                                className="w-full h-full object-cover"
+                                placeholder="blur"
+                                blurDataURL={media.url}
+                                onError={() => setImageError(true)}
+                                loading="lazy"
                             />
                         </div>
 
                         <div className="flex flex-col gap-xxs text-sm">
-                            {image.caption && (
-                                <p className="italic">{image.caption}</p>
+                            {media.caption && (
+                                <p className="italic">{media.caption}</p>
                             )}
                             <div className="flex gap-xs text-xs opacity-70">
-                                <span>Size: {formatFileSize(image.size)}</span>
-                                {image.width && image.height && (
-                                    <span>• Dimensions: {image.width}×{image.height}</span>
-                                )}
-                                <span>• Type: {image.mimetype}</span>
+                                <span>Size: {formatFileSize(media.size)}</span>
+                                <span>• Type: {media.mimetype}</span>
                             </div>
                         </div>
 

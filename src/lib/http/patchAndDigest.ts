@@ -3,7 +3,7 @@ import {createFailResponse, ResponseObject} from "@/lib/db/utils";
 
 export const patchAndDigest = async <T>(
     url: string,
-    data: Partial<T>,
+    data: Partial<T> | FormData,
     setData: (data: T) => void,
     setError: (error: string) => void,
     setWarning: (warning: string) => void
@@ -26,7 +26,7 @@ export const patchAndDigest = async <T>(
 
 export const patchAndReturn = async <T> (
     url: string,
-    data: Partial<T>,
+    data: Partial<T> | FormData,
 ) => {
     try {
         const response = await axios.patch<ResponseObject>(url, data);

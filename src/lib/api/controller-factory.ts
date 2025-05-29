@@ -23,14 +23,8 @@ export const createController = <TInterface extends IBaseItem>(
 
         post: async (request: NextRequest, { params }: PageProps) => {
             try {
-                const session = await getServerSession(authOptions);
-                if (!session) {
-                    return createFailResponse('Unauthorized', 401);
-                }
-
                 const document = await request.json();
                 const type = (await params).type;
-
                 if (!type) {
                     return createFailResponse('Type parameter is required', 400);
                 }
@@ -48,11 +42,9 @@ export const createController = <TInterface extends IBaseItem>(
             try {
                 const type = (await params).type;
                 const slug = (await params).slug;
-
                 if (!slug) {
                     return createFailResponse('Slug parameter is required', 400);
                 }
-
                 return await service.getBySlug(slug, type??undefined);
             } catch (error) {
                 console.error('GET by slug error:', error);
@@ -62,20 +54,13 @@ export const createController = <TInterface extends IBaseItem>(
 
         patch: async (request: NextRequest, { params }: PageProps) => {
             try {
-                const session = await getServerSession(authOptions);
-                if (!session) {
-                    return createFailResponse('Unauthorized', 401);
-                }
-
                 const type = (await params).type;
-                const id = (await params).slug;
-
-                if (!id) {
-                    return createFailResponse('ID parameter is required', 400);
+                const slug = (await params).slug;
+                if (!slug) {
+                    return createFailResponse('Slug parameter is required', 400);
                 }
-
                 const document = await request.json();
-                return await service.update(id, document, type??undefined);
+                return await service.update(slug, document, type??undefined);
             } catch (error) {
                 console.error('PATCH error:', error);
                 if (error instanceof SyntaxError) {
@@ -87,19 +72,12 @@ export const createController = <TInterface extends IBaseItem>(
 
         delete: async (request: NextRequest, { params }: PageProps) => {
             try {
-                const session = await getServerSession(authOptions);
-                if (!session) {
-                    return createFailResponse('Unauthorized', 401);
-                }
-
                 const type = (await params).type;
-                const id = (await params).slug;
-
-                if (!id) {
+                const slug = (await params).slug;
+                if (!slug) {
                     return createFailResponse('ID parameter is required', 400);
                 }
-
-                return await service.delete(id, type??undefined);
+                return await service.delete(slug, type??undefined);
             } catch (error) {
                 console.error('DELETE error:', error);
                 return createFailResponse('Failed to delete resource', 500);

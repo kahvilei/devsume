@@ -3,7 +3,7 @@ import {createFailResponse, ResponseObject} from "@/lib/db/utils";
 
 export const postAndDigest = async <T>(
     url: string,
-    data: T,
+    data: T | FormData,
     setData: (data: T) => void,
     setError: (error: string) => void,
     setWarning: (warning: string) => void
@@ -26,7 +26,7 @@ export const postAndDigest = async <T>(
 
 export const postAndReturn = async <T>(
     url: string,
-    data: T,
+    data: T | FormData,
 )=> {
     try {
         const response = await axios.post<ResponseObject>(url, data);

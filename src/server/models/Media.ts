@@ -17,7 +17,9 @@ export interface IMedia extends IBaseItem{
         description: string;
         tags: string[];
     };
-    formData?: FormData; //only exists front-side for upload
+    file?: File; //only exists front-side for upload
+    width?: string;
+    height?: string;
 }
 export const MediaSchemaDefinition = {
     ...ItemBaseSchema,
@@ -35,7 +37,9 @@ export const MediaSchemaDefinition = {
     metadata: {
         description: { type: String },
         tags: [{ type: String }]
-    }
+    },
+    width: { type: String },
+    height: { type: String },
 };
 
 const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);

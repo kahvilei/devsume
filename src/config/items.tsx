@@ -12,8 +12,8 @@ import {IResume} from "@/server/models/Resume";
 import {IMedia} from "@/server/models/Media";
 import {ICategory} from "@/server/models/Category";
 import {IImage} from "@/custom/media/image/model";
-import PreviewImage from "@/custom/media/image/preview";
-import EditImage from "@/custom/media/image/edit";
+import PreviewImage from "@/app/media/preview";
+import EditImage from "@/app/media/edit";
 
 export interface ItemConfig<T extends IBaseItem> {
   api: string;

@@ -2,9 +2,9 @@
 import { createFailResponse, createSuccessResponse, ResponseObject } from "@/lib/db/utils";
 import { Model, Document } from "mongoose";
 import { IMedia } from "@/server/models/Media";
-import fs from 'fs/promises';
-import path from 'path';
-import sharp from 'sharp'; // For image processing
+import fs from "fs/promises";
+import path from "path";
+import sharp from "sharp";
 import { createModelResolver } from "@/lib/db/model-resolver";
 import { dbOperation } from "@/lib/db/db-operation";
 import { createServiceFactory, ServiceFactory } from "@/lib/db/service-factory";
@@ -12,7 +12,7 @@ import { createServiceFactory, ServiceFactory } from "@/lib/db/service-factory";
 // File upload configuration
 export interface MediaUploadConfig {
     uploadDir: string;
-    baseUrl: string; // Base URL for serving files
+    baseUrl: string;
     maxFileSize: number;
     allowedMimeTypes: string[];
     generateThumbnails: boolean;
@@ -20,27 +20,18 @@ export interface MediaUploadConfig {
     generateBlurDataUrl: boolean;
 }
 
-// Default configuration with absolute path
 const defaultConfig: MediaUploadConfig = {
-    uploadDir: path.join(process.cwd(), 'uploads'), // Fixed: absolute path
-    baseUrl: '/api/media', // Fixed: removed .ts extension
+    uploadDir: path.join(process.cwd(), "uploads"),
+    baseUrl: "/api/media",
     maxFileSize: 10 * 1024 * 1024, // 10MB
-    allowedMimeTypes: [
-        'image/jpeg',
-        'image/png',
-        'image/webp',
-        'image/gif',
-        'video/mp4',
-        'video/webm',
-        'application/pdf'
-    ],
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/webm", "application/pdf"],
     generateThumbnails: true,
     thumbnailSizes: [
-        { width: 150, height: 150, suffix: 'thumb' },
-        { width: 300, height: 300, suffix: 'medium' },
-        { width: 800, height: 600, suffix: 'large' }
+        { width: 150, height: 150, suffix: "thumb" },
+        { width: 300, height: 300, suffix: "medium" },
+        { width: 800, height: 600, suffix: "large" },
     ],
-    generateBlurDataUrl: true
+    generateBlurDataUrl: true,
 };
 
 interface InternalFile {
@@ -50,7 +41,6 @@ interface InternalFile {
     size: number;
 }
 
-// Properly typed metadata
 interface MediaMetadata {
     title?: string;
     alt?: string;
@@ -66,99 +56,70 @@ export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceF
     getFileStream: (id: string, thumbnailType?: string, type?: string) => Promise<ResponseObject>;
     replaceFile: (id: string, file: InternalFile, type?: string) => Promise<ResponseObject>;
     getWithThumbnails: (id: string, type?: string) => Promise<ResponseObject>;
+    deleteAndClean: (id: string, type: string) => Promise<ResponseObject>;
 }
 
-/**
- * Enhanced media service factory with file upload capabilities
- */
-export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper type constraint
+export const createMediaServiceFactory = <T extends IMedia>(
     defaultModel: Model<Document<T>>,
     customPath: string,
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
 ): MediaServiceFactory<T> => {
     const modelCache = new Map<string, Model<Document<T>>>();
-    const MAX_CACHE_SIZE = 100; // Prevent memory leak
+    const MAX_CACHE_SIZE = 100; // Prevent memory leaks
 
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
     const mediaConfig = { ...defaultConfig, ...config };
 
-    // Cache size management
+    // Cache management
     const manageCacheSize = () => {
         if (modelCache.size > MAX_CACHE_SIZE) {
-            const firstKey = modelCache.keys().next().value;
-            if (firstKey) modelCache.delete(firstKey);
+            const [firstKey] = modelCache.keys();
+            modelCache.delete(firstKey);
         }
     };
 
-    // Utility functions
-    const ensureUploadDir = async (mediaId: string) => {
+    // Utilities
+    const ensureUploadDir = async (mediaId: string): Promise<string> => {
         const uploadPath = path.join(mediaConfig.uploadDir, mediaId);
         await fs.mkdir(uploadPath, { recursive: true });
         return uploadPath;
     };
 
-    const validateFile = (file: { size: number; mimetype: string }) => {
-        if (!file.size || !file.mimetype) {
-            throw new Error('Invalid file: missing size or mimetype');
-        }
-        if (file.size > mediaConfig.maxFileSize) {
-            throw new Error(`File size exceeds maximum allowed size of ${mediaConfig.maxFileSize} bytes`);
-        }
-        if (!mediaConfig.allowedMimeTypes.includes(file.mimetype)) {
-            throw new Error(`File type ${file.mimetype} is not allowed`);
-        }
+    const validateFile = ({ size, mimetype }: InternalFile) => {
+        if (!size || !mimetype) throw new Error("Invalid file: missing size or mimetype");
+        if (size > mediaConfig.maxFileSize) throw new Error(`File size exceeds max allowed size of ${mediaConfig.maxFileSize} bytes`);
+        if (!mediaConfig.allowedMimeTypes.includes(mimetype)) throw new Error(`File type ${mimetype} is not allowed`);
     };
 
-    const generateThumbnails = async (
-        filePath: string,
-        mediaId: string,
-        mimetype: string
-    ): Promise<{ [key: string]: string }> => {
-        if (!mediaConfig.generateThumbnails || !mimetype.startsWith('image/')) {
-            return {};
-        }
-
-        const thumbnails: { [key: string]: string } = {};
+    const generateThumbnails = async (filePath: string, mediaId: string, mimetype: string): Promise<Record<string, string>> => {
+        if (!mediaConfig.generateThumbnails || !mimetype.startsWith("image/")) return {};
+        const thumbnails: Record<string, string> = {};
         const uploadDir = path.join(mediaConfig.uploadDir, mediaId);
 
-        try {
-            for (const size of mediaConfig.thumbnailSizes) {
-                const thumbnailName = `${size.suffix}.webp`;
-                const thumbnailPath = path.join(uploadDir, thumbnailName);
+        for (const { width, height, suffix } of mediaConfig.thumbnailSizes) {
+            const thumbnailName = `${suffix}.webp`;
+            const thumbnailPath = path.join(uploadDir, thumbnailName);
 
-                await sharp(filePath)
-                    .resize(size.width, size.height, { fit: 'cover' })
-                    .webp({ quality: 80 })
-                    .toFile(thumbnailPath);
-
-                thumbnails[size.suffix] = `${mediaConfig.baseUrl}/${mediaId}?thumbnail=${size.suffix}`;
+            try {
+                await sharp(filePath).resize(width, height, { fit: "cover" }).webp({ quality: 80 }).toFile(thumbnailPath);
+                thumbnails[suffix] = `${mediaConfig.baseUrl}/${mediaId}?thumbnail=${suffix}`;
+            } catch (error) {
+                console.error(`Error generating thumbnail (${suffix}):`, error);
             }
-        } catch (error) {
-            console.error('Error generating thumbnails:', error);
-            // Continue without thumbnails rather than failing the upload
         }
-
         return thumbnails;
     };
 
     const generateBlurDataUrl = async (filePath: string, mimetype: string): Promise<string> => {
-        if (!mediaConfig.generateBlurDataUrl || !mimetype.startsWith('image/')) {
-            return '';
-        }
-
+        if (!mediaConfig.generateBlurDataUrl || !mimetype.startsWith("image/")) return "";
         try {
-            const buffer = await sharp(filePath)
-                .resize(10, 10, { fit: 'cover' })
-                .blur(1)
-                .jpeg({ quality: 20 })
-                .toBuffer();
-
-            return `data:image/jpeg;base64,${buffer.toString('base64')}`;
+            const buffer = await sharp(filePath).resize(10, 10, { fit: "cover" }).blur(1).jpeg({ quality: 20 }).toBuffer();
+            return `data:image/jpeg;base64,${buffer.toString("base64")}`;
         } catch (error) {
-            console.error('Error generating blur data URL:', error);
-            return '';
+            console.error("Error generating blur data URL:", error);
+            return "";
         }
     };
 
@@ -167,245 +128,168 @@ export const createMediaServiceFactory = <T extends IMedia>( // Fixed: proper ty
             const uploadDir = path.dirname(mediaEntity.path);
             await fs.rm(uploadDir, { recursive: true, force: true });
         } catch (error) {
-            console.error('Error cleaning up files:', error);
+            console.error("Error cleaning up files:", error);
         }
     };
 
-    // Base CRUD operations
-    const baseMethods = createServiceFactory<T>(defaultModel, customPath, entityName);
+    const buildSlug = (base: string) =>
+        base.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-    const mediaMethods: Omit<MediaServiceFactory<T>, keyof ServiceFactory<T>> = {
-        // Upload single file
-        uploadFile: (
-            file: InternalFile,
-            metadata: MediaMetadata = {},
-            type?: string
-        ) => {
-            return dbOperation(true, async () => {
-                let uploadDir: string | null = null;
+    // Media methods
+    const uploadFile = async (file: InternalFile, metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            validateFile(file);
+            manageCacheSize();
 
-                try {
-                    validateFile(file);
-                    manageCacheSize();
+            const slug = buildSlug(metadata.title || path.basename(file.originalname, path.extname(file.originalname)));
+            const uploadDir = await ensureUploadDir(slug);
 
-                    const baseSlug = metadata.title || path.basename(file.originalname, path.extname(file.originalname));
-                    const slug = baseSlug
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, '-')
-                        .replace(/^-+|-+$/g, '');
+            try {
+                const filename = `original${path.extname(file.originalname)}`;
+                const filePath = path.join(uploadDir, filename);
 
-                    uploadDir = await ensureUploadDir(slug);
+                await fs.writeFile(filePath, file.buffer);
+                const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
+                const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
 
-                    // Generate unique filename
-                    const ext = path.extname(file.originalname);
-                    const filename = `original${ext}`;
-                    const filePath = path.join(uploadDir, filename);
+                const mediaData: Partial<IMedia> = {
+                    ...metadata,
+                    filename,
+                    originalName: file.originalname,
+                    path: filePath,
+                    url: `${mediaConfig.baseUrl}/${slug}/${filename}`,
+                    slug,
+                    size: file.size,
+                    mimetype: file.mimetype,
+                    blurDataUrl,
+                    createdAt: new Date(),
+                };
 
-                    // Save file
-                    await fs.writeFile(filePath, file.buffer);
-
-                    // Generate thumbnails
-                    const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
-
-                    // Generate blur data URL for images
-                    const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
-
-                    // Create database record matching your existing schema
-                    const mediaData: Partial<IMedia> = {
-                        filename,
-                        title: metadata.title,
-                        originalName: file.originalname,
-                        path: filePath,
-                        url: `${mediaConfig.baseUrl}/${slug}/${filename}`,
-                        slug: slug,
-                        size: file.size,
-                        mimetype: file.mimetype,
-                        alt: metadata.alt || '',
-                        caption: metadata.caption || '',
-                        blurDataUrl,
-                        createdAt: new Date(),
-                        metadata: {
-                            description: metadata.description || '',
-                            tags: metadata.tags || []
-                        }
-                    };
-
-                    const Model = await resolveModel(type);
-                    const entity = new Model(mediaData);
-                    await entity.save();
-
-                    // Add thumbnail URLs to response
-                    const responseData = {
-                        ...entity.toObject(),
-                        thumbnails
-                    };
-
-                    return createSuccessResponse(responseData);
-                } catch (error) {
-                    // Clean up on error
-                    if (uploadDir) {
-                        await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
-                    }
-                    throw error;
-                }
-            });
-        },
-
-        uploadFiles: (
-            files: InternalFile[],
-            metadata: MediaMetadata = {},
-            type?: string
-        ) => {
-            return dbOperation(true, async () => {
-                const responses = []
-                for (const file of files) {
-                    const res = await mediaMethods.uploadFile(file, metadata, type);
-                    responses.push(res);
-                }
-                return createSuccessResponse(responses)
-            });
-        },
-
-        // Get file metadata (renamed from getFileStream for clarity)
-        getFileStream: (id: string, thumbnailType?: string, type?: string) => {
-            return dbOperation(false, async () => {
                 const Model = await resolveModel(type);
-                const entity = await Model.findById(id) as T;
+                const entity = new Model(mediaData);
+                await entity.save();
 
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-                }
-
-                let filePath = entity.path;
-                let mimetype = entity.mimetype;
-
-                // If thumbnail requested, try to find it
-                if (thumbnailType) {
-                    const uploadDir = path.dirname(entity.path);
-                    const thumbnailPath = path.join(uploadDir, `${thumbnailType}.webp`);
-
-                    try {
-                        await fs.access(thumbnailPath);
-                        filePath = thumbnailPath;
-                        mimetype = 'image/webp';
-                    } catch {
-                        // Fallback to original file
-                    }
-                }
-
-                return createSuccessResponse({
-                    filePath,
-                    mimetype,
-                    filename: entity.filename,
-                    originalName: entity.originalName,
-                    size: entity.size
-                });
-            });
-        },
-
-        // Replace file (keep same ID and metadata, replace file)
-        replaceFile: (
-            id: string,
-            file: InternalFile,
-            type?: string
-        ) => {
-            return dbOperation(true, async () => {
-                let uploadDir: string | null = null;
-
-                try {
-                    validateFile(file);
-
-                    const Model = await resolveModel(type);
-                    const entity = await Model.findById(id) as T;
-
-                    if (!entity) {
-                        return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-                    }
-
-                    // Clean up old files
-                    await cleanupFiles(entity);
-
-                    // Upload new file using same ID
-                    uploadDir = await ensureUploadDir(id);
-                    const ext = path.extname(file.originalname);
-                    const filename = `original${ext}`;
-                    const filePath = path.join(uploadDir, filename);
-
-                    await fs.writeFile(filePath, file.buffer);
-
-                    // Generate new thumbnails and blur data
-                    const thumbnails = await generateThumbnails(filePath, id, file.mimetype);
-                    const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
-
-                    // Update database record
-                    const updatedEntity = await Model.findByIdAndUpdate(
-                        id,
-                        {
-                            filename,
-                            originalName: file.originalname,
-                            path: filePath,
-                            size: file.size,
-                            mimetype: file.mimetype,
-                            blurDataUrl,
-                            updatedAt: new Date()
-                        },
-                        { new: true }
-                    );
-
-                    if (!updatedEntity) {
-                        throw new Error('Failed to upload entity');
-                    }
-
-                    const responseData = {
-                        ...updatedEntity.toObject(),
-                        thumbnails
-                    };
-
-                    return createSuccessResponse(responseData);
-                } catch (error) {
-                    // Clean up on error
-                    if (uploadDir) {
-                        await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
-                    }
-                    throw error;
-                }
-            });
-        },
-
-        // Get media with thumbnail URLs
-        getWithThumbnails: (id: string, type?: string) => {
-            return dbOperation(false, async () => {
-                const Model = await resolveModel(type);
-                const entity = await Model.findById(id).lean() as T;
-
-                if (!entity) {
-                    return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-                }
-
-                const thumbnails: { [key: string]: string } = {};
-
-                // Generate thumbnail URLs for existing thumbnails
-                for (const size of mediaConfig.thumbnailSizes) {
-                    const thumbnailPath = path.join(path.dirname(entity.path), `${size.suffix}.webp`);
-                    try {
-                        await fs.access(thumbnailPath);
-                        thumbnails[size.suffix] = `${mediaConfig.baseUrl}/${id}?thumbnail=${size.suffix}`;
-                    } catch {
-                        // Thumbnail doesn't exist
-                    }
-                }
-
-                return createSuccessResponse({
-                    ...entity,
-                    thumbnails
-                });
-            });
-        }
+                return createSuccessResponse({ ...entity.toObject(), thumbnails });
+            } catch (error) {
+                await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
+                throw error;
+            }
+        });
     };
 
+    const uploadFiles = async (files: InternalFile[], metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
+        const results = await Promise.all(files.map(file => uploadFile(file, metadata, type)));
+        return createSuccessResponse(results);
+    };
+
+    const getFileStream = async (id: string, thumbnailType?: string, type?: string): Promise<ResponseObject> => {
+        return dbOperation(false, async () => {
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id) as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            let filePath = entity.path;
+            let mimetype = entity.mimetype;
+
+            if (thumbnailType) {
+                const thumbnailPath = path.join(path.dirname(entity.path), `${thumbnailType}.webp`);
+                try {
+                    await fs.access(thumbnailPath);
+                    filePath = thumbnailPath;
+                    mimetype = "image/webp";
+                } catch {
+                    // Fallback to original file
+                }
+            }
+
+            return createSuccessResponse({ filePath, mimetype, filename: entity.filename, originalName: entity.originalName, size: entity.size });
+        });
+    };
+
+    const replaceFile = async (id: string, file: InternalFile, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            validateFile(file);
+
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id) as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            await cleanupFiles(entity);
+
+            const slug = buildSlug(entity.title || path.basename(file.originalname, path.extname(file.originalname)));
+            const uploadDir = await ensureUploadDir(slug);
+
+            try {
+                const filename = `original${path.extname(file.originalname)}`;
+                const filePath = path.join(uploadDir, filename);
+
+                await fs.writeFile(filePath, file.buffer);
+
+                const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
+                const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
+
+                const updatedEntity = await Model.findByIdAndUpdate(
+                    id,
+                    { filename, originalName: file.originalname, path: filePath, url: `${mediaConfig.baseUrl}/${slug}/${filename}`, size: file.size, mimetype: file.mimetype, blurDataUrl, updatedAt: new Date() },
+                    { new: true }
+                );
+
+                if (!updatedEntity) throw new Error("Failed to upload entity");
+                return createSuccessResponse({ ...updatedEntity.toObject(), thumbnails });
+            } catch (error) {
+                await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
+                throw error;
+            }
+        });
+    };
+
+    const getWithThumbnails = async (id: string, type?: string): Promise<ResponseObject> => {
+        return dbOperation(false, async () => {
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id).lean() as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            const thumbnails: Record<string, string> = {};
+            for (const { suffix } of mediaConfig.thumbnailSizes) {
+                const thumbnailPath = path.join(path.dirname(entity.path), `${suffix}.webp`);
+                try {
+                    await fs.access(thumbnailPath);
+                    thumbnails[suffix] = `${mediaConfig.baseUrl}/${id}?thumbnail=${suffix}`;
+                } catch {
+                    // Thumbnail doesn't exist
+                    return createFailResponse(`No thumbnail found for ${entityNameLower} with ID ${id}`, 404);
+                }
+            }
+
+            return createSuccessResponse({ ...entity, thumbnails });
+        });
+    };
+
+    const deleteAndClean = async (id: string, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id).lean() as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            await cleanupFiles(entity);
+            const result = await Model.findByIdAndDelete(id);
+            return result ? createSuccessResponse(result) : createFailResponse(`Failed to delete ${entityNameLower}`);
+        });
+    };
+
+    // Return combined methods
     return {
-        ...baseMethods,
-        ...mediaMethods,
-        clearCache: () => modelCache.clear()
+        ...createServiceFactory<T>(defaultModel, customPath, entityName),
+        uploadFile,
+        uploadFiles,
+        getFileStream,
+        replaceFile,
+        getWithThumbnails,
+        deleteAndClean,
+        clearCache: () => modelCache.clear(),
     };
 };

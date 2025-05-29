@@ -353,6 +353,7 @@ export class ItemService<T extends ItemInterface> {
     // Update an existing item, falls back to create if there is no id
     async updateItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
+        console.log(item);
         if (!item._id) {
             return this.createItem(item, type);
         }
@@ -373,6 +374,7 @@ export class ItemService<T extends ItemInterface> {
     // Delete an item
     async deleteItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
+        console.log(item);
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await deleteAndReturn(apiPath + item._id);
 
@@ -405,5 +407,47 @@ export class ItemService<T extends ItemInterface> {
 
     getIcon(type: string) {
         return this.getConfig(type).icon;
+    }
+
+    //for Items that are reliant on media uploads
+    async updateItemAsForm(data: T, type: string) {
+        const form = new FormData();
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const element = data[key];
+                if (element instanceof File) {
+                    form.append(key, element, element.name);
+                } else {
+                    form.append(key, element as string);
+                }
+            }
+        }
+        const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
+        let serverResponse = undefined;
+        if (!data._id) {
+            serverResponse = this.executeOperation(async () => {
+                const response = await postAndReturn<T>(apiPath, form);
+
+                // Update items map if successful
+                if (!response.error && response.content) {
+                    this.updateItemsMap([response.content as T]);
+                }
+
+                return response;
+            });
+        } else {
+            serverResponse = this.executeOperation(async () => {
+                const response = await patchAndReturn<T>(apiPath + data._id, form);
+
+                // Update items map if successful
+                if (!response.error && response.content) {
+                    this.updateItemsMap([response.content as T]);
+                }
+
+                return response;
+            });
+        }
+        return serverResponse;
+
     }
 }

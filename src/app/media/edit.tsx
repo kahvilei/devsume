@@ -1,18 +1,17 @@
 import React, { useState, useRef } from "react";
 import { EditProps } from "@/interfaces/data";
-import { IImage } from "@/custom/media/image/model";
 import WysiwygText from "@/app/_components/input/WysiwygText";
 import { Save, Upload, X, Image as ImageIcon } from "lucide-react";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
-import axios from "axios";
+import {IMedia} from "@/server/models/Media";
 
-export default function EditImage({ item, onCancel }: EditProps<IImage>) {
-    const image = item.getData();
-    const [title, setTitle] = useState(image.title);
-    const [alt, setAlt] = useState(image.alt || '');
-    const [caption, setCaption] = useState(image.caption || '');
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>(image.url || '');
+export default function EditMedia({ item, onCancel }: EditProps<IMedia>) {
+    const media = item.getData();
+    const [title, setTitle] = useState(media.title);
+    const [alt, setAlt] = useState(media.alt || '');
+    const [caption, setCaption] = useState(media.caption || '');
+    const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+    const [previewUrl, setPreviewUrl] = useState<string>(media.url || '');
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,21 +19,13 @@ export default function EditImage({ item, onCancel }: EditProps<IImage>) {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                setUploadError('Please select an image file');
-                return;
-            }
-
             // Validate file size (10MB limit by default)
             if (file.size > 10 * 1024 * 1024) {
                 setUploadError('File size must be less than 10MB');
                 return;
             }
-
             setSelectedFile(file);
             setUploadError('');
-
             // Create preview URL
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -47,53 +38,13 @@ export default function EditImage({ item, onCancel }: EditProps<IImage>) {
     const handleSave = async () => {
         setUploading(true);
         setUploadError('');
-
         try {
-            let finalImageData = { ...image, title, alt, caption };
-
-            // If there's a new file, upload it
-            if (selectedFile) {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                formData.append('title', title);
-                formData.append('alt', alt);
-                formData.append('caption', caption);
-
-                if (image._id) {
-                    // Replace existing image
-                    const response = await axios.post(
-                        `/api/media/image/${image._id}/replace`,
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        }
-                    );
-                    finalImageData = response.data.content;
-                } else {
-                    // Upload new image
-                    const response = await axios.post(
-                        '/api/media/image/upload',
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        }
-                    );
-                    finalImageData = response.data.content;
-                }
-            } else if (image._id) {
-                // Just upload metadata
-                await item.setDataAndSave(finalImageData);
-            }
-
+            await item.setDataAndSaveAsForm({ ...media, title, alt, caption, file: selectedFile });
             onCancel();
         } catch (error) {
             console.error('Upload error:', error);
             setUploadError(
-                error instanceof Error ? error.message : 'Failed to upload image'
+                error instanceof Error ? error.message : 'Failed to upload media'
             );
         } finally {
             setUploading(false);
