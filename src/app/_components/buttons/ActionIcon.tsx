@@ -49,7 +49,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
 
         const buttonContent = (
             <button
-                className={`action-icon ${variant} ${color} ${radius} ${size} ${className} ${disabled ? 'disabled' : ''}`}
+                className={`action-icon ${variant} ${color} ${radius} ${size} ${disabled ? 'disabled' : ''}`}
                 type={ (type || "button")}
                 onClick={handleClick}
                 disabled={disabled}
@@ -61,9 +61,11 @@ export const ActionIcon: React.FC<ActionIconProps> =
 
         if (tooltip && !disabled) {
             return (
-                <Tooltip text={tooltip} position={tooltipPosition}>
-                    {buttonContent}
-                </Tooltip>
+                <div className={`action-icon-wrap ${className}`}>
+                    <Tooltip text={tooltip} position={tooltipPosition}>
+                        {buttonContent}
+                    </Tooltip>
+                </div>
             );
         }
 

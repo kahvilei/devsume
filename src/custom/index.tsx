@@ -13,7 +13,6 @@ export const config = {
             key: "Skill",
             preview: PreviewSkill as React.FC<PreviewProps<ISkill>>,
             edit: EditSkill as React.FC<EditProps<ISkill>>,
-            openEditInModal: true,
             queryFields: {
                 title: "string",
                 tags: "string[]",
@@ -30,7 +29,6 @@ export const config = {
             key: "Collaborator",
             preview: PreviewCollaborator as React.FC<PreviewProps<ISkill>>,
             edit: EditSkill as React.FC<EditProps<ISkill>>,
-            openEditInModal: true,
             queryFields: {
                 title: "string",
                 tags: "string[]",
@@ -47,7 +45,6 @@ export const config = {
         {
             api: "/api/media/image/",
             key: "Image",
-            openEditInModal: true,
             queryFields: {
                 title: "string",
             },

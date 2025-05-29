@@ -44,7 +44,6 @@ export const ItemAddButton = (
                 <Modal
                     isOpen={isAdding}
                     onClose={() => setIsAdding(false)}
-                    title={`Create a new ${singularName}`}
                 >
                     <ItemEdit
                         item={new Item({ title: "" }, type)}

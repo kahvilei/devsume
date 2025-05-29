@@ -31,7 +31,8 @@ export type ColorVariant =
     | "disabled";
 
 export type ButtonVariant =
-    "btn-swipe"
+    "btn-default"
+    | "btn-swipe"
     | "btn-shadow-drop"
     | "btn-shadow-spread"
     | "btn-shadow-filled"
@@ -39,4 +40,5 @@ export type ButtonVariant =
     | "btn-border-grow"
     | "btn-discreet"
     | "btn-light";
+
 

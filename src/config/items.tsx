@@ -20,7 +20,6 @@ export interface ItemConfig<T extends IBaseItem> {
   key: string;
   preview?: React.FC<PreviewProps<T>>;
   edit?: React.FC<EditProps<T>>;
-  openEditInModal?: boolean;
   queryFields?: {
     [key: string]: string
   }
@@ -56,7 +55,6 @@ const ITEMS: ItemManifestList = {
     api: "/api/categories/",
     preview: PreviewCategory as React.FC<PreviewProps<ICategory>>,
     edit: EditCategory as React.FC<EditProps<ICategory>>,
-    openEditInModal: true,
     queryFields: {
       title: "string",
       tags: "string"
@@ -73,7 +71,6 @@ const ITEMS: ItemManifestList = {
     api: "/api/media/",
     preview: PreviewImage as React.FC<PreviewProps<IImage>>,
     edit: EditImage as React.FC<EditProps<IImage>>,
-    openEditInModal: true,
     queryFields: {
        title: "string",
     },
@@ -87,13 +84,11 @@ const ITEMS: ItemManifestList = {
   posts: {
     key: "Post",
     api: "/api/posts/",
-    openEditInModal: true,
     discriminators: (custom as CustomConfigList).posts??[]
   },
   resumes: {
     key: "Resume",
     api: "/api/resumes/",
-    openEditInModal: true,
     discriminators: (custom as CustomConfigList).resumes??[]
   },
 }

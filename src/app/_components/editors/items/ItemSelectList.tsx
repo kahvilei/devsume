@@ -2,9 +2,9 @@ import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
 import {Item} from "@/app/_data/Items/Item";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 
-type SingleSelectValue<T extends IBaseItem> = Item<T> | null;
+type SingleSelectValue<T extends IBaseItem> = Item<T> | undefined;
 type MultipleSelectValue<T extends IBaseItem> = Item<T>[];
-type SelectValue<T extends IBaseItem> = SingleSelectValue<T> | MultipleSelectValue<T>;
+export type SelectValue<T extends IBaseItem> = SingleSelectValue<T> | MultipleSelectValue<T>;
 
 interface ItemSelectListProps<T extends IBaseItem> {
     items: Item<T>[];
@@ -13,7 +13,7 @@ interface ItemSelectListProps<T extends IBaseItem> {
     onSelect: (value: SelectValue<T>) => void;
 }
 
-const ItemSelectList = <T extends IBaseItem>(
+export const ItemSelectList = <T extends IBaseItem>(
     {
         items,
         selectType,

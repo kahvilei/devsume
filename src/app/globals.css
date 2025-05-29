@@ -827,15 +827,10 @@ main {
     }
 
     /*
-        ItemSelectFromDB Component
+        ItemMultiSelectDB Component
     */
     .multi-selector {
         @apply rounded flex flex-col w-full relative;
-
-        ul {
-            @apply flex flex-wrap gap-xs p-0 m-0;
-            list-style: none;
-        }
 
         /* Header area */
 
@@ -847,21 +842,6 @@ main {
             }
         }
 
-        /* Selector dropdown */
-
-        .selector {
-            @apply flex flex-col gap-xs px-xs h-0 w-full overflow-hidden transition-all;
-            transition-duration: var(--transition-duration-normal);
-
-            &.open {
-                @apply h-auto p-xs mb-xs content-style-3 overflow-visible;
-            }
-
-            &>div {
-                @apply flex flex-col gap-xs;
-            }
-        }
-
         /* Content area */
 
         .content {
@@ -869,14 +849,6 @@ main {
         }
 
         /* Button container */
-
-        .buttons {
-            @apply separator-b gap-xs w-full flex-between;
-
-            &>div {
-                @apply flex flex-row gap-xs;
-            }
-        }
 
         .item-selector-placeholder {
             @apply dimmed text-sm italic;
@@ -891,6 +863,34 @@ main {
             }
         }
 
+    }
+    .popover-controls {
+        @apply background-bg;
+    }
+    .selector-controls {
+        @apply flex flex-col gap-xs px-xs h-0 w-full overflow-hidden transition-all;
+        transition-duration: var(--transition-duration-normal);
+
+        &.open {
+            @apply h-auto p-xs mb-xs content-style-3 overflow-visible;
+        }
+
+        &>div {
+            @apply flex flex-col gap-xs;
+        }
+
+        ul {
+            @apply flex flex-wrap gap-xs p-0 m-0;
+            list-style: none;
+        }
+
+        .buttons {
+            @apply separator-b gap-xs w-full flex-row flex-between;
+
+            &>div {
+                @apply flex flex-row gap-xs;
+            }
+        }
     }
 
     /*

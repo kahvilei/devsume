@@ -2,7 +2,7 @@ import {IResume} from "@/server/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import WysiwygText from "@/app/_components/input/WysiwygText";
-import ItemSelectFromDB from "@/app/_components/editors/items/ItemSelectFromDB";
+import {ItemMultiSelect, ItemSingleSelect} from "@/app/_components/editors/items/ItemSelect";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -17,6 +17,10 @@ export default function EditResume({resume}: EditResumeProps) {
         <section className="resume">
             <section className="right">
                 <section className="title-description">
+                    <ItemSingleSelect
+                        type={"Image"}
+                        onSelect={() => {}}
+                    />
                     <WysiwygText
                         order="h1"
                         value={resumeData?.name}
@@ -38,10 +42,7 @@ export default function EditResume({resume}: EditResumeProps) {
                         placeholder="Write a subtitle/short description"
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
-                    <ItemSelectFromDB
-                        type={"Image"}
-                        onSelect={() => {}}
-                    />
+
                 </section>
             </section>
             <section className="left">
@@ -53,7 +54,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
                     toolTipPosition={"right"}
                 />
-                <ItemSelectFromDB
+                <ItemMultiSelect
                     type={"Category"}
                     onSelect={() => {}}
                     />
