@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeObservable, observable, runInAction} from "mobx";
 import { Item } from "./Item";
 import { ItemConfig } from "@/config/items";
 import { getAndReturn } from "@/lib/http/getAndDigest";
@@ -11,6 +11,7 @@ import {createFailResponse, PagContent, ResponseObject} from "@/lib/db/utils";
 import {IBaseItem, IBaseItem as ItemInterface} from "@/server/models/schemas/IBaseItem";
 import React from "react";
 import {EditProps, PreviewProps} from "@/interfaces/data";
+import {PlusIcon} from "lucide-react";
 
 interface QueryCacheEntry {
     ids: string[];
@@ -43,21 +44,23 @@ export class ItemService<T extends ItemInterface> {
     private MAX_CACHE_QUERIES = 100;
 
     // State
-    loading = false;
-    error: string | undefined = undefined;
-    warning: string | undefined = undefined;
-    lastUpdated: number | undefined = undefined;
+    @observable loading = false;
+    @observable error: string | undefined = undefined;
+    @observable warning: string | undefined = undefined;
+    @observable lastUpdated: number | undefined = undefined;
 
     constructor(parentType: string, parentConfig: ItemConfig<T>) {
         this.parentType = parentType;
         this.parentConfig = parentConfig;
-        makeAutoObservable(this);
+        makeObservable(this);
     }
 
     // Set error and warning from response
     private setErrorWarning(response: ResponseObject) {
-        this.warning = response.warning ?? undefined;
-        this.error = response.error;
+        runInAction(() => {
+            this.warning = response.warning ?? undefined;
+            this.error = response.error;
+        })
     }
 
     // Clean old queries from cache
@@ -123,6 +126,12 @@ export class ItemService<T extends ItemInterface> {
         const config = this.getConfig(dataKey);
         return config.names?.plural ?? 'Items';
     }
+
+    getIcon(type: string): React.ReactNode{
+        const config = this.getConfig(type);
+        return config.icon ?? (<PlusIcon/>);
+    }
+
     // Invalidate all queries (called after any CRUD operation)
     private invalidateAllQueries() {
         this.queryCache.clear();
@@ -266,9 +275,12 @@ export class ItemService<T extends ItemInterface> {
             if (invalidateCache && !result.error) {
                 this.invalidateAllQueries();
             }
-
-            this.lastUpdated = Date.now();
-            this.loading = false;
+            runInAction(
+                () => {
+                    this.lastUpdated = Date.now();
+                    this.loading = false;
+                }
+            )
             return result;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -403,10 +415,6 @@ export class ItemService<T extends ItemInterface> {
     clearAllCaches() {
         this.queryCache.clear();
         this.itemsMap.clear();
-    }
-
-    getIcon(type: string) {
-        return this.getConfig(type).icon;
     }
 
     //for Items that are reliant on media uploads

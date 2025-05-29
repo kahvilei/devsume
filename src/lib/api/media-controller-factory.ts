@@ -91,7 +91,7 @@ export const createMediaController = <TInterface extends IMedia>(
                     return createFailResponse('ID parameter is required', 400);
                 }
 
-                return await service.replaceFile(id, await extractFileData(file as File), type);
+                return await service.replaceFile(id, await extractFileData(file as File), formDataObj, type);
             } catch (error) {
                 console.error('Replace file error:', error);
                 const errorMessage = error instanceof Error ? error.message : 'Replace failed';

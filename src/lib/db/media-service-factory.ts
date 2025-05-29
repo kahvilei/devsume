@@ -1,6 +1,6 @@
 // lib/db/media-service-factory.ts
 import { createFailResponse, createSuccessResponse, ResponseObject } from "@/lib/db/utils";
-import { Model, Document } from "mongoose";
+import {Model, Document} from "mongoose";
 import { IMedia } from "@/server/models/Media";
 import fs from "fs/promises";
 import path from "path";
@@ -54,8 +54,7 @@ export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceF
     uploadFile: (file: InternalFile, metadata?: MediaMetadata, type?: string) => Promise<ResponseObject>;
     uploadFiles: (files: InternalFile[], metadata?: MediaMetadata, type?: string) => Promise<ResponseObject>;
     getFileStream: (id: string, thumbnailType?: string, type?: string) => Promise<ResponseObject>;
-    replaceFile: (id: string, file: InternalFile, type?: string) => Promise<ResponseObject>;
-    getWithThumbnails: (id: string, type?: string) => Promise<ResponseObject>;
+    replaceFile: (id: string, file: InternalFile, metadata?: MediaMetadata, type?: string) => Promise<ResponseObject>;
     deleteAndClean: (id: string, type: string) => Promise<ResponseObject>;
 }
 
@@ -71,6 +70,124 @@ export const createMediaServiceFactory = <T extends IMedia>(
     const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
     const entityNameLower = entityName.toLowerCase();
     const mediaConfig = { ...defaultConfig, ...config };
+
+    const generateEntity = async (file: InternalFile, metadata: MediaMetadata = {}): Promise<Partial<IMedia>> => {
+        const slug = buildSlug(metadata.title || path.basename(file.originalname, path.extname(file.originalname)));
+        const uploadDir = await ensureUploadDir(slug);
+
+        try {
+            const filename = `original${path.extname(file.originalname)}`;
+            const filePath = path.join(uploadDir, filename);
+
+            await fs.writeFile(filePath, file.buffer);
+            const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
+            const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
+            return {
+                ...metadata,
+                filename,
+                originalName: file.originalname,
+                path: filePath,
+                url: `${mediaConfig.baseUrl}/${slug}/${filename}`,
+                slug,
+                size: file.size,
+                mimetype: file.mimetype,
+                blurDataUrl,
+                createdAt: new Date(),
+                thumbnails
+            };
+        } catch (error) {
+            await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
+            throw error;
+        }
+
+    }
+
+    // Media methods
+    const uploadFile = async (file: InternalFile, metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            validateFile(file);
+            manageCacheSize();
+
+            try {
+                const mediaData = await generateEntity(file, metadata);
+                const Model = await resolveModel(type);
+                const entity = new Model(mediaData);
+                await entity.save();
+                return createSuccessResponse({ ...entity.toObject()});
+            } catch (error) {
+                throw error;
+            }
+        });
+    };
+
+    const replaceFile = async (id: string, file: InternalFile, metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            validateFile(file);
+            manageCacheSize();
+
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id) as T;
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+            await cleanupFiles(entity);
+
+            try {
+                const mediaData = await generateEntity(file, metadata);
+                const updatedEntity = await Model.findByIdAndUpdate(
+                    id,
+                    mediaData,
+                    { new: true }
+                );
+                if (!updatedEntity) throw new Error("Failed to upload entity");
+                return createSuccessResponse({ ...updatedEntity.toObject()});
+            } catch (error) {
+                throw error;
+            }
+        });
+    };
+
+
+    const uploadFiles = async (files: InternalFile[], metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
+        const results = await Promise.all(files.map(file => uploadFile(file, metadata, type)));
+        return createSuccessResponse(results);
+    };
+
+    const getFileStream = async (id: string, thumbnailType?: string, type?: string): Promise<ResponseObject> => {
+        return dbOperation(false, async () => {
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id) as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            let filePath = entity.path;
+            let mimetype = entity.mimetype;
+
+            if (thumbnailType) {
+                const thumbnailPath = path.join(path.dirname(entity.path), `${thumbnailType}.webp`);
+                try {
+                    await fs.access(thumbnailPath);
+                    filePath = thumbnailPath;
+                    mimetype = "image/webp";
+                } catch {
+                    // Fallback to original file
+                }
+            }
+
+            return createSuccessResponse({ filePath, mimetype, filename: entity.filename, originalName: entity.originalName, size: entity.size });
+        });
+    };
+
+    const deleteAndClean = async (id: string, type?: string): Promise<ResponseObject> => {
+        return dbOperation(true, async () => {
+            const Model = await resolveModel(type);
+            const entity = await Model.findById(id).lean() as T;
+
+            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
+
+            await cleanupFiles(entity);
+            const result = await Model.findByIdAndDelete(id);
+            return result ? createSuccessResponse(result) : createFailResponse(`Failed to delete ${entityNameLower}`);
+        });
+    };
 
     // Cache management
     const manageCacheSize = () => {
@@ -135,152 +252,6 @@ export const createMediaServiceFactory = <T extends IMedia>(
     const buildSlug = (base: string) =>
         base.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-    // Media methods
-    const uploadFile = async (file: InternalFile, metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
-        return dbOperation(true, async () => {
-            validateFile(file);
-            manageCacheSize();
-
-            const slug = buildSlug(metadata.title || path.basename(file.originalname, path.extname(file.originalname)));
-            const uploadDir = await ensureUploadDir(slug);
-
-            try {
-                const filename = `original${path.extname(file.originalname)}`;
-                const filePath = path.join(uploadDir, filename);
-
-                await fs.writeFile(filePath, file.buffer);
-                const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
-                const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
-
-                const mediaData: Partial<IMedia> = {
-                    ...metadata,
-                    filename,
-                    originalName: file.originalname,
-                    path: filePath,
-                    url: `${mediaConfig.baseUrl}/${slug}/${filename}`,
-                    slug,
-                    size: file.size,
-                    mimetype: file.mimetype,
-                    blurDataUrl,
-                    createdAt: new Date(),
-                };
-
-                const Model = await resolveModel(type);
-                const entity = new Model(mediaData);
-                await entity.save();
-
-                return createSuccessResponse({ ...entity.toObject(), thumbnails });
-            } catch (error) {
-                await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
-                throw error;
-            }
-        });
-    };
-
-    const uploadFiles = async (files: InternalFile[], metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
-        const results = await Promise.all(files.map(file => uploadFile(file, metadata, type)));
-        return createSuccessResponse(results);
-    };
-
-    const getFileStream = async (id: string, thumbnailType?: string, type?: string): Promise<ResponseObject> => {
-        return dbOperation(false, async () => {
-            const Model = await resolveModel(type);
-            const entity = await Model.findById(id) as T;
-
-            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-
-            let filePath = entity.path;
-            let mimetype = entity.mimetype;
-
-            if (thumbnailType) {
-                const thumbnailPath = path.join(path.dirname(entity.path), `${thumbnailType}.webp`);
-                try {
-                    await fs.access(thumbnailPath);
-                    filePath = thumbnailPath;
-                    mimetype = "image/webp";
-                } catch {
-                    // Fallback to original file
-                }
-            }
-
-            return createSuccessResponse({ filePath, mimetype, filename: entity.filename, originalName: entity.originalName, size: entity.size });
-        });
-    };
-
-    const replaceFile = async (id: string, file: InternalFile, type?: string): Promise<ResponseObject> => {
-        return dbOperation(true, async () => {
-            validateFile(file);
-
-            const Model = await resolveModel(type);
-            const entity = await Model.findById(id) as T;
-
-            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-
-            await cleanupFiles(entity);
-
-            const slug = buildSlug(entity.title || path.basename(file.originalname, path.extname(file.originalname)));
-            const uploadDir = await ensureUploadDir(slug);
-
-            try {
-                const filename = `original${path.extname(file.originalname)}`;
-                const filePath = path.join(uploadDir, filename);
-
-                await fs.writeFile(filePath, file.buffer);
-
-                const thumbnails = await generateThumbnails(filePath, slug, file.mimetype);
-                const blurDataUrl = await generateBlurDataUrl(filePath, file.mimetype);
-
-                const updatedEntity = await Model.findByIdAndUpdate(
-                    id,
-                    { filename, originalName: file.originalname, path: filePath, url: `${mediaConfig.baseUrl}/${slug}/${filename}`, size: file.size, mimetype: file.mimetype, blurDataUrl, updatedAt: new Date() },
-                    { new: true }
-                );
-
-                if (!updatedEntity) throw new Error("Failed to upload entity");
-                return createSuccessResponse({ ...updatedEntity.toObject(), thumbnails });
-            } catch (error) {
-                await fs.rm(uploadDir, { recursive: true, force: true }).catch(() => {});
-                throw error;
-            }
-        });
-    };
-
-    const getWithThumbnails = async (id: string, type?: string): Promise<ResponseObject> => {
-        return dbOperation(false, async () => {
-            const Model = await resolveModel(type);
-            const entity = await Model.findById(id).lean() as T;
-
-            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-
-            const thumbnails: Record<string, string> = {};
-            for (const { suffix } of mediaConfig.thumbnailSizes) {
-                const thumbnailPath = path.join(path.dirname(entity.path), `${suffix}.webp`);
-                try {
-                    await fs.access(thumbnailPath);
-                    thumbnails[suffix] = `${mediaConfig.baseUrl}/${id}?thumbnail=${suffix}`;
-                } catch {
-                    // Thumbnail doesn't exist
-                    return createFailResponse(`No thumbnail found for ${entityNameLower} with ID ${id}`, 404);
-                }
-            }
-
-            return createSuccessResponse({ ...entity, thumbnails });
-        });
-    };
-
-    const deleteAndClean = async (id: string, type?: string): Promise<ResponseObject> => {
-        return dbOperation(true, async () => {
-            const Model = await resolveModel(type);
-            const entity = await Model.findById(id).lean() as T;
-
-            if (!entity) return createFailResponse(`No ${entityNameLower} found with this ID`, 404);
-
-            await cleanupFiles(entity);
-            const result = await Model.findByIdAndDelete(id);
-            return result ? createSuccessResponse(result) : createFailResponse(`Failed to delete ${entityNameLower}`);
-        });
-    };
-
     // Return combined methods
     return {
         ...createServiceFactory<T>(defaultModel, customPath, entityName),
@@ -288,7 +259,6 @@ export const createMediaServiceFactory = <T extends IMedia>(
         uploadFiles,
         getFileStream,
         replaceFile,
-        getWithThumbnails,
         deleteAndClean,
         clearCache: () => modelCache.clear(),
     };

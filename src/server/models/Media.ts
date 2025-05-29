@@ -20,6 +20,9 @@ export interface IMedia extends IBaseItem{
     file?: File; //only exists front-side for upload
     width?: string;
     height?: string;
+    thumbnails?: {
+        [key: string]: string;
+    };
 }
 export const MediaSchemaDefinition = {
     ...ItemBaseSchema,
@@ -40,6 +43,9 @@ export const MediaSchemaDefinition = {
     },
     width: { type: String },
     height: { type: String },
+    thumbnails: {
+        type: Object,
+    }
 };
 
 const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);
