@@ -3,25 +3,23 @@ import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
 
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  setIsOpen: (open: boolean) => void;
   children: React.ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+export const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
   const key = useId();
-  const [modalOpen, setModalOpen] = React.useState(isOpen);
+  const handleClose = () => {
+      setIsOpen(false);
+  }
 
   return (
-      <PortalOverlay isOpen={modalOpen} overlayKey={key}>
+      <PortalOverlay isOpen={isOpen} overlayKey={key} onClickOutside={handleClose}>
           <div className="modal">
             <div
                 className="modal-backdrop"
-                onClick={() => {
-                    setModalOpen(false);
-                    onClose();
-                }
-            }>
-            </div>
+                onClick={handleClose}
+            />
             <div className="modal-container">
               <div>{children}</div>
             </div>
@@ -29,3 +27,5 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       </PortalOverlay>
   );
 }
+
+export default Modal;

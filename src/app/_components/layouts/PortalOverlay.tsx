@@ -33,6 +33,12 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
     const overlayRef = useRef<HTMLDivElement>(null);
     const {setOverlay, removeOverlay, checkNode} = useContext(OverlayContext);
 
+    useEffect(() => {
+        if (!isOpen) {
+            removeOverlay(overlayKey);
+        }
+    }, [isOpen, removeOverlay, overlayKey]);
+
     // Handle click outside
     const handleClickOutside = useCallback(
         (event: MouseEvent) => {
@@ -47,7 +53,6 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
                 if (!checkNode(overlayKey)){
                     onClickOutside();
                 }
-
             }
         },
         [onClickOutside, targetRef, overlayKey, checkNode]
@@ -99,7 +104,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
         overlayRef.current.style.opacity = '1';
     }, [matchWidth, offset, placement, targetRef]);
 
-    const updateOverlay = useCallback(() => {
+    const addOverlay = useCallback(() => {
         setOverlay(
             overlayKey,
             <div
@@ -119,14 +124,10 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
     }, [overlayKey, className, children]);
 
     useEffect(() => {
-        if (!isOpen) {
-            console.log('removing overlay');
-            removeOverlay(overlayKey);
-            return;
-        } else {
-            updateOverlay();
+        if (isOpen) {
+            addOverlay();
         }
-    }, [isOpen, children, updateOverlay, overlayKey]);
+    }, [isOpen, children, addOverlay, overlayKey]);
 
     useEffect(() => {
         if (!isOpen) return;

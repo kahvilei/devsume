@@ -19,7 +19,7 @@ export const createMediaController = <TInterface extends IMedia>(
             buffer,
             originalname: file.name,
             mimetype: file.type,
-            size: file.size
+            size: file.size,
         };
     };
 
@@ -43,7 +43,7 @@ export const createMediaController = <TInterface extends IMedia>(
             }
         },
 
-        // Media-specific operations
+        // MediaViewer-specific operations
         post: async (request: NextRequest, { params }: PageProps) => {
             try {
                 const data = await request.formData();

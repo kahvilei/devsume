@@ -40,18 +40,16 @@ export const ItemAddButton = (
                 color={color}
                 variant={variant}
             />
-            {isAdding && (
-                <Modal
-                    isOpen={isAdding}
-                    onClose={() => setIsAdding(false)}
-                >
-                    <ItemEdit
-                        item={new Item({ title: "" }, type)}
-                        label="Add a new item"
-                        onCancel={() => setIsAdding(false)}
-                    />
-                </Modal>
-            )}
+            <Modal
+                isOpen={isAdding}
+                setIsOpen={setIsAdding}
+            >
+                <ItemEdit
+                    item={new Item({ title: "" }, type)}
+                    label="Add a new item"
+                    onCancel={() => setIsAdding(false)}
+                />
+            </Modal>
         </>
     );
 }

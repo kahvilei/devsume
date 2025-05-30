@@ -13,10 +13,10 @@ export const createReferenceConfig = {
     }),
 
     /**
-     * Creates a reference config for Media fields
+     * Creates a reference config for MediaViewer fields
      */
     media: (options: Partial<AutoReferenceConfig[string]> = {}): AutoReferenceConfig[string] => ({
-        model: 'Media',
+        model: 'MediaViewer',
         autoPopulate: false,
         populateSelect: 'filename url alt caption mimetype size',
         ...options

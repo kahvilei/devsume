@@ -25,7 +25,7 @@ class ServiceStore {
             Category: new ItemService<ICategory>('Category', items.categories),
             Post: new ItemService<IPost>('Post', items.posts),
             Resume: new ItemService<IResume>('Resume', items.resumes),
-            Media: new ItemService<IMedia>('Media', items.media)
+            Media: new ItemService<IMedia>('MediaViewer', items.media)
         };
         this.items = items;
     }

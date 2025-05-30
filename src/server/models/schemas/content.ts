@@ -26,7 +26,7 @@ export interface Content extends IBaseItem {
 // Base schema for Posts and Resumes
 export const ContentBaseSchema = {
     ...ItemBaseSchema,
-    hero: { type: mongoose.Schema.Types.ObjectId, ref: 'Media' },
+    hero: { type: mongoose.Schema.Types.ObjectId, ref: 'MediaViewer' },
     description: { type: String },
     published: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },

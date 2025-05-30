@@ -34,20 +34,16 @@ export const ItemPreview = observer(<T extends IBaseItem>(
                     onClick(item);
                 }}
             />
-
-            {/* Render edit form */}
-            {isEditing && (
-                <Modal
-                    isOpen={isEditing}
-                    onClose={() => setIsEditing(false)}
-                >
-                    <ItemEdit
-                        label="Edit item"
-                        item={item}
-                        onCancel={() => setIsEditing(false)}
-                    />
-                </Modal>
-            )}
+            <Modal
+                isOpen={isEditing}
+                setIsOpen={setIsEditing}
+            >
+                <ItemEdit
+                    label="Edit item"
+                    item={item}
+                    onCancel={() => setIsEditing(false)}
+                />
+            </Modal>
         </>
     );
 });

@@ -17,9 +17,7 @@ export interface IMedia extends IBaseItem{
         description: string;
         tags: string[];
     };
-    file?: File; //only exists front-side for upload
-    width?: string;
-    height?: string;
+    file?: File;
     thumbnails?: {
         [key: string]: string;
     };
@@ -41,8 +39,6 @@ export const MediaSchemaDefinition = {
         description: { type: String },
         tags: [{ type: String }]
     },
-    width: { type: String },
-    height: { type: String },
     thumbnails: {
         type: Object,
     }
@@ -51,9 +47,9 @@ export const MediaSchemaDefinition = {
 const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);
 
 export const createMediaModel = createModelFactoryWithAutoRef(
-    'Media',
+    'MediaViewer',
     MediaSchema,
     {},
    );
 
-export default mongoose.models.Media || mongoose.model('Media', MediaSchema);
+export default mongoose.models.Media || mongoose.model('MediaViewer', MediaSchema);

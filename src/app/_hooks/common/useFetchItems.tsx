@@ -53,7 +53,7 @@ export const useFetchItems = <T extends IBaseItem>(
         return () => {
             isCancelled = true;
         };
-    }, [type, searchPageSize, searchPage, searchTitleQuery, service.lastUpdated]);
+    }, [type, searchPageSize, searchPage, searchTitleQuery, service.lastUpdated, service]);
 
     return {items, pageCount, error};
 };

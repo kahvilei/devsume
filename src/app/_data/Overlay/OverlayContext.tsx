@@ -54,7 +54,6 @@ export function OverlayProvider({ children }: { children: React.ReactNode }) {
         let i = 0;
         const copy = [...overlays]
         for (const value of copy) {
-            console.log(value?.key, key)
             if (value?.key === key ) {
                 return i < overlays.length - 1;
             }
