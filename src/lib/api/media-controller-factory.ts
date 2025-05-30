@@ -43,7 +43,7 @@ export const createMediaController = <TInterface extends IMedia>(
             }
         },
 
-        // MediaViewer-specific operations
+        // Media-specific operations
         post: async (request: NextRequest, { params }: PageProps) => {
             try {
                 const data = await request.formData();

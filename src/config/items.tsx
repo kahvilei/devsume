@@ -67,7 +67,7 @@ const ITEMS: ItemManifestList = {
     discriminators: (custom as CustomConfigList).categories??[]
   },
   media :{
-    key: "MediaViewer",
+    key: "Media",
     api: "/api/media/",
     preview: PreviewImage as React.FC<PreviewProps<IImage>>,
     edit: EditImage as React.FC<EditProps<IImage>>,

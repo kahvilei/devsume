@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import Tooltip from "@/app/_components/layouts/Tooltip";
 import {TagInputProps} from "@/interfaces/components/input";
+import {X} from "lucide-react";
+import ActionIcon from "@/app/_components/buttons/ActionIcon";
 
 const TagInput: React.FC<TagInputProps> = (
     {
@@ -27,73 +29,61 @@ const TagInput: React.FC<TagInputProps> = (
         setInputValue(newValue);
 
         if (newValue.endsWith(",")) {
-            const newTag = newValue.slice(0, -1).trim();
-            if (newTag && !value.includes(newTag)) {
-                // Add a new tag if it's not already present in the value
-                onChange([...value, newTag]);
-            }
-            setInputValue(""); // Clear the input field
+           updateValue();
         }
     };
+
+    const updateValue = () => {
+        const newTag = inputValue.trim();
+        if (newTag && !value.includes(newTag)) {
+            // Add a new tag if it's not already present in the value
+            onChange([...value, newTag]);
+        }
+        setInputValue(""); // Clear the input field
+    }
+
 
     const removeTag = (tag: string) => {
         onChange(value.filter((t) => t !== tag)); // Remove the selected tag
     };
 
-    const textContent = (
-        <div className="tag-input-container">
-            <div className="tags-wrapper">
+    return (
+        <div className={"tag-input max-w-full" + className}>
+            <Tooltip text={label} position={tooltipPosition}>
+                <input
+                    id={id}
+                    type="text"
+                    value={inputValue}
+                    onChange={handleChange}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            updateValue();
+                        }
+                    }}
+                    placeholder={placeholder}
+                    aria-label={label}
+                    disabled={disabled}
+                    maxLength={maxLength}
+                    pattern={pattern}
+                    required={required}
+                />
+            </Tooltip>
+            <div className="tags-wrapper flex flex-wrap gap-xs">
                 {value.map((tag, index) => (
-                    <span key={index} className="tag">
+                    <span key={index} className="tag primary rounded-full">
                         {tag}
-                        <button
-                            type="button"
+                        <ActionIcon
+                            icon={<X/>}
                             onClick={() => removeTag(tag)}
-                            className="tag-remove"
-                            aria-label={`Remove tag ${tag}`}
-                        >
-                            <svg
-                                width="10"
-                                height="10"
-                                viewBox="0 0 10 10"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M5 1L1 5L5 9L9 5L5 1Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
-                        </button>
+                            tooltip="Remove tag"
+                            size="xs"
+                        />
                     </span>
                 ))}
             </div>
-            <input
-                id={id}
-                type="text"
-                value={inputValue}
-                onChange={handleChange}
-                placeholder={placeholder}
-                aria-label={label}
-                disabled={disabled}
-                maxLength={maxLength}
-                pattern={pattern}
-                required={required}
-            />
         </div>
     );
-
-    if (showTooltip && label) {
-        return (
-            <div className={`text-input ${size} ${className}`}>
-                <Tooltip text={label} position={tooltipPosition}>
-                    {textContent}
-                </Tooltip>
-            </div>
-        );
-    }
-
-    return textContent;
 };
 
 export default TagInput;

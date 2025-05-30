@@ -3,7 +3,7 @@ import React from "react";
 
 interface ButtonProps {
     icon?: React.ReactNode;
-    text: string;
+    children?: React.ReactNode;
     onClick?: () => void;
     className?: string;
     size?: SizeVariant;
@@ -17,7 +17,7 @@ interface ButtonProps {
 export const Button =
     ({
         icon,
-        text,
+        children,
         onClick,
         className = '',
         size = "md",
@@ -47,7 +47,7 @@ export const Button =
                 disabled={disabled}
             >
                 {icon && <span className="btn-icon">{icon}</span>}
-                <span className="btn-text">{text}</span>
+                <span className="btn-content">{children}</span>
             </button>
         );
     };

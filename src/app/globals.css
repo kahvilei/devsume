@@ -275,14 +275,9 @@ main {
     border: var(--devsume-border-subtle);
 }
 
-@utility separator-b {
+@utility separator {
+    @apply h-0 w-full;
     border-bottom: var(--devsume-border-subtle);
-    padding: 0 0 var(--spacing-xs) 0;
-}
-
-@utility separator-t {
-    border-top: var(--devsume-border-subtle);
-    padding: var(--spacing-xs) 0 0 0;
 }
 
 /* Interactive display */
@@ -466,6 +461,13 @@ main {
 
         .btn-icon {
             @apply flex items-center justify-center h-full;
+            svg {
+                @apply h-full;
+            }
+        }
+
+        .btn-content {
+            @apply flex-center;
             svg {
                 @apply h-full;
             }
@@ -885,7 +887,7 @@ main {
         }
 
         .buttons {
-            @apply separator-b gap-xs w-full flex-row flex-between;
+            @apply gap-xs w-full flex-row flex-between;
 
             &>div {
                 @apply flex flex-row gap-xs;
@@ -1020,10 +1022,10 @@ main {
         }
 
         .modal-container {
-            @apply flex flex-col gap-xs background-bg content-style-3 z-10 max-w-content p-xs;
+            @apply flex flex-col gap-xs background-bg content-style-3 z-10 max-w-content p-md m-xs;
             max-height: calc(100vh - 2rem);
             overflow-y: auto;
-            overflow-x: hidden;
+            overflow-x: visible;
 
             .modal-header {
                 @apply flex-right;
@@ -1192,12 +1194,15 @@ main {
             @apply bg-primary text-foreground;
         }
     }
-    .text-input{
+    .text-input, .tag-input{
         @apply w-full flex-1 border-none box-border;
 
-        input {
+        input, textarea {
             @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded w-full box-border;
         }
+    }
+    .tag-input {
+        @apply flex flex-col gap-xs;
     }
     .number-select {
         .select-trigger {
@@ -1233,7 +1238,7 @@ main {
       'add new' block
      */
     .add-new {
-        @apply separator-t flex items-center justify-center gap-xs p-xs;
+        @apply flex items-center justify-center gap-xs p-xs;
     }
 }
 

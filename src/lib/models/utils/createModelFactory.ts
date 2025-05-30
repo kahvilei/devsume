@@ -56,14 +56,12 @@ export function createModelFactory<T = mongoose.Document>(
             });
         }
 
-        // Apply custom behaviors
-        customBehaviors(mongooseSchema);
-
         // Apply additional behaviors if provided
         if (additionalBehaviors) {
             additionalBehaviors(mongooseSchema);
         }
-
+        // Apply custom behaviors
+        customBehaviors(mongooseSchema);
         // Create discriminator model
         return BaseModel.discriminator<T>(typeName, mongooseSchema);
     };

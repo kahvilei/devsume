@@ -11,7 +11,7 @@ export const createModelFactoryWithAutoRef = <T = mongoose.Document>(
     return createModelFactory<T>(
         baseModelName,
         baseSchema,
-        (schema) => schema, // No base behaviors needed, handled by additionalBehaviors
+        (schema) => schema,
         {
             autoRefConfig: baseAutoRefConfig,
             additionalBehaviors

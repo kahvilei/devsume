@@ -5,7 +5,7 @@ import {IMedia} from "@/server/models/Media";
 const mediaService = createMediaServiceFactory<IMedia>(
     Media,
     "media",
-    "MediaViewer",
+    "Media",
     {
         uploadDir: 'public/uploads',
         baseUrl: '/uploads',

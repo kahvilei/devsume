@@ -1,6 +1,5 @@
 import React from "react";
 import {EditProps} from "@/interfaces/data";
-import {ISkill} from "@/custom/categories/skill/model";
 import TextInput from "@/app/_components/input/TextInput";
 import TextAreaInput from "@/app/_components/input/select/TextAreaInput";
 import TagInput from "@/app/_components/input/TagInput";
@@ -8,25 +7,28 @@ import {Button} from "@/app/_components/buttons/Button";
 import {Separator} from "@/app/_components/display/Seperator";
 import {Plus, Save, Trash, X} from "lucide-react";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
+import {ICollaborator} from "@/custom/categories/collaborator/model";
+import {IImage} from "@/custom/media/image/model";
+import {MediaSelect} from "@/app/_components/input/select/MediaSelect";
 
-export default function EditSkill({item, onCancel}: EditProps<ISkill>) {
-    const skill = item.getData();
-    const [title, setTitle] = React.useState(skill.title);
-    const [description, setDescription] = React.useState(skill.description);
-    const [tags, setTags] = React.useState<string[]>(skill.tags??[]);
+export default function EditCollaborator({item, onCancel}: EditProps<ICollaborator>) {
+    const collaborator = item.getData();
+    const [title, setTitle] = React.useState(collaborator.title);
+    const [description, setDescription] = React.useState(collaborator.description);
+    const [tags, setTags] = React.useState<string[]>(collaborator.tags??[]);
+    const [image, setImage] = React.useState<IImage>(collaborator.img);
 
-    const mode = skill._id ? 'edit' : 'create';
+    const mode = collaborator._id ? 'edit' : 'create';
 
-    //if value has an _id, it's an existing skill
-    const handleSaveSkill = () => {
-        console.log(skill);
-        item.setDataAndSave({...skill, title, description, tags}).then(
+    //if value has an _id, it's an existing collaborator
+    const handleSaveCollaborator = () => {
+        item.setDataAndSave({...collaborator, title, description, tags, img:image}).then(
             onCancel
         );
     };
 
     const handleDelete = () => {
-        if (window.confirm('Are you sure you want to delete this skill?')) {
+        if (window.confirm('Are you sure you want to delete this collaborator?')) {
             item.delete().then(
                 onCancel
             );
@@ -39,28 +41,34 @@ export default function EditSkill({item, onCancel}: EditProps<ISkill>) {
                 autoFocus={true}
                 onSubmit={(e) => {
                     e.preventDefault();
-                    handleSaveSkill();
+                    handleSaveCollaborator();
                 }}
                 className="flex flex-col gap-sm max-w-full w-50"
             >
                 <div className="flex flex-row gap-xs justify-between items-end">
-                    <h3>{mode === 'edit' ? "Edit skill" : "Add a new skill"}</h3>
+                    <h3>{mode === 'edit' ? "Edit collaborator" : "Add a new collaborator"}</h3>
                     <ActionIcon icon={<X/>} onClick={onCancel} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
                 </div>
 
                 <Separator/>
+
+                <MediaSelect
+                    type={"Image"}
+                    value={image}
+                    onSelect = {setImage}
+                />
                 <TextInput
                     value = {title}
                     onChange = {setTitle}
-                    label = "Title"
-                    placeholder = "Skill title"
+                    label = "Colloborator name"
+                    placeholder = "Collaborator name"
                     required = {true}
                 />
                 <TextAreaInput
                     value = {description??""}
                     onChange = {setDescription}
                     label = "Description"
-                    placeholder = "Skill description"
+                    placeholder = "Collaborator description"
                 />
                 <TagInput value={tags} onChange={setTags} label={"Enter tags"}/>
                 <Separator/>

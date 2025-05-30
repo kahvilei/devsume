@@ -47,9 +47,9 @@ export const MediaSchemaDefinition = {
 const MediaSchema = new mongoose.Schema(MediaSchemaDefinition);
 
 export const createMediaModel = createModelFactoryWithAutoRef(
-    'MediaViewer',
+    'Media',
     MediaSchema,
     {},
    );
 
-export default mongoose.models.Media || mongoose.model('MediaViewer', MediaSchema);
+export default mongoose.models.Media || mongoose.model('Media', MediaSchema);

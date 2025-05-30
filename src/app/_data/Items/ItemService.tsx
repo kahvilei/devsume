@@ -365,7 +365,6 @@ export class ItemService<T extends ItemInterface> {
     // Update an existing item, falls back to create if there is no id
     async updateItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
-        console.log(item);
         if (!item._id) {
             return this.createItem(item, type);
         }
@@ -386,7 +385,6 @@ export class ItemService<T extends ItemInterface> {
     // Delete an item
     async deleteItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
-        console.log(item);
         const serverResponsePromise = this.executeOperation(async () => {
             const response = await deleteAndReturn(apiPath + item._id);
 

@@ -24,6 +24,7 @@ export interface ServiceFactory<TInterface> {
     clearCache: () => void;
 }
 
+
 export const createServiceFactory = <T>(
     defaultModel: Model<Document<T>>,
     customPath: string,

@@ -5,6 +5,8 @@ import EditSkill from "@/custom/categories/skill/edit";
 import {ISkill} from "@/custom/categories/skill/model";
 import {Lightbulb, UserRound} from "lucide-react";
 import PreviewCollaborator from "@/custom/categories/collaborator/preview";
+import EditCollaborator from "@/custom/categories/collaborator/edit";
+import {ICollaborator} from "@/custom/categories/collaborator/model";
 
 export const config = {
     categories: [
@@ -28,7 +30,7 @@ export const config = {
             api: "/api/categories/collaborator/",
             key: "Collaborator",
             preview: PreviewCollaborator as React.FC<PreviewProps<ISkill>>,
-            edit: EditSkill as React.FC<EditProps<ISkill>>,
+            edit: EditCollaborator as React.FC<EditProps<ICollaborator>>,
             queryFields: {
                 title: "string",
                 tags: "string[]",

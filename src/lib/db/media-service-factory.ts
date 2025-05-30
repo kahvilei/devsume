@@ -50,7 +50,7 @@ interface MediaMetadata {
 }
 
 export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceFactory<TInterface> {
-    // MediaViewer-specific operations
+    // Media-specific operations
     uploadFile: (file: InternalFile, metadata?: MediaMetadata, type?: string) => Promise<ResponseObject>;
     uploadFiles: (files: InternalFile[], metadata?: MediaMetadata, type?: string) => Promise<ResponseObject>;
     getFileStream: (id: string, thumbnailType?: string, type?: string) => Promise<ResponseObject>;
@@ -102,7 +102,7 @@ export const createMediaServiceFactory = <T extends IMedia>(
 
     }
 
-    // MediaViewer methods
+    // Media methods
     const uploadFile = async (file: InternalFile, metadata: MediaMetadata = {}, type?: string): Promise<ResponseObject> => {
         return dbOperation(true, async () => {
             validateFile(file);

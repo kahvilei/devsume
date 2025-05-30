@@ -55,7 +55,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     toolTipPosition={"right"}
                 />
                 <ItemMultiSelect
-                    type={"Category"}
+                    type={"Collaborator"}
                     onSelect={() => {}}
                     />
             </section>

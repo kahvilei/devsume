@@ -14,7 +14,6 @@ interface MediaProps<T extends IMedia> {
 export const MediaViewer = observer(<T extends IMedia>({item, className, width, height}:MediaProps<T>) => {
     const media = item.getData();
     const [imageError, setImageError] = React.useState(false);
-    console.log(media);
     return (
         <div className="media-container">
             {!imageError ? (

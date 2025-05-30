@@ -4,7 +4,6 @@ import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
 import {Download, Maximize2, Pencil, Trash} from "lucide-react";
 import Modal from "@/app/_components/layouts/Modal";
 import {IMedia} from "@/server/models/Media";
-import Image from "next/image";
 import {MediaViewer} from "@/app/_components/display/media/MediaViewer";
 
 export default function PreviewMedia(

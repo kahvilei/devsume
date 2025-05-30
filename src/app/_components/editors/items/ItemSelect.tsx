@@ -281,7 +281,7 @@ export const ItemMultiSelect = observer(<T extends IBaseItem>(
  */
 export const ItemSingleSelect = observer(<T extends IBaseItem>(
     {
-        values,
+        value,
         label = "Select item",
         type,
         searchPageSize = 10,
@@ -290,7 +290,7 @@ export const ItemSingleSelect = observer(<T extends IBaseItem>(
         openInPopover,
     }: CommonItemSelectProps<T>) => (
     <ItemSelect<T>
-        values={values}
+        values={value}
         label={label}
         type={type}
         searchPageSize={searchPageSize}
