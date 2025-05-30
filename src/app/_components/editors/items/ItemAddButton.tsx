@@ -4,12 +4,12 @@ import {Item} from "@/app/_data/Items/Item";
 import React, {useState} from "react";
 import {DataService} from "@/app/_data";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
-import {ButtonVariant, ColorVariant, Size} from "@/types/designTypes";
+import {ButtonVariant, ColorVariant, SizeVariant} from "@/types/designTypes";
 import {PlusIcon, X} from "lucide-react";
 
 interface ItemAddButtonProps {
     type: string;
-    size?: Size;
+    size?: SizeVariant;
     color?: ColorVariant;
     variant?: ButtonVariant;
     disabled?: boolean;

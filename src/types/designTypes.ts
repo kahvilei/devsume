@@ -5,9 +5,9 @@ export type ContentVariant =
     | "content-style-4"
     | "content-style-5";
 
-export type Size = "xs" | "sm" | "md" | "lg" | "xl";
+export type SizeVariant = "xs" | "sm" | "md" | "lg" | "xl";
 
-export type RadiusSize =
+export type RadiusVariant =
     "rounded"
     | "rounded-none"
     | "rounded-xs"

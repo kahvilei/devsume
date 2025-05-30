@@ -86,7 +86,7 @@ export default function EditMedia({ item, onCancel }: EditProps<IMedia>) {
                     </div>
                 </div>
 
-                {/* Hidden file input */}
+                {/* Hidden file components */}
                 <input
                     ref={fileInputRef}
                     type="file"

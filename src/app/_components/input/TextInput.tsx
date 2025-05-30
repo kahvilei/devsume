@@ -1,28 +1,13 @@
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
-import {Size} from "@/types/designTypes";
-
-export interface TextFieldProps {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    size?: Size;
-    showTooltip?: boolean;
-    tooltipPosition?: TooltipPosition;
-    disabled?: boolean;
-    className?: string;
-    id?: string;
-    maxLength?: number;
-    pattern?: string;
-}
+import Tooltip from "@/app/_components/layouts/Tooltip";
+import {TextInputProps} from "@/interfaces/components/input";
 
 /**
- * TextInput component - A styled text input with tooltip support
+ * TextInput component - A styled text components with tooltip support
  *
  * Provides a consistent interface for text inputs with validation.
  */
-const TextInput: React.FC<TextFieldProps> =
+const TextInput: React.FC<TextInputProps> =
     ({
          label,
          value,
@@ -32,6 +17,7 @@ const TextInput: React.FC<TextFieldProps> =
          showTooltip = true,
          tooltipPosition = "above",
          disabled = false,
+         required = false,
          className = "",
          id,
          maxLength,
@@ -44,22 +30,23 @@ const TextInput: React.FC<TextFieldProps> =
         };
 
         const textContent = (
-                <input
-                    id={id}
-                    type="text"
-                    value={value}
-                    onChange={handleChange}
-                    placeholder={placeholder}
-                    aria-label={label}
-                    disabled={disabled}
-                    maxLength={maxLength}
-                    pattern={pattern}
-                />
+            <input
+                id={id}
+                type="text"
+                value={value}
+                onChange={handleChange}
+                placeholder={placeholder}
+                aria-label={label}
+                disabled={disabled}
+                maxLength={maxLength}
+                pattern={pattern}
+                required={required}
+            />
         );
 
         if (showTooltip && label) {
             return (
-                <div className={`text-input ${size} ${className}`} >
+                <div className={`text-input ${size} ${className}`}>
                     <Tooltip text={label} position={tooltipPosition}>
                         {textContent}
                     </Tooltip>

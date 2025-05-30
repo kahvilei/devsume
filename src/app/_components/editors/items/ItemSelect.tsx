@@ -5,7 +5,7 @@ import { IBaseItem } from "@/server/models/schemas/IBaseItem";
 import { Item } from "@/app/_data/Items/Item";
 import { ItemSelectList, SelectValue } from "@/app/_components/editors/items/ItemSelectList";
 import TextInput from "@/app/_components/input/TextInput";
-import Paginator from "@/app/_components/input/Paginator";
+import Paginator from "@/app/_components/navigation/Paginator";
 import { ItemAddAnyOfTypeButton } from "@/app/_components/editors/items/ItemAddButton";
 import { ActionIcon } from "@/app/_components/buttons/ActionIcon";
 import BinaryToggle from "@/app/_components/buttons/BinaryToggle";

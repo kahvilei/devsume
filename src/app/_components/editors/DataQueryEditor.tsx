@@ -1,14 +1,13 @@
 // @/app/_components/editor/DataQueryEditor.tsx
 import React, {useEffect, useState} from "react";
-import {IBaseItem} from "@/interfaces/data";
 import {Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
-import Select, {DropdownOption} from "@/app/_components/select/Select";
+import Select, {DropdownOption} from "@/app/_components/input/select/Select";
 import NumberInput from "@/app/_components/input/NumberInput";
 import DateInput from "@/app/_components/input/DateInput";
 import TextInput from "@/app/_components/input/TextInput";
 import {Chip} from "@/app/_components/display/Chip";
-import {ContentVariant, Size} from "@/types/designTypes";
+import {ContentVariant, SizeVariant} from "@/types/designTypes";
 import {MongoOperator} from "@/types/dataTypes";
 import {Button} from "@/app/_components/buttons/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
@@ -31,9 +30,9 @@ interface FilterField {
     id?: string;
 }
 
-interface DataQueryEditorProps<T extends BaseDataModel> {
-    query: DataQuery<T>;
-    onSave: (query: DataQuery<T>) => void;
+interface DataQueryEditorProps {
+    query: DataQuery;
+    onSave: (query: DataQuery) => void;
     onCancel?: () => void;
     queryFields: { [key: string]: string };
     fieldTypes?: { [key: string]: FieldType };
@@ -42,7 +41,7 @@ interface DataQueryEditorProps<T extends BaseDataModel> {
     className?: string;
     debounceTime?: number;
     variant?: ContentVariant;
-    size?: Size;
+    size?: SizeVariant;
 }
 
 // Helper function to format field names for display
@@ -50,7 +49,7 @@ function formatFieldName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1');
 }
 
-export function DataQueryEditor<T extends BaseDataModel>
+export function DataQueryEditor
 ({
      query,
      onSave,
@@ -58,8 +57,8 @@ export function DataQueryEditor<T extends BaseDataModel>
      fieldTypes = {},
      className = '',
      size = "md"
- }: DataQueryEditorProps<T>) {
-    const [localQuery, setLocalQuery] = useState<DataQuery<T>>({...query});
+ }: DataQueryEditorProps) {
+    const [localQuery, setLocalQuery] = useState<DataQuery>({...query});
     const [filters, setFilters] = useState<FilterField[]>(Object.entries((query.filter as object)??{}).map(([key, value]) => ({
         key,
         value
@@ -71,17 +70,7 @@ export function DataQueryEditor<T extends BaseDataModel>
         if (JSON.stringify(localQuery) !== JSON.stringify(query)) {
             onSave(localQuery);
         }
-    }, [localQuery]);
-
-    useEffect(() => {
-        if (JSON.stringify(localQuery) !== JSON.stringify(query)) {
-            setLocalQuery(query);
-            setFilters(Object.entries((query.filter as object)??{}).map(([key, value]) => ({
-                key,
-                value
-            })));
-        }
-    }, [query]);
+    }, [localQuery, query]);
 
     const handleSortChange = (value: string): void => {
         setLocalQuery(prev => ({
@@ -159,18 +148,18 @@ export function DataQueryEditor<T extends BaseDataModel>
 
     function validateAndUpdateQuery(filters: FilterField[]) {
         setLocalQuery(prev => {
-            const newFilter: { [K in keyof T]?: DataFilter | undefined } = {};
+            const newFilter: { [key: string]: DataFilter } = {};
             filters.forEach(({key, value}) => {
                 // Check if the filter is valid
                 const [fieldKey, operator] = key.split('.');
                 if (fieldKey && operator && value) {
-                    newFilter[key as keyof T] = value;
+                    newFilter[key] = value;
                 }
             });
             return {
                 ...prev,
                 filter: newFilter
-            } as DataQuery<T>;
+            } as DataQuery;
         });
     }
 
@@ -301,7 +290,7 @@ export function FilterField(
         onChange(newFilter);
     }
 
-    // Render the appropriate field input based on field type
+    // Render the appropriate field components based on field type
     const renderValueField = () => {
         const fieldType = fieldTypes[key] || 'text';
 

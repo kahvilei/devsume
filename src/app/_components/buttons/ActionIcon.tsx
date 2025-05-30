@@ -1,6 +1,6 @@
 import React from "react";
 import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
-import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
+import {ButtonVariant, ColorVariant, RadiusVariant, SizeVariant} from "@/types/designTypes";
 
 interface ActionIconProps {
     icon: React.ReactNode;
@@ -10,8 +10,8 @@ interface ActionIconProps {
     className?: string;
     variant?: ButtonVariant;
     color?: ColorVariant;
-    radius?: RadiusSize;
-    size?: Size;
+    radius?: RadiusVariant;
+    size?: SizeVariant;
     tooltipPosition?: TooltipPosition;
     disabled?: boolean;
     ariaLabel?: string;

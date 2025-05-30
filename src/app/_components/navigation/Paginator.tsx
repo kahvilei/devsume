@@ -1,6 +1,6 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
-import { ActionIcon } from '@/app/_components/buttons/ActionIcon';
+import {ChevronLeft, ChevronRight, MoreHorizontal} from 'lucide-react';
+import {ActionIcon} from '@/app/_components/buttons/ActionIcon';
 
 interface PaginatorProps {
     pages: number;
@@ -9,12 +9,13 @@ interface PaginatorProps {
     maxVisiblePages?: number;
 }
 
-export const Paginator: React.FC<PaginatorProps> = ({
-                                                        pages,
-                                                        currentPage = 0,
-                                                        onSelect,
-                                                        maxVisiblePages = 5
-                                                    }) => {
+export const Paginator: React.FC<PaginatorProps> = (
+    {
+        pages,
+        currentPage = 0,
+        onSelect,
+        maxVisiblePages = 5
+    }) => {
     // Don't render if there's only one page or no pages
     if (pages <= 1) {
         return null;
@@ -41,12 +42,12 @@ export const Paginator: React.FC<PaginatorProps> = ({
     // Calculate which page numbers to show
     const getVisiblePages = (): (number | 'ellipsis')[] => {
         if (pages <= maxVisiblePages) {
-            return Array.from({ length: pages }, (_, i) => i);
+            return Array.from({length: pages}, (_, i) => i);
         }
 
         const half = Math.floor(maxVisiblePages / 2);
         let start = Math.max(0, currentPage - half);
-        let end = Math.min(pages - 1, start + maxVisiblePages - 1);
+        const end = Math.min(pages - 1, start + maxVisiblePages - 1);
 
         // Adjust start if we're near the end
         if (end - start < maxVisiblePages - 1) {
@@ -85,7 +86,7 @@ export const Paginator: React.FC<PaginatorProps> = ({
         <div className="flex items-center gap-1" role="navigation" aria-label="Pagination">
             {/* Previous button */}
             <ActionIcon
-                icon={<ChevronLeft size={16} />}
+                icon={<ChevronLeft size={16}/>}
                 onClick={handlePrevious}
                 disabled={currentPage === 0}
                 size="sm"
@@ -102,7 +103,7 @@ export const Paginator: React.FC<PaginatorProps> = ({
                                 key={`ellipsis-${index}`}
                                 className="flex items-center justify-center w-8 h-8 text-gray-400"
                             >
-                                <MoreHorizontal size={16} />
+                                <MoreHorizontal size={16}/>
                             </div>
                         );
                     }
@@ -133,7 +134,7 @@ export const Paginator: React.FC<PaginatorProps> = ({
 
             {/* Next button */}
             <ActionIcon
-                icon={<ChevronRight size={16} />}
+                icon={<ChevronRight size={16}/>}
                 onClick={handleNext}
                 disabled={currentPage === pages - 1}
                 size="sm"

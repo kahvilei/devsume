@@ -1,6 +1,6 @@
 import React from "react";
 import Tooltip from "@/app/_components/layouts/Tooltip";
-import {ButtonVariant, RadiusSize, Size} from "@/types/designTypes";
+import {ButtonVariant, RadiusVariant, SizeVariant} from "@/types/designTypes";
 
 interface BinaryToggleProps {
     state: boolean;
@@ -8,8 +8,8 @@ interface BinaryToggleProps {
     label?: [string, string];
     elements?: [React.ReactNode, React.ReactNode];
     id?: string;
-    size?: Size;
-    radius?: RadiusSize;
+    size?: SizeVariant;
+    radius?: RadiusVariant;
     variant?: ButtonVariant;
     orientation?: "horizontal" | "vertical";
 }

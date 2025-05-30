@@ -1,7 +1,7 @@
 // @/app/_components/common/Pill.tsx
 import React from 'react';
 import {Chip} from "@/app/_components/display/Chip";
-import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
+import {ButtonVariant, ColorVariant, RadiusVariant, SizeVariant} from "@/types/designTypes";
 
 interface PillProps {
     label: string;
@@ -11,9 +11,9 @@ interface PillProps {
     icon?: React.ReactNode;
     className?: string;
     variant?: ButtonVariant;
-    size?: Size;
+    size?: SizeVariant;
     color?: ColorVariant;
-    radius?: RadiusSize;
+    radius?: RadiusVariant;
     disabled?: boolean;
     ariaLabel?: string;
 }

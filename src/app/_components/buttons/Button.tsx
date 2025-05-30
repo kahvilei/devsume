@@ -1,4 +1,4 @@
-import {ButtonVariant, ColorVariant, RadiusSize, Size} from "@/types/designTypes";
+import {ButtonVariant, ColorVariant, RadiusVariant, SizeVariant} from "@/types/designTypes";
 import React from "react";
 
 interface ButtonProps {
@@ -6,11 +6,11 @@ interface ButtonProps {
     text: string;
     onClick?: () => void;
     className?: string;
-    size?: Size;
+    size?: SizeVariant;
     type?: 'button' | 'submit' | 'reset';
     disabled?: boolean;
     variant?: ButtonVariant;
-    radius?: RadiusSize;
+    radius?: RadiusVariant;
     color?: ColorVariant;
 }
 

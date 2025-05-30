@@ -1,28 +1,7 @@
 import React, {useState, useEffect, useId, useRef} from 'react';
-import Tooltip, { TooltipPosition } from "@/app/_components/layouts/Tooltip";
-import { Size } from "@/types/designTypes";
+import Tooltip from "@/app/_components/layouts/Tooltip";
 import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
-
-export interface DropdownOption {
-    value: string;
-    label: React.ReactNode;
-    option: React.ReactNode;
-}
-
-export interface SelectFieldProps {
-    label: string;
-    value: string;
-    options: DropdownOption[];
-    onChange: (value: string) => void;
-    placeholder?: string;
-    size?: Size;
-    className?: string;
-    required?: boolean;
-    showTooltip?: boolean;
-    tooltipPosition?: TooltipPosition;
-    disabled?: boolean;
-    id?: string;
-}
+import {SelectInputProps} from "@/interfaces/components/input";
 
 /**
  * Select component - A styled select dropdown with tooltip support
@@ -30,7 +9,7 @@ export interface SelectFieldProps {
  * This component follows the WysiwygText pattern from the design system
  * and provides a consistent interface for select inputs with more styling flexibility.
  */
-const Select: React.FC<SelectFieldProps> =
+const Select: React.FC<SelectInputProps> =
     ({
          label,
          value,

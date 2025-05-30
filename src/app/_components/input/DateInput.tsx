@@ -1,43 +1,26 @@
 // @/app/_components/editor/common/DateInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
+import Tooltip from "@/app/_components/layouts/Tooltip";
 import {Calendar} from "lucide-react";
-import {ContentVariant, Size} from "@/types/designTypes";
-
-
-export interface DateFieldProps {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    variant?: ContentVariant;
-    size?: Size;
-    showTooltip?: boolean;
-    tooltipPosition?: TooltipPosition;
-    disabled?: boolean;
-    className?: string;
-    id?: string;
-    min?: string; // ISO date string for min date
-    max?: string; // ISO date string for max date
-}
+import {DateInputProps} from "@/interfaces/components/input";
 
 /**
- * DateInput component - A styled date input with icon and tooltip support
+ * DateInput component - A styled date components with icon and tooltip support
  *
  * Provides a consistent interface for date inputs with validation.
  */
-const DateInput: React.FC<DateFieldProps> =
+const DateInput: React.FC<DateInputProps> =
     ({
          label,
          value,
          onChange,
          placeholder = "Select date",
-         variant = "subtle",
          size = "md",
          showTooltip = true,
          tooltipPosition = "left",
          disabled = false,
          className = "",
+         required = false,
          id,
          min,
          max
@@ -58,8 +41,9 @@ const DateInput: React.FC<DateFieldProps> =
                         value={value}
                         onChange={handleChange}
                         placeholder={placeholder}
-                        className={`clarity-${variant} input date-field ${size}`}
+                        className={`input date-field ${size}`}
                         disabled={disabled}
+                        required={required}
                         aria-label={label}
                         min={min}
                         max={max}

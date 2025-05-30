@@ -1,31 +1,15 @@
 // @/app/_components/editor/common/NumberInput.tsx
 import React from 'react';
-import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
+import Tooltip from "@/app/_components/layouts/Tooltip";
 import {Hash} from "lucide-react";
-import {Size} from "@/types/designTypes";
-
-export interface NumberFieldProps {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    size?: Size;
-    min?: number;
-    max?: number;
-    step?: number;
-    showTooltip?: boolean;
-    tooltipPosition?: TooltipPosition;
-    disabled?: boolean;
-    className?: string;
-    id?: string;
-}
+import {NumberInputProps} from "@/interfaces/components/input";
 
 /**
- * NumberInput component - A styled number input with icon and tooltip support
+ * NumberInput component - A styled number components with icon and tooltip support
  *
  * Provides a consistent interface for number inputs with validation.
  */
-const NumberInput: React.FC<NumberFieldProps> =
+const NumberInput: React.FC<NumberInputProps> =
     ({
          label,
          value,
@@ -38,12 +22,13 @@ const NumberInput: React.FC<NumberFieldProps> =
          showTooltip = true,
          tooltipPosition = "above",
          disabled = false,
+        required = false,
          className = "",
          id
      }) => {
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             if (!disabled) {
-                onChange(e.target.value);
+                onChange(parseInt(e.target.value)??0);
             }
         };
 
@@ -61,6 +46,7 @@ const NumberInput: React.FC<NumberFieldProps> =
                     placeholder={placeholder}
                     className={`${size}`}
                     disabled={disabled}
+                    required={required}
                     aria-label={label}
                 />
             </div>
