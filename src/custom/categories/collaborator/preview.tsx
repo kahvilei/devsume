@@ -3,6 +3,8 @@ import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
 import {Pencil, Trash} from "lucide-react";
+import {Avatar} from "@/app/_components/display/Avatar";
+import {ICollaborator} from "@/custom/categories/collaborator/model";
 
 export default function PreviewCollaborator(
     {
@@ -14,7 +16,7 @@ export default function PreviewCollaborator(
         className = 'rounded btn-shadow-spread',
         disabled = false,
         setIsEditing,
-    }: PreviewProps<ISkill>) {
+    }: PreviewProps<ICollaborator>) {
     const collaborator = item.getData();
     return (
         <div
@@ -33,6 +35,7 @@ export default function PreviewCollaborator(
                 e.stopPropagation();
             }}
         >
+            <Avatar color={'primary'} size={'xs'} name={collaborator.title} src={collaborator.img?.url}/>
             <span className="tag-label">{collaborator.title}</span>
             <span className="tag-label">{collaborator.description}</span>
             <span className={"flex gap-xxs"}>

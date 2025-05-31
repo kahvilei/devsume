@@ -3,7 +3,7 @@ import { Database, ListPlus, Undo, X, Edit3 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { IBaseItem } from "@/server/models/schemas/IBaseItem";
 import { Item } from "@/app/_data/Items/Item";
-import { ItemSelectList, SelectValue } from "@/app/_components/editors/items/ItemSelectList";
+import { ItemSelectList } from "@/app/_components/editors/items/ItemSelectList";
 import TextInput from "@/app/_components/input/TextInput";
 import Paginator from "@/app/_components/navigation/Paginator";
 import { ItemAddAnyOfTypeButton } from "@/app/_components/editors/items/ItemAddButton";
@@ -20,21 +20,32 @@ import {ItemList} from "@/app/_components/editors/items/ItemList";
 
 type SelectMode = "single" | "multiple";
 
-interface ItemSelectProps<T extends IBaseItem> {
-    values?: Data<T> | Item<T>[] | Item<T>;
+// Conditional types based on select mode
+export type SelectValue<T extends IBaseItem, Mode extends SelectMode> =
+    Mode extends "single"
+        ? Item<T>
+        : Data<T> ;
+
+type RenderSelectionValue<T extends IBaseItem, Mode extends SelectMode> =
+    Mode extends "single"
+        ? Item<T>
+        : Data<T>;
+
+interface ItemSelectProps<T extends IBaseItem, Mode extends SelectMode = SelectMode> {
+    values?: Mode extends "single" ? Item<T> : Item<T>[];
     label?: string;
     type: string;
     searchPageSize?: number;
-    selectMode: SelectMode;
+    selectMode: Mode;
     enableQuery?: boolean;
-    openInPopover?: boolean; // New prop for popover display
-    onSelect: (value: Data<T> | Item<T>[] | Item<T> | undefined) => void;
-    renderSelection?: (items: Item<T>[] | Item<T> | undefined) => React.ReactNode;
+    openInPopover?: boolean;
+    onSelect: (value: SelectValue<T, Mode>) => void;
+    renderSelection?: (items: RenderSelectionValue<T, Mode>) => React.ReactNode;
 }
 
-export const ItemSelect = observer(<T extends IBaseItem>(
+export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode>(
     {
-        values = [],
+        values,
         label = "Select items",
         type,
         searchPageSize = 10,
@@ -43,24 +54,30 @@ export const ItemSelect = observer(<T extends IBaseItem>(
         openInPopover = true,
         onSelect,
         renderSelection,
-    }: ItemSelectProps<T>
+    }: ItemSelectProps<T, Mode>
 ) => {
     const [controlsOpen, setControlsOpen] = useState<boolean>(false);
     const [searchPage, setSearchPage] = useState<number>(0);
     const [searchTitleQuery, setSearchTitleQuery] = useState<string>("");
-    const [selectedItems, setSelectedItems] = useState<Item<T>[]>(
-        Array.isArray(values) ? (values as Item<T>[]) : []
-    );
-    const [selectedItem, setSelectedItem] = useState<Item<T> | undefined>(
-        !Array.isArray(values) && selectMode === "single" ? (values as Item<T>) : undefined
-    );
+    const [selectedItems, setSelectedItems] = useState<Item<T>[]>(() => {
+        if (selectMode === "multiple" && Array.isArray(values)) {
+            return values as Item<T>[];
+        }
+        return [];
+    });
+    const [selectedItem, setSelectedItem] = useState<Item<T> | undefined>(() => {
+        if (selectMode === "single" && values && !Array.isArray(values)) {
+            return values as Item<T>;
+        }
+        return undefined;
+    });
     const [queryResults, setQueryResults] = useState<Item<T>[]>([]);
     const [isDynamic, setIsDynamic] = useState<boolean>(enableQuery);
 
     const renderBoxRef = useRef<HTMLDivElement>(null);
 
     const initialQuery = useMemo<DataQuery>(() => {
-        if (enableQuery && typeof values === "object" && !Array.isArray(values)) {
+        if (enableQuery && selectMode === "multiple" && values && typeof values === "object" && !Array.isArray(values)) {
             return values as DataQuery;
         }
         return {
@@ -68,7 +85,7 @@ export const ItemSelect = observer(<T extends IBaseItem>(
             sort: undefined,
             limit: undefined,
         };
-    }, [enableQuery, values]);
+    }, [enableQuery, selectMode, values]);
     const [query, setQuery] = useState<DataQuery>(initialQuery);
 
     const { items: list, pageCount } = useFetchItems<T>({
@@ -100,13 +117,13 @@ export const ItemSelect = observer(<T extends IBaseItem>(
 
     // Notify parent of selection changes
     useEffect(() => {
-        let result: Data<T> | Item<T>[] | Item<T> | undefined;
+        let result: SelectValue<T, Mode>;
         if (isDynamic) {
-            result = query;
+            result = query as SelectValue<T, Mode>;
         } else if (selectMode === "single") {
-            result = selectedItem;
+            result = selectedItem as SelectValue<T, Mode>;
         } else {
-            result = selectedItems;
+            result = selectedItems as SelectValue<T, Mode>;
         }
         onSelect(result);
     }, [isDynamic, query, selectedItem, selectedItems, onSelect, selectMode]);
@@ -122,11 +139,14 @@ export const ItemSelect = observer(<T extends IBaseItem>(
             sort: undefined,
             limit: undefined,
         });
-        if (enableQuery && isDynamic) onSelect({} as Data<T>);
-        else onSelect([]);
+        if (enableQuery && isDynamic) {
+            onSelect({} as SelectValue<T, Mode>);
+        } else {
+            onSelect((selectMode === "single" ? undefined : []) as unknown as SelectValue<T, Mode>);
+        }
     }, [selectMode, enableQuery, isDynamic, onSelect]);
 
-    const displayValue = isDynamic ? queryResults : selectMode === "single" ? selectedItem : selectedItems;
+    const displayValue: RenderSelectionValue<T, Mode> = (isDynamic ? queryResults : selectMode === "single" ? selectedItem : selectedItems) as RenderSelectionValue<T, Mode>;
     const overlayKey = useId();
 
     const controls = (
@@ -174,13 +194,13 @@ export const ItemSelect = observer(<T extends IBaseItem>(
                         onChange={setSearchTitleQuery}
                         placeholder={`Search ${names?.plural}`}
                     />
-                    <ItemSelectList<T>
+                    <ItemSelectList<T, Mode>
                         items={list}
                         selectType={selectMode}
-                        selected={selectMode === "single" ? selectedItem : selectedItems}
+                        selected={(selectMode === "single" ? selectedItem : selectedItems) as SelectValue<T, Mode>}
                         onSelect={(
                             selectMode === "single" ? setSelectedItem : setSelectedItems
-                        ) as (value: SelectValue<T>) => void}
+                        ) as (value: SelectValue<T, Mode>) => void}
                     />
                     <Paginator
                         pages={pageCount}
@@ -239,15 +259,25 @@ export const ItemSelect = observer(<T extends IBaseItem>(
         </div>
     );
 });
+
 // Props for both `ItemMultiSelect` and `ItemSingleSelect`
-interface CommonItemSelectProps<T extends IBaseItem> {
-    values?: Data<T> | Item<T>[] | Item<T>;
+interface CommonItemSelectProps {
     label?: string;
     type: string;
     searchPageSize?: number;
-    onSelect: (value: Data<T> | Item<T>[] | Item<T> | undefined) => void;
-    renderSelection?: (items: Item<T>[] | Item<T> | undefined) => React.ReactNode;
     openInPopover?: boolean;
+}
+
+interface SingleSelectProps<T extends IBaseItem> extends CommonItemSelectProps {
+    value?: Item<T>;
+    onSelect: (value: Item<T>) => void;
+    renderSelection?: (item: Item<T>) => React.ReactNode;
+}
+
+interface MultiSelectProps<T extends IBaseItem> extends CommonItemSelectProps {
+    values?: Data<T>;
+    onSelect: (value: Data<T>) => void;
+    renderSelection?: (items: Data<T>) => React.ReactNode;
 }
 
 /**
@@ -262,9 +292,9 @@ export const ItemMultiSelect = observer(<T extends IBaseItem>(
         onSelect,
         renderSelection = (items) => <ItemList items={items as Item<T>[]}/>,
         openInPopover,
-    }: CommonItemSelectProps<T>) => (
-    <ItemSelect<T>
-        values={values}
+    }: MultiSelectProps<T>) => (
+    <ItemSelect<T, "multiple">
+        values={values as Item<T>[]}
         label={label}
         type={type}
         searchPageSize={searchPageSize}
@@ -272,7 +302,7 @@ export const ItemMultiSelect = observer(<T extends IBaseItem>(
         enableQuery={true}
         onSelect={onSelect}
         renderSelection={renderSelection}
-        openInPopover = {openInPopover}
+        openInPopover={openInPopover}
     />
 ));
 
@@ -288,8 +318,8 @@ export const ItemSingleSelect = observer(<T extends IBaseItem>(
         onSelect,
         renderSelection = (item) => <ItemPreview item={item as Item<T>}/>,
         openInPopover,
-    }: CommonItemSelectProps<T>) => (
-    <ItemSelect<T>
+    }: SingleSelectProps<T>) => (
+    <ItemSelect<T, "single">
         values={value}
         label={label}
         type={type}
@@ -298,9 +328,8 @@ export const ItemSingleSelect = observer(<T extends IBaseItem>(
         enableQuery={false}
         onSelect={onSelect}
         renderSelection={renderSelection}
-        openInPopover = {openInPopover}
+        openInPopover={openInPopover}
     />
 ));
-
 
 export default ItemSelect;

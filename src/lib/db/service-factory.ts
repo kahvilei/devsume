@@ -96,7 +96,7 @@ export const createServiceFactory = <T>(
                         .sort(sort && Object.keys(sort).length > 0 ? sort : {})
                         .limit(limit)
                         .skip(skip)
-                        .lean(),
+                        .lean().populate(''),
                     Model.countDocuments(filters)
                 ]);
 
@@ -115,7 +115,7 @@ export const createServiceFactory = <T>(
 
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const entity = await Model.findOne({ slug }).lean();
+                const entity = await Model.findOne({ slug }).lean().populate('');
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with slug: ${slug}`, 404);

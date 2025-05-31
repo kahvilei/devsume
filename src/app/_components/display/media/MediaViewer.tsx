@@ -16,14 +16,13 @@ export const MediaViewer = observer(<T extends IMedia>({item, className, width, 
     const [imageError, setImageError] = React.useState(false);
     return (
         <div className="media-container">
-            {!imageError ? (
+            {!imageError && media.url ? (
                 <Image
                     src={media.url}
                     alt={media.alt || media.title}
                     width={width??400}
                     height={height??400}
-                    placeholder="blur"
-                    blurDataURL={media.url}
+                    blurDataURL={media.blurDataUrl??""}
                     onError={() => setImageError(true)}
                     loading="lazy"
                     className={className}
@@ -36,3 +35,4 @@ export const MediaViewer = observer(<T extends IMedia>({item, className, width, 
         </div>
     )
 });
+

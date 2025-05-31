@@ -3,36 +3,36 @@ import {Item} from "@/app/_data/Items/Item";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import {AnimatePresence} from "motion/react";
 import PopInOut from "@/app/_components/animations/PopInOut";
+import {SelectValue} from "@/app/_components/editors/items/ItemSelect";
 
-type SingleSelectValue<T extends IBaseItem> = Item<T> | undefined;
-type MultipleSelectValue<T extends IBaseItem> = Item<T>[];
-export type SelectValue<T extends IBaseItem> = SingleSelectValue<T> | MultipleSelectValue<T>;
+// Type definitions for select values
+type SelectMode = "single" | "multiple";
 
-interface ItemSelectListProps<T extends IBaseItem> {
+interface ItemSelectListProps<T extends IBaseItem, Mode extends SelectMode> {
     items: Item<T>[];
-    selectType: "single" | "multiple";
-    selected: SelectValue<T>;
-    onSelect: (value: SelectValue<T>) => void;
+    selectType: Mode;
+    selected: SelectValue<T, Mode>;
+    onSelect: (value: SelectValue<T, Mode>) => void;
 }
 
-export const ItemSelectList = <T extends IBaseItem>(
+export const ItemSelectList = <T extends IBaseItem, Mode extends SelectMode>(
     {
         items,
         selectType,
         selected,
         onSelect
-    }: ItemSelectListProps<T>) => {
+    }: ItemSelectListProps<T, Mode>) => {
     const handleClick = (item: Item<T>) => {
         if (selectType === "single") {
-            onSelect(item);
+            onSelect(item as SelectValue<T, Mode>);
             return;
         }
 
-        const selectedItems = selected as MultipleSelectValue<T>;
+        const selectedItems = (selected || []) as Item<T>[];
         if (selectedItems.includes(item)) {
-            onSelect(selectedItems.filter(i => i !== item));
+            onSelect(selectedItems.filter(i => i !== item) as SelectValue<T, Mode>);
         } else {
-            onSelect([...selectedItems, item]);
+            onSelect([...selectedItems, item] as SelectValue<T, Mode>);
         }
     };
 
@@ -40,33 +40,33 @@ export const ItemSelectList = <T extends IBaseItem>(
         if (selectType === "single") {
             return item === selected;
         }
-        return (selected as MultipleSelectValue<T>).includes(item);
+        const selectedItems = (selected || []) as Item<T>[];
+        return selectedItems.includes(item);
     };
 
     return (
         <ul role="listbox" className="item-select-list">
             <AnimatePresence>
-            {items.map(item =>
-                <PopInOut key={item.getData()._id}>
-                    <li
-
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            handleClick(item);
-                        }}
-                        role="option"
-                        aria-label={item.getData().title}
-                        aria-selected={isSelected(item)}
-                        className="flex items-center justify-between item-selector item cursor-pointer"
-                    >
-                        <ItemPreview
-                            item={item}
-                            onClick={() => handleClick(item)}
-                        />
-                    </li>
-                </PopInOut>
-            )}
+                {items.map(item =>
+                    <PopInOut key={item.getData()._id}>
+                        <li
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleClick(item);
+                            }}
+                            role="option"
+                            aria-label={item.getData().title}
+                            aria-selected={isSelected(item)}
+                            className="flex items-center justify-between item-selector item cursor-pointer"
+                        >
+                            <ItemPreview
+                                item={item}
+                                onClick={() => handleClick(item)}
+                            />
+                        </li>
+                    </PopInOut>
+                )}
             </AnimatePresence>
         </ul>
     );
@@ -74,8 +74,8 @@ export const ItemSelectList = <T extends IBaseItem>(
 
 interface ItemSingleSelectProps<T extends IBaseItem> {
     items: Item<T>[];
-    selected: SingleSelectValue<T>;
-    onSelect: (item: SingleSelectValue<T>) => void;
+    selected: SelectValue<T, "single">;
+    onSelect: (item: SelectValue<T, "single">) => void;
 }
 
 export const ItemSingleSelect = <T extends IBaseItem>(
@@ -84,18 +84,18 @@ export const ItemSingleSelect = <T extends IBaseItem>(
         selected,
         onSelect
     }: ItemSingleSelectProps<T>) => (
-    <ItemSelectList<T>
+    <ItemSelectList<T, "single">
         items={items}
         selectType="single"
         selected={selected}
-        onSelect={value => onSelect(value as SingleSelectValue<T>)}
+        onSelect={onSelect}
     />
 );
 
 interface ItemMultipleSelectProps<T extends IBaseItem> {
     items: Item<T>[];
-    selected: MultipleSelectValue<T>;
-    onSelect: (items: MultipleSelectValue<T>) => void;
+    selected: SelectValue<T, "multiple">;
+    onSelect: (items: SelectValue<T, "multiple">) => void;
 }
 
 export const ItemMultipleSelect = <T extends IBaseItem>(
@@ -104,10 +104,10 @@ export const ItemMultipleSelect = <T extends IBaseItem>(
         selected,
         onSelect
     }: ItemMultipleSelectProps<T>) => (
-    <ItemSelectList<T>
+    <ItemSelectList<T, "multiple">
         items={items}
         selectType="multiple"
         selected={selected}
-        onSelect={value => onSelect(value as MultipleSelectValue<T>)}
+        onSelect={onSelect}
     />
 );

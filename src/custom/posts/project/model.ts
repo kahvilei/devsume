@@ -16,17 +16,8 @@ const ProjectSchemaDefinition = {
 };
 
 const ProjectAutoRefConfig = {
-    'job': {
-        model: 'Experience',
-        autoPopulate: false,
-        populateSelect: 'title company startDate endDate'
-    },
-    'collaborators.items': {
-        model: 'Collaborator',
-        autoPopulate: false,
-        populateSelect: 'name title avatar bio',
-        deep: true // Enable deep searching since this is nested
-    }
+    'job': 'title company startDate endDate',
+    'collaborators.items': 'name title avatar bio',
 };
 
 const Project = createPostModel('Project', ProjectSchemaDefinition, undefined, ProjectAutoRefConfig);

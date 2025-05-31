@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import {withSlugGeneration} from "@/lib/models/plugins/withSlugGeneration";
 import {IBaseItem, ItemBaseSchema} from "@/server/models/schemas/IBaseItem";
-import {createModelFactoryWithAutoRef} from "@/lib/models/utils/createModelFactoryWithAutoRef";
+import {createModelFactory} from "@/lib/models/utils/createModelFactory";
 
 export type ICategory = IBaseItem
 
@@ -10,7 +10,8 @@ export type ICategory = IBaseItem
 export const CategorySchemaDefinition = {
     ...ItemBaseSchema
 };
-const CategorySchema = new mongoose.Schema(CategorySchemaDefinition);
+const CategorySchema = new mongoose.Schema(
+    CategorySchemaDefinition);
 
 /**
  * Creates a "discriminator" on the Category model allowing for custom Category types that inherit from the base Category model
@@ -18,10 +19,9 @@ const CategorySchema = new mongoose.Schema(CategorySchemaDefinition);
  * customBehaviours callback can be applied to add custom schema functions for validation, on delete, etc.
  * @example  export default createCategoryModel('Skill', SkillSchema);
  **/
-export const createCategoryModel = createModelFactoryWithAutoRef(
+export const createCategoryModel = createModelFactory(
     'Category',
     CategorySchema,
-    {},
     withSlugGeneration);
 
 // Apply timestamps and auto-slug generation

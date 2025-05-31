@@ -19,7 +19,7 @@ export const MediaSelect = <T extends IMedia>({type, value, onSelect}: MediaSele
     return (
         <ItemSingleSelect
             type={type??"Media"}
-            value={new Item<T>(value??{}, value.__t??"Media")}
+            value={new Item<T>(value??{}, value?.__t??"Media")}
             onSelect={handleSelect}
         />
     );

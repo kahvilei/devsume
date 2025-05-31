@@ -15,14 +15,7 @@ export const Schema = {
     links: [LinkSchema]
 };
 
-const CollaboratorAutoRefConfig = {
-    'img': {
-        model: 'Image',
-        autoPopulate: true,
-        populateSelect: 'url _id'
-    },
-};
 
-const Collaborator = createCategoryModel('Collaborator', Schema,undefined, CollaboratorAutoRefConfig);
+const Collaborator = createCategoryModel('Collaborator', Schema,);
 
 export default Collaborator;
