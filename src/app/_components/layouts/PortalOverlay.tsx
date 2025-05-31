@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useEffect, useRef} from "react";
 import OverlayContext from "@/app/_data/Overlay/OverlayContext";
-import ScaleInDownUpOut from "@/app/_components/animations/ScaleInDownUpOut";
+import overlayContext from "@/app/_data/Overlay/OverlayContext";
 
 export interface PortalOverlayProps {
     children?: React.ReactNode;
@@ -10,13 +10,15 @@ export interface PortalOverlayProps {
     placement?: 'bottom' | 'top' | 'left' | 'right';
     offset?: number;
     onClickOutside?: () => void;
-    className?: string;
+    className?: string; // Applied to the inner scrollable container
     matchWidth?: boolean;
+    minHeight?: number; // Minimum height for the overlay
 }
 
 /**
  * PortalOverlay - A utility component that renders content to the Overlay container
- * positioned relative to a target element
+ * positioned relative to a target element with edge detection and automatic repositioning.
+ * Height constraints and overflow are applied to the inner container that receives the className.
  */
 const PortalOverlay: React.FC<PortalOverlayProps> = (
     {
@@ -29,9 +31,10 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
         onClickOutside,
         className = '',
         matchWidth = false,
+        minHeight = 300,
     }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
-    const {setOverlay, removeOverlay, checkNode} = useContext(OverlayContext);
+    const {overlays, setOverlay, removeOverlay, checkNode} = useContext(OverlayContext);
 
     useEffect(() => {
         if (!isOpen) {
@@ -70,39 +73,119 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
 
         const targetRect = targetRef.current.getBoundingClientRect();
         const overlayRect = overlayRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
 
+        const innerElement = overlayRef.current.firstElementChild?.firstElementChild as HTMLElement;
+
+        // Calculate available space in each direction
+        const availableBottom = viewportHeight - targetRect.bottom - offset;
+        const availableTop = targetRect.top - offset;
+        const availableRight = viewportWidth - targetRect.right - offset;
+        const availableLeft = targetRect.left - offset;
+
+        // Determine preferred width
+        const preferredWidth = matchWidth ? targetRect.width : overlayRect.width;
+
+        // Find the best placement based on available space
+        let bestPlacement = placement;
+        let fallbackOrder: Array<'bottom' | 'top' | 'left' | 'right'> = [];
+
+        // Define fallback order based on original placement
+        switch (placement) {
+            case 'bottom':
+                fallbackOrder = ['bottom', 'top', 'right', 'left'];
+                break;
+            case 'top':
+                fallbackOrder = ['top', 'bottom', 'right', 'left'];
+                break;
+            case 'left':
+                fallbackOrder = ['left', 'right', 'bottom', 'top'];
+                break;
+            case 'right':
+                fallbackOrder = ['right', 'left', 'bottom', 'top'];
+                break;
+        }
+
+        // Check if we have enough space for each placement
+        const hasEnoughSpace = (p: typeof placement): boolean => {
+            switch (p) {
+                case 'bottom':
+                    return availableBottom >= minHeight;
+                case 'top':
+                    return availableTop >= minHeight;
+                case 'left':
+                    return availableLeft >= preferredWidth;
+                case 'right':
+                    return availableRight >= preferredWidth;
+                default:
+                    return false;
+            }
+        };
+
+
+        // Find the first placement that has enough space
+        bestPlacement = fallbackOrder.find(hasEnoughSpace) || placement;
+
+        // Calculate position and constraints based on best placement
         let top = 0;
         let left = 0;
+        let maxHeight = 'none';
 
-        // Calculate position based on placement
-        switch (placement) {
+        // Apply width if matching is requested
+        if (matchWidth) {
+            if (innerElement) {
+                innerElement.style.width = `${targetRect.width}px`;
+            }
+        }
+
+        switch (bestPlacement) {
             case 'bottom':
                 top = targetRect.bottom + offset;
                 left = targetRect.left;
+                maxHeight = `${Math.max(minHeight, availableBottom - 20)}px`;
                 break;
             case 'top':
                 top = targetRect.top - overlayRect.height - offset;
                 left = targetRect.left;
+                maxHeight = `${Math.max(minHeight, availableTop)}px`;
+                // Adjust top position if content is constrained
+                if (availableTop < overlayRect.height) {
+                    top = offset;
+                }
                 break;
             case 'left':
                 top = targetRect.top;
                 left = targetRect.left - overlayRect.width - offset;
+                maxHeight = `${Math.max(minHeight, viewportHeight - top - 20)}px`;
+                // Adjust left position if content is constrained
+                if (availableLeft < overlayRect.width) {
+                    left = offset;
+                }
                 break;
             case 'right':
                 top = targetRect.top;
                 left = targetRect.right + offset;
+                maxHeight = `${Math.max(minHeight, viewportHeight - top - 20)}px`;
+                break;
+            default:
+                top = targetRect.bottom + offset;
+                left = targetRect.left;
+                maxHeight = `${Math.max(minHeight, availableBottom - 20)}px`;
                 break;
         }
 
-        // Apply width if matching is requested
-        if (matchWidth) {
-            overlayRef.current.style.width = `${targetRect.width}px`;
+        if (innerElement) {
+            console.log(innerElement.offsetHeight, parseInt(maxHeight));
+            if (innerElement.offsetHeight > parseInt(maxHeight)){
+                innerElement.style.maxHeight = maxHeight;
+            }
+            innerElement.style.overflowX = 'hidden';
+            overlayRef.current.style.opacity = '1';
+            // Apply position styles to outer container
+            overlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
         }
-
-        // Position the overlay
-        overlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
-        overlayRef.current.style.opacity = '1';
-    }, [matchWidth, offset, placement, targetRef]);
+    }, [matchWidth, offset, placement, targetRef, minHeight]);
 
     const addOverlay = useCallback(() => {
         setOverlay(
@@ -153,7 +236,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
     useEffect(() => {
         // Initial positioning
         updatePosition();
-    }, [updatePosition, setOverlay]);
+    }, [updatePosition, setOverlay, overlays]);
 
     return null;
 };

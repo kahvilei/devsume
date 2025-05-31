@@ -134,7 +134,7 @@ export const createServiceFactory = <T>(
 
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const entity = await Model.findById(id).lean();
+                const entity = await Model.findById(id).lean().populate('');
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);
@@ -210,7 +210,7 @@ export const createServiceFactory = <T>(
                         new: true,
                         runValidators: true
                     }
-                );
+                ).populate('');
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);

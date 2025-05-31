@@ -45,7 +45,7 @@
 
     --devsume-typography-body-weight: 400;
 
-    --devsume-border-width: 0.1rem;
+    --devsume-border-width: 0.08rem;
     --devsume-border: var(--devsume-border-width) solid;
 
     --devsume-border-subtle-width: 0.05rem;
@@ -111,7 +111,7 @@
     /* Layout */
     --spacing-content: 75rem;
 
-    --spacing-border-width: 0.1rem;
+    --spacing-border-width: var(--devsume-border-width);
 
     /* Color System */
     /* Primary palette */
@@ -233,6 +233,29 @@ main {
 .body, p {
     font-size: var(--text-body);
     font-weight: var(--font-weight-body-w);
+}
+
+/*
+  Global Scrollbar Styles
+  Add this to your globals.css file
+*/
+* {
+    scrollbar-width: auto;
+    scrollbar-color: currentColor transparent;
+}
+
+::-webkit-scrollbar {
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--devsume-colors-primary);
+    border-radius: var(--devsume-radius-xl);
 }
 
 /*
@@ -866,15 +889,12 @@ main {
         }
 
     }
-    .popover-controls {
-        @apply background-bg;
-    }
     .selector-controls {
-        @apply flex flex-col gap-xs px-xs h-0 w-full overflow-hidden transition-all;
+        @apply flex flex-col gap-xs px-xs h-0 overflow-hidden transition-all;
         transition-duration: var(--transition-duration-normal);
 
         &.open {
-            @apply h-auto p-xs mb-xs content-style-3 overflow-visible;
+            @apply h-auto max-h-70 p-xs mb-xs content-style-3 overflow-visible background-bg;
         }
 
         &>div {
@@ -1022,10 +1042,10 @@ main {
         }
 
         .modal-container {
-            @apply flex flex-col gap-xs background-bg content-style-3 z-10 max-w-content p-md m-xs;
+            @apply flex flex-col gap-xs background-bg content-style-3 z-10 max-w-content p-sm m-xs;
             max-height: calc(100vh - 2rem);
             overflow-y: auto;
-            overflow-x: visible;
+            overflow-x: hidden;
 
             .modal-header {
                 @apply flex-right;
