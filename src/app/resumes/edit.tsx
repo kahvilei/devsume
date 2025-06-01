@@ -42,6 +42,10 @@ export default function EditResume({resume}: EditResumeProps) {
                         placeholder="Write a subtitle/short description"
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
+                    <ItemMultiSelect
+                        type={"Skill"}
+                        onSelect={() => {}}
+                    />
 
                 </section>
             </section>
@@ -54,10 +58,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
                     toolTipPosition={"right"}
                 />
-                <ItemMultiSelect
-                    type={"Category"}
-                    onSelect={() => {}}
-                    />
+
                 <ItemMultiSelect
                     type={"Collaborator"}
                     onSelect={() => {}}

@@ -1,18 +1,20 @@
-import React, {useCallback, useContext, useEffect, useRef} from "react";
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
 import OverlayContext from "@/app/_data/Overlay/OverlayContext";
-import overlayContext from "@/app/_data/Overlay/OverlayContext";
 
 export interface PortalOverlayProps {
     children?: React.ReactNode;
     targetRef?: React.RefObject<HTMLElement>;
-    isOpen: boolean;
+    isOpen?: boolean;
     overlayKey: string; // Unique key for this overlay
     placement?: 'bottom' | 'top' | 'left' | 'right';
     offset?: number;
     onClickOutside?: () => void;
     className?: string; // Applied to the inner scrollable container
     matchWidth?: boolean;
-    minHeight?: number; // Minimum height for the overlay
+    minHeight?: number | string; // Minimum height for the overlay
+    minWidth?: number | string; // Minimum width for the overlay
+    hoverMode?: boolean; // Enable hover to show/hide overlay
+    hoverDelay?: number; // Delay before hiding on mouse leave
 }
 
 /**
@@ -24,7 +26,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
     {
         children,
         targetRef,
-        isOpen,
+        isOpen: controlledIsOpen,
         overlayKey,
         placement = 'bottom',
         offset = 5,
@@ -32,15 +34,70 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
         className = '',
         matchWidth = false,
         minHeight = 300,
+        minWidth = '10rem',
+        hoverMode = false,
+        hoverDelay = 200,
     }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
+    const hoverTimeoutRef = useRef<NodeJS.Timeout>();
+    const [hoverOpen, setHoverOpen] = useState(false);
     const {overlays, setOverlay, removeOverlay, checkNode} = useContext(OverlayContext);
+
+    // Determine if overlay should be open
+    const isOpen = hoverMode ? hoverOpen : (controlledIsOpen ?? false);
+
+    // Convert minHeight/minWidth to pixels for calculations
+    const getPixelValue = (value: number | string): number => {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            if (value.endsWith('px')) return parseInt(value);
+            if (value.endsWith('rem')) return parseInt(value) * 16;
+            return parseInt(value) || 0;
+        }
+        return 0;
+    };
+
+    const minHeightPx = getPixelValue(minHeight);
+    const minWidthPx = getPixelValue(minWidth);
 
     useEffect(() => {
         if (!isOpen) {
             removeOverlay(overlayKey);
         }
     }, [isOpen, removeOverlay, overlayKey]);
+
+    // Handle hover for target element
+    useEffect(() => {
+        if (!hoverMode || !targetRef?.current) return;
+
+        const target = targetRef.current;
+
+        const handleMouseEnter = () => {
+            clearTimeout(hoverTimeoutRef.current);
+            setHoverOpen(true);
+        };
+
+        const handleMouseLeave = (e: MouseEvent) => {
+            // Check if mouse is moving to the overlay
+            const relatedTarget = e.relatedTarget as Node;
+            if (relatedTarget && overlayRef.current?.contains(relatedTarget)) {
+                return; // Don't hide if moving to overlay
+            }
+
+            hoverTimeoutRef.current = setTimeout(() => {
+                setHoverOpen(false);
+            }, hoverDelay);
+        };
+
+        target.addEventListener('mouseenter', handleMouseEnter);
+        target.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            target.removeEventListener('mouseenter', handleMouseEnter);
+            target.removeEventListener('mouseleave', handleMouseLeave);
+            clearTimeout(hoverTimeoutRef.current);
+        };
+    }, [hoverMode, hoverDelay]); // targetRef is stable, don't need it in deps
 
     // Handle click outside
     const handleClickOutside = useCallback(
@@ -50,7 +107,8 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
                 !overlayRef.current.contains(event.target as Node) &&
                 targetRef?.current &&
                 !targetRef?.current?.contains(event.target as Node) &&
-                onClickOutside
+                onClickOutside &&
+                !hoverMode
             ) {
                 //check first if this overlay has other overlays on top
                 if (!checkNode(overlayKey)){
@@ -58,7 +116,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
                 }
             }
         },
-        [onClickOutside, targetRef, overlayKey, checkNode]
+        [onClickOutside, targetRef, overlayKey, checkNode, hoverMode]
     );
 
     const updatePosition = useCallback(() => {
@@ -78,14 +136,17 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
 
         const innerElement = overlayRef.current.firstElementChild?.firstElementChild as HTMLElement;
 
+        // Use 0 offset for hover mode to ensure overlay touches target
+        const effectiveOffset = hoverMode ? 0 : offset;
+
         // Calculate available space in each direction
-        const availableBottom = viewportHeight - targetRect.bottom - offset;
-        const availableTop = targetRect.top - offset;
-        const availableRight = viewportWidth - targetRect.right - offset;
-        const availableLeft = targetRect.left - offset;
+        const availableBottom = viewportHeight - targetRect.bottom - effectiveOffset;
+        const availableTop = targetRect.top - effectiveOffset;
+        const availableRight = viewportWidth - targetRect.right - effectiveOffset;
+        const availableLeft = targetRect.left - effectiveOffset;
 
         // Determine preferred width
-        const preferredWidth = matchWidth ? targetRect.width : overlayRect.width;
+        const preferredWidth = matchWidth ? targetRect.width : Math.max(overlayRect.width, minWidthPx);
 
         // Find the best placement based on available space
         let bestPlacement = placement;
@@ -111,9 +172,9 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
         const hasEnoughSpace = (p: typeof placement): boolean => {
             switch (p) {
                 case 'bottom':
-                    return availableBottom >= minHeight;
+                    return availableBottom >= minHeightPx;
                 case 'top':
-                    return availableTop >= minHeight;
+                    return availableTop >= minHeightPx;
                 case 'left':
                     return availableLeft >= preferredWidth;
                 case 'right':
@@ -122,7 +183,6 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
                     return false;
             }
         };
-
 
         // Find the first placement that has enough space
         bestPlacement = fallbackOrder.find(hasEnoughSpace) || placement;
@@ -139,44 +199,49 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
             }
         }
 
+        // Apply min width
+        if (innerElement) {
+            innerElement.style.minWidth = typeof minWidth === 'string' ? minWidth : `${minWidth}px`;
+            innerElement.style.minHeight = typeof minHeight === 'string' ? minHeight : `${minHeight}px`;
+        }
+
         switch (bestPlacement) {
             case 'bottom':
-                top = targetRect.bottom + offset;
+                top = targetRect.bottom + effectiveOffset;
                 left = targetRect.left;
-                maxHeight = `${Math.max(minHeight, availableBottom - 20)}px`;
+                maxHeight = `${Math.max(minHeightPx, availableBottom - 20)}px`;
                 break;
             case 'top':
-                top = targetRect.top - overlayRect.height - offset;
+                top = targetRect.top - overlayRect.height - effectiveOffset;
                 left = targetRect.left;
-                maxHeight = `${Math.max(minHeight, availableTop)}px`;
+                maxHeight = `${Math.max(minHeightPx, availableTop)}px`;
                 // Adjust top position if content is constrained
                 if (availableTop < overlayRect.height) {
-                    top = offset;
+                    top = effectiveOffset;
                 }
                 break;
             case 'left':
                 top = targetRect.top;
-                left = targetRect.left - overlayRect.width - offset;
-                maxHeight = `${Math.max(minHeight, viewportHeight - top - 20)}px`;
+                left = targetRect.left - overlayRect.width - effectiveOffset;
+                maxHeight = `${Math.max(minHeightPx, viewportHeight - top - 20)}px`;
                 // Adjust left position if content is constrained
                 if (availableLeft < overlayRect.width) {
-                    left = offset;
+                    left = effectiveOffset;
                 }
                 break;
             case 'right':
                 top = targetRect.top;
-                left = targetRect.right + offset;
-                maxHeight = `${Math.max(minHeight, viewportHeight - top - 20)}px`;
+                left = targetRect.right + effectiveOffset;
+                maxHeight = `${Math.max(minHeightPx, viewportHeight - top - 20)}px`;
                 break;
             default:
-                top = targetRect.bottom + offset;
+                top = targetRect.bottom + effectiveOffset;
                 left = targetRect.left;
-                maxHeight = `${Math.max(minHeight, availableBottom - 20)}px`;
+                maxHeight = `${Math.max(minHeightPx, availableBottom - 20)}px`;
                 break;
         }
 
         if (innerElement) {
-            console.log(innerElement.offsetHeight, parseInt(maxHeight));
             if (innerElement.offsetHeight > parseInt(maxHeight)){
                 innerElement.style.maxHeight = maxHeight;
             }
@@ -185,14 +250,36 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
             // Apply position styles to outer container
             overlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
         }
-    }, [matchWidth, offset, placement, targetRef, minHeight]);
+    }, [matchWidth, offset, placement, targetRef, minHeightPx, minWidthPx, hoverMode, minHeight, minWidth]);
 
     const addOverlay = useCallback(() => {
+        const handleOverlayMouseEnter = () => {
+            if (hoverMode) {
+                clearTimeout(hoverTimeoutRef.current);
+            }
+        };
+
+        const handleOverlayMouseLeave = (e: React.MouseEvent) => {
+            if (hoverMode) {
+                // Check if mouse is moving to the target
+                const relatedTarget = e.relatedTarget as Node;
+                if (relatedTarget && targetRef?.current?.contains(relatedTarget)) {
+                    return; // Don't hide if moving to target
+                }
+
+                hoverTimeoutRef.current = setTimeout(() => {
+                    setHoverOpen(false);
+                }, hoverDelay);
+            }
+        };
+
         setOverlay(
             overlayKey,
             <div
                 ref={overlayRef}
                 key={overlayKey}
+                onMouseEnter={handleOverlayMouseEnter}
+                onMouseLeave={handleOverlayMouseLeave}
                 style={{
                     position: 'fixed',
                     top: 0,
@@ -204,7 +291,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
                 <div className={className}>{children}</div>
             </div>
         );
-    }, [overlayKey, className, children]);
+    }, [overlayKey, className, children, hoverMode, hoverDelay, targetRef]); // setOverlay is stable
 
     useEffect(() => {
         if (isOpen) {
@@ -219,7 +306,7 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
         window.addEventListener('resize', updatePosition);
         window.addEventListener('scroll', updatePosition);
 
-        if (onClickOutside) {
+        if (onClickOutside && !hoverMode) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
@@ -227,11 +314,11 @@ const PortalOverlay: React.FC<PortalOverlayProps> = (
             window.removeEventListener('resize', updatePosition);
             window.removeEventListener('scroll', updatePosition);
 
-            if (onClickOutside) {
+            if (onClickOutside && !hoverMode) {
                 document.removeEventListener('mousedown', handleClickOutside);
             }
         };
-    }, [isOpen, onClickOutside, updatePosition, handleClickOutside]);
+    }, [isOpen, onClickOutside, updatePosition, handleClickOutside, hoverMode]);
 
     useEffect(() => {
         // Initial positioning

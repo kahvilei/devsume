@@ -29,7 +29,7 @@ export const config = {
         {
             api: "/api/categories/collaborator/",
             key: "Collaborator",
-            preview: PreviewCollaborator as React.FC<PreviewProps<ISkill>>,
+            preview: PreviewCollaborator as React.FC<PreviewProps<ICollaborator>>,
             edit: EditCollaborator as React.FC<EditProps<ICollaborator>>,
             queryFields: {
                 title: "string",

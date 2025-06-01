@@ -1,7 +1,6 @@
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import WysiwygText from "@/app/_components/input/WysiwygText";
-import ItemSectionEditor from "@/app/_components/editors/items/ItemSectionEditor";
 import {Section} from "@/server/models/schemas/section";
 import {ICategory} from "@/server/models/Category";
 import {IDevelopmentResume} from "@/custom/resumes/development/model";
@@ -42,15 +41,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     />
                 </section>
                 <section className="categories">
-                    <ItemSectionEditor
-                        max={100}
-                        sectionTypes={["categories"]}
-                        sectionData={resumeData?.skills ?? []}
-                        onSave={(sections: Section<ICategory>[]) => setResumeData({
-                            ...resumeData,
-                            skills: sections
-                        })}
-                    />
+
                 </section>
             </section>
             <section className="left">
@@ -63,15 +54,7 @@ export default function EditResume({resume}: EditResumeProps) {
                     toolTipPosition={"right"}
                 />
                 <section className="work">
-                    <ItemSectionEditor
-                        max={100}
-                        sectionTypes={["posts"]}
-                        sectionData={resumeData?.experience ?? []}
-                        onSave={(sections: Section<IExperience>[]) => setResumeData({
-                            ...resumeData,
-                            experience: sections
-                        })}
-                    />
+
                 </section>
             </section>
 

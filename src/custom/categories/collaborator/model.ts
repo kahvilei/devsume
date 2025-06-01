@@ -15,7 +15,11 @@ export const Schema = {
     links: [LinkSchema]
 };
 
+const population = [{
+    path: 'img',
+    select: 'url alt title description'
+}];
 
-const Collaborator = createCategoryModel('Collaborator', Schema,);
+const Collaborator = createCategoryModel('Collaborator', Schema, undefined, population);
 
 export default Collaborator;

@@ -1,4 +1,3 @@
-import {ISkill} from "@/custom/categories/skill/model";
 import {PreviewProps} from "@/interfaces/data";
 import React from "react";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
@@ -13,16 +12,16 @@ export default function PreviewCollaborator(
             window.location.href = `/tags/${item.getData().slug}`
         },
         size = "md",
-        className = 'rounded btn-shadow-spread',
+        className = 'content-style-1',
         disabled = false,
         setIsEditing,
+        showEdit = false,
     }: PreviewProps<ICollaborator>) {
     const collaborator = item.getData();
     return (
         <div
-            role="button"
             tabIndex={0}
-            className={`pill ${size} ${className} ${disabled ? 'disabled' : ''}`}
+            className={`${size} ${className} ${disabled ? 'disabled' : ''} flex flex-row gap-sm items-center`}
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
@@ -35,23 +34,25 @@ export default function PreviewCollaborator(
                 e.stopPropagation();
             }}
         >
-            <Avatar color={'primary'} size={'xs'} name={collaborator.title} src={collaborator.img?.url}/>
-            <span className="tag-label">{collaborator.title}</span>
-            <span className="tag-label">{collaborator.description}</span>
+            <Avatar name={collaborator.title} src={collaborator.img?.url}/>
+            <div className="flex flex-col gap-xxs">
+                <span className="tag-label font-bold">{collaborator.title}</span>
+                <span className="tag-label">{collaborator.description}</span>
+            </div>
             <span className={"flex gap-xxs"}>
-            {setIsEditing &&
-                <ActionIcon
-                    onClick={() => setIsEditing(true)}
-                    icon={<Pencil/>}
-                    tooltip={"Edit collaborator"}
-                    size="xs"
-                    variant="btn-light"
-                    color="foreground"
-                    radius="rounded-full"
-                />
-            }
-            {item.delete &&
-                <ActionIcon
+                {showEdit && setIsEditing &&
+                    <ActionIcon
+                        onClick={() => setIsEditing(true)}
+                        icon={<Pencil/>}
+                        tooltip={"Edit collaborator"}
+                        size="xs"
+                        variant="btn-light"
+                        color="foreground"
+                        radius="rounded-full"
+                    />
+                }
+                {showEdit && item.delete &&
+                    <ActionIcon
                     onClick={() => item.delete()}
                     icon={<Trash/>}
                     tooltip="Delete collaborator"
@@ -60,7 +61,8 @@ export default function PreviewCollaborator(
                     color="foreground"
                     radius="rounded-full"
                 />
-            }
+                }
+
             </span>
         </div>
     );

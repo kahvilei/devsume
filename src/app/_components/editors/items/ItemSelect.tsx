@@ -217,27 +217,22 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
             <div
                 className="render-box relative"
                 ref={renderBoxRef}
+                onClick={() => setControlsOpen(!controlsOpen)}
+                aria-label={label}
+                aria-haspopup="listbox"
             >
-                <div
-                    onClick={() => setControlsOpen(!controlsOpen)}
-                    aria-label={label}
-                    aria-haspopup="listbox"
-                    className="content-style-1 with-hover"
-                >
-                    {!displayValue || (Array.isArray(displayValue) && displayValue.length === 0) ? (
-                        <div className="item-selector-placeholder">
-                            No {selectMode === "single" ? names?.singular : names?.plural} selected. Click here to add.
-                        </div>
-                    ) : renderSelection?.(displayValue)}
-                </div>
                 <ActionIcon
                     icon={<Edit3 />}
                     size="sm"
                     variant="btn-default"
-                    className="absolute top-1 right-1 rounded-full background-bg"
                     tooltip="Edit Selection"
                     onClick={() => setControlsOpen(!controlsOpen)}
                 />
+                {!displayValue || (Array.isArray(displayValue) && displayValue.length === 0) ? (
+                    <div className="item-selector-placeholder">
+                        No {selectMode === "single" ? names?.singular : names?.plural} selected. Click here to add.
+                    </div>
+                ) : renderSelection?.(displayValue)}
             </div>
 
             {/* Conditionally render controls in a popover or in place */}

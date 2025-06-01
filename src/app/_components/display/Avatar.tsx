@@ -3,8 +3,8 @@ import {ImageViewer} from "@/app/_components/display/ImageViewer";
 import {ReactNode} from "react";
 
 interface Avatar {
-    color: ColorVariant;
-    size: SizeVariant;
+    color?: ColorVariant;
+    size?: SizeVariant;
     className?: string;
     icon?: ReactNode;
     name?: string;
@@ -18,7 +18,7 @@ export const Avatar = ({color, size, className, icon, name, src}: Avatar) => {
         if (name) return (name.charAt(0) + name.charAt(1)).toUpperCase()
     }
     return (
-        <div className={`avatar w-sm h-sm ${color} ${size} ${className}`}>
+        <div className={`avatar ${color} ${size} ${className}`}>
             {renderInterior()}
         </div>
     );

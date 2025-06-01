@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+    overflow-x: hidden;
+}
+
 :root {
     color-scheme: light;
 }
@@ -57,6 +61,8 @@
     --devsume-spacing-md: 2rem;
     --devsume-spacing-lg: 3rem;
     --devsume-spacing-xl: 4rem;
+    --devsume-spacing-xxl: 5rem;
+    --devsume-spacing: var(--devsume-spacing-xs);
 
     --devsume-sizes-content: 75rem;
 
@@ -106,6 +112,7 @@
     --spacing-md: 2rem;
     --spacing-lg: 3rem;
     --spacing-xl: 4rem;
+    --spacing-xxl: 5rem;
     --spacing: var(--spacing-xs); /* Base spacing unit */
 
     /* Layout */
@@ -240,7 +247,7 @@ main {
   Add this to your globals.css file
 */
 * {
-    scrollbar-width: auto;
+    scrollbar-width: thin;
     scrollbar-color: currentColor transparent;
 }
 
@@ -869,24 +876,14 @@ main {
 
         /* Content area */
 
-        .content {
-            @apply content-style-1 p-xs cursor-pointer;
-        }
+        .render-box {
+            @apply content-style-1 p-xs cursor-pointer min-h-7 flex items-center relative;
 
-        /* Button container */
-
-        .item-selector-placeholder {
-            @apply dimmed text-sm italic;
-        }
-
-        .item-selector {
-            @apply rounded;
-            &[aria-selected="true"] {
-                &>* {
-                    @apply outline-2 outline-offset-1 outline-dashed outline-foreground;
-                }
+            &>.action-icon-wrap {
+                @apply absolute top-1 right-1 rounded-full background-bg;
             }
         }
+
 
     }
     .selector-controls {
@@ -911,6 +908,31 @@ main {
 
             &>div {
                 @apply flex flex-row gap-xs;
+            }
+        }
+
+        /* Button container */
+
+        .item-selector-placeholder {
+            @apply dimmed text-sm italic;
+        }
+
+        .item-selector {
+            @apply rounded;
+            &[aria-selected="true"] {
+                &>* {
+                    position: relative;
+                }
+                &>*::after {
+                    border-radius: inherit;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    content: "";
+                    @apply outline-2 outline-offset-2 outline-dashed outline-foreground;
+                }
             }
         }
     }
@@ -1159,7 +1181,7 @@ main {
         }
     }
 
-    /* Select Styles */
+    /* Select Styles and input */
     .select, .number-select {
         position: relative;
         width: 100%;
@@ -1215,7 +1237,7 @@ main {
         }
     }
     .text-input, .tag-input{
-        @apply w-full flex-1 border-none box-border;
+        @apply border-none box-border;
 
         input, textarea {
             @apply interactive content-style-3 flex items-center justify-between gap-xs p-xs rounded w-full box-border;
@@ -1259,6 +1281,66 @@ main {
      */
     .add-new {
         @apply flex items-center justify-center gap-xs p-xs;
+    }
+
+    /*
+        avatar styles
+     */
+    .avatar {
+        @apply rounded-full h-lg w-lg overflow-hidden background-bg border;
+        border: var(--spacing-border-width) solid currentColor;
+
+        img {
+            @apply h-full w-full;
+        }
+
+        &.xs {
+            @apply h-sm w-sm;
+        }
+
+        &.sm {
+            @apply h-md w-md;
+        }
+
+        &.md {
+            @apply h-lg w-lg;
+        }
+
+        &.lg {
+            @apply h-xl w-xl;
+        }
+
+        &.xl {
+            @apply h-xxl w-xxl;
+        }
+
+        &.primary {
+            @apply text-primary;
+        }
+
+        &.secondary {
+            @apply text-secondary;
+        }
+        &.tertiary {
+            @apply text-tertiary;
+        }
+        &.success {
+            @apply text-success;
+        }
+        &.warning {
+            @apply text-warning;
+        }
+        &.danger {
+            @apply text-danger;
+        }
+
+    }
+
+    /*
+        base "item" defaults
+     */
+    .item-list {
+        @apply flex flex-row flex-wrap gap-xs;
     }
 }
 

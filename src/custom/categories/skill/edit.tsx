@@ -9,7 +9,7 @@ import {Separator} from "@/app/_components/display/Seperator";
 import {Plus, Save, Trash, X} from "lucide-react";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
 
-export default function EditSkill({item, onCancel}: EditProps<ISkill>) {
+export default function EditSkill({item, onFinished}: EditProps<ISkill>) {
     const skill = item.getData();
     const [title, setTitle] = React.useState(skill.title);
     const [description, setDescription] = React.useState(skill.description);
@@ -21,14 +21,14 @@ export default function EditSkill({item, onCancel}: EditProps<ISkill>) {
     const handleSaveSkill = () => {
         console.log(skill);
         item.setDataAndSave({...skill, title, description, tags}).then(
-            onCancel
+            onFinished
         );
     };
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this skill?')) {
             item.delete().then(
-                onCancel
+                onFinished
             );
         }
     }
@@ -45,7 +45,7 @@ export default function EditSkill({item, onCancel}: EditProps<ISkill>) {
             >
                 <div className="flex flex-row gap-xs justify-between items-end">
                     <h3>{mode === 'edit' ? "Edit skill" : "Add a new skill"}</h3>
-                    <ActionIcon icon={<X/>} onClick={onCancel} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
+                    <ActionIcon icon={<X/>} onClick={onFinished} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
                 </div>
 
                 <Separator/>

@@ -1,6 +1,6 @@
 // lib/db/media-service-factory.ts
 import { createFailResponse, createSuccessResponse, ResponseObject } from "@/lib/db/utils";
-import {Model, Document} from "mongoose";
+import {Model, Document, PopulateOptions} from "mongoose";
 import { IMedia } from "@/server/models/Media";
 import fs from "fs/promises";
 import path from "path";
@@ -58,16 +58,17 @@ export interface MediaServiceFactory<TInterface extends IMedia> extends ServiceF
     deleteAndClean: (id: string, type: string) => Promise<ResponseObject>;
 }
 
-export const createMediaServiceFactory = <T extends IMedia>(
+export const createMediaServiceFactory = async <T extends IMedia>(
     defaultModel: Model<Document<T>>,
     customPath: string,
     entityName: string,
     config: Partial<MediaUploadConfig> = {}
-): MediaServiceFactory<T> => {
+): Promise<MediaServiceFactory<T>> => {
     const modelCache = new Map<string, Model<Document<T>>>();
+    const popFields: PopulateOptions[] = [];
     const MAX_CACHE_SIZE = 100; // Prevent memory leaks
 
-    const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
+    const resolveModel = await createModelResolver(defaultModel, customPath, modelCache, popFields);
     const entityNameLower = entityName.toLowerCase();
     const mediaConfig = { ...defaultConfig, ...config };
 
@@ -254,7 +255,7 @@ export const createMediaServiceFactory = <T extends IMedia>(
 
     // Return combined methods
     return {
-        ...createServiceFactory<T>(defaultModel, customPath, entityName),
+        ... await createServiceFactory<T>(defaultModel, customPath, entityName),
         uploadFile,
         uploadFiles,
         getFileStream,

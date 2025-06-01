@@ -51,25 +51,33 @@ export default function EditCollaborator({item, onCancel}: EditProps<ICollaborat
                 </div>
 
                 <Separator/>
-
-                <MediaSelect
-                    type={"Image"}
-                    value={image}
-                    onSelect = {setImage}
-                />
-                <TextInput
-                    value = {title}
-                    onChange = {setTitle}
-                    label = "Colloborator name"
-                    placeholder = "Collaborator name"
-                    required = {true}
-                />
-                <TextAreaInput
-                    value = {description??""}
-                    onChange = {setDescription}
-                    label = "Description"
-                    placeholder = "Collaborator description"
-                />
+                <section className="flex flex-row gap-xs items-center">
+                    <section className={'flex-1'}>
+                        <MediaSelect
+                            type={"Image"}
+                            value={image}
+                            onSelect = {setImage}
+                        />
+                    </section>
+                    <section className={'flex-2 flex flex-col gap-xs justify-center'}>
+                        <TextInput
+                            value = {title}
+                            onChange = {setTitle}
+                            label = "Colloborator name"
+                            placeholder = "Collaborator name"
+                            required = {true}
+                            className={'w-full'}
+                        />
+                        <TextAreaInput
+                            value = {description??""}
+                            onChange = {setDescription}
+                            label = "Description"
+                            placeholder = "Collaborator description"
+                            className={'w-full'}
+                        />
+                    </section>
+                </section>
+                <Separator/>
                 <TagInput value={tags} onChange={setTags} label={"Enter tags"}/>
                 <Separator/>
                 <div className="flex flex-row gap-xs justify-center">

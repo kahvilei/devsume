@@ -5,7 +5,7 @@ import {
     ResponseObject,
     PagContent
 } from "@/lib/db/utils";
-import { Model, UpdateQuery, Document } from "mongoose";
+import {Model, UpdateQuery, Document, PopulateOptions} from "mongoose";
 import { createModelResolver } from "@/lib/db/model-resolver";
 import { dbOperation } from "@/lib/db/db-operation";
 
@@ -24,16 +24,16 @@ export interface ServiceFactory<TInterface> {
     clearCache: () => void;
 }
 
-
-export const createServiceFactory = <T>(
+export const createServiceFactory = async <T>(
     defaultModel: Model<Document<T>>,
     customPath: string,
     entityName: string
-): ServiceFactory<T> => {
+): Promise<ServiceFactory<T>> => {
     const modelCache = new Map<string, Model<Document<T>>>();
+    const popFields: PopulateOptions[] = [];
     const MAX_CACHE_SIZE = 100; // Prevent memory leak
 
-    const resolveModel = createModelResolver(defaultModel, customPath, modelCache);
+    const resolveModel = await createModelResolver(defaultModel, customPath, modelCache, popFields);
     const entityNameLower = entityName.toLowerCase();
 
     // Cache size management
@@ -74,7 +74,7 @@ export const createServiceFactory = <T>(
                 // Get both entities and total count
                 const [entities, total] = await Promise.all([
                     Model.find().lean(),
-                    Model.countDocuments()
+                    Model.countDocuments().populate(popFields)
                 ]);
 
                 const pagination = calculatePagination(total, entities.length, 0);
@@ -96,7 +96,8 @@ export const createServiceFactory = <T>(
                         .sort(sort && Object.keys(sort).length > 0 ? sort : {})
                         .limit(limit)
                         .skip(skip)
-                        .lean().populate(''),
+                        .lean()
+                        .populate(popFields),
                     Model.countDocuments(filters)
                 ]);
 
@@ -115,7 +116,7 @@ export const createServiceFactory = <T>(
 
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const entity = await Model.findOne({ slug }).lean().populate('');
+                const entity = await Model.findOne({ slug }).lean().populate(popFields);
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with slug: ${slug}`, 404);
@@ -134,7 +135,7 @@ export const createServiceFactory = <T>(
 
                 manageCacheSize();
                 const Model = await resolveModel(type);
-                const entity = await Model.findById(id).lean().populate('');
+                const entity = await Model.findById(id).lean().populate(popFields);
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);
@@ -210,7 +211,7 @@ export const createServiceFactory = <T>(
                         new: true,
                         runValidators: true
                     }
-                ).populate('');
+                ).populate(popFields);
 
                 if (!entity) {
                     return createFailResponse(`No ${entityNameLower} found with ID: ${id}`, 404);

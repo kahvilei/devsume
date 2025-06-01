@@ -2,7 +2,7 @@ import { Media } from "@/server/models";
 import { createMediaServiceFactory } from "@/lib/db/media-service-factory";
 import {IMedia} from "@/server/models/Media";
 
-const mediaService = createMediaServiceFactory<IMedia>(
+const mediaService = await createMediaServiceFactory<IMedia>(
     Media,
     "media",
     "Media",

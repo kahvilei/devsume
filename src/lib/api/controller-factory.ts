@@ -1,8 +1,6 @@
 import { ServiceFactory } from "@/lib/db/service-factory";
 import { NextRequest } from "next/server";
 import { PageProps } from "@/interfaces/api";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import { createFailResponse } from "@/lib/db/utils";
 

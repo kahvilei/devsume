@@ -1,10 +1,10 @@
 // src/lib/models/utils/createModelFactory.ts
-import mongoose from "mongoose";
+import mongoose, {PopulateOptions} from "mongoose";
 
 export const createModelFactory = <T = mongoose.Document>(
     baseModelName: string,
     baseSchema: mongoose.Schema,
-    additionalBehaviors?: (schema: mongoose.Schema) => mongoose.Schema
+    additionalBehaviors?: (schema: mongoose.Schema) => mongoose.Schema,
 ) => {
 
     // Apply additional behaviors to base schema
@@ -20,6 +20,7 @@ export const createModelFactory = <T = mongoose.Document>(
         typeName: string,
         schema: mongoose.SchemaDefinition | object,
         customBehaviors: (schema: mongoose.Schema) => mongoose.Schema = (schema) => (schema),
+        populateOptions: PopulateOptions[] = []
     ) => {
         // Return existing model if it already exists
         if (mongoose.models[typeName]) {
@@ -33,6 +34,9 @@ export const createModelFactory = <T = mongoose.Document>(
         customBehaviors(mongooseSchema);
 
         // Create discriminator model
-        return BaseModel.discriminator<T>(typeName, mongooseSchema);
+        return {
+            model: BaseModel.discriminator<T>(typeName, mongooseSchema),
+            populateOptions: populateOptions
+        }
     };
 };
