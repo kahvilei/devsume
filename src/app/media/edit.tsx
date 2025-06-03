@@ -5,7 +5,7 @@ import { Save, Upload, X, Image as ImageIcon } from "lucide-react";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {IMedia} from "@/server/models/Media";
 
-export default function EditMedia({ item, onCancel }: EditProps<IMedia>) {
+export default function EditMedia({ item, onFinished }: EditProps<IMedia>) {
     const media = item.getData();
     const [title, setTitle] = useState(media.title);
     const [alt, setAlt] = useState(media.alt || '');
@@ -40,7 +40,7 @@ export default function EditMedia({ item, onCancel }: EditProps<IMedia>) {
         setUploadError('');
         try {
             await item.setDataAndSaveAsForm({ ...media, title, alt, caption, file: selectedFile });
-            onCancel();
+            onFinished();
         } catch (error) {
             console.error('Upload error:', error);
             setUploadError(
@@ -137,7 +137,7 @@ export default function EditMedia({ item, onCancel }: EditProps<IMedia>) {
                         disabled={uploading || !title}
                     />
                     <ActionIcon
-                        onClick={onCancel}
+                        onClick={onFinished}
                         icon={<X />}
                         tooltip="Cancel"
                         size="sm"

@@ -14,12 +14,11 @@ export const MediaSelect = <T extends IMedia>({type, value, onSelect}: MediaSele
         if (!item) return;
         onSelect(item.getData())
     }
-    console.log(value);
 
     return (
         <ItemSingleSelect
             type={type??"Media"}
-            value={new Item<T>(value??{}, value?.__t??"Media")}
+            value={new Item<T>(value??{} as T, value?.__t??"Media")}
             onSelect={handleSelect}
         />
     );

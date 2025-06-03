@@ -18,7 +18,6 @@ export default function PreviewSkill(
             tabIndex={0}
             className={`tag ${className} ${disabled ? 'no-hover' : ''}`}
             onClick={(e) => {
-                e.stopPropagation();
                 onClick();
             }}
             onKeyDown={(e) => {

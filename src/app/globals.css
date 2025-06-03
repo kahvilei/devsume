@@ -887,12 +887,9 @@ main {
 
     }
     .selector-controls {
-        @apply flex flex-col gap-xs px-xs h-0 overflow-hidden transition-all;
+        @apply flex flex-col gap-xs px-xs transition-all  h-auto max-h-70 p-xs mb-xs content-style-3 overflow-visible background-bg;
         transition-duration: var(--transition-duration-normal);
 
-        &.open {
-            @apply h-auto max-h-70 p-xs mb-xs content-style-3 overflow-visible background-bg;
-        }
 
         &>div {
             @apply flex flex-col gap-xs;
@@ -1000,7 +997,7 @@ main {
             transform: translateY(-50%) translateX(0.5rem);
         }
 
-        /* Tooltip hover effects */
+        /* Tooltip useHover effects */
 
         &:hover > .tooltip {
             @apply opacity-100;

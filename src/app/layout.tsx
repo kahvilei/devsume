@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from  "./provider";
 import Header from "@/app/_layouts/header";
 import Footer from "@/app/_layouts/footer";
-import {OverlayContainer} from "@/app/_components/layouts/OverlayContainer";
-import {OverlayProvider} from "@/app/_data/Overlay/OverlayContext";
 
 
 export const metadata: Metadata = {
@@ -22,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
         <Provider>
-            <OverlayProvider>
             <body>
                  <div className="flex flex-col items-center">
                     <Header/>
@@ -31,9 +27,7 @@ export default function RootLayout({
                     </main>
                  </div>
                 <Footer/>
-                <OverlayContainer/>
             </body>
-            </OverlayProvider>
         </Provider>
     </html>
   );

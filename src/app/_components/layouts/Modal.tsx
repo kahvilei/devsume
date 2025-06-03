@@ -1,31 +1,31 @@
-import React, {useId} from 'react';
-import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
+import React, {useCallback} from 'react';
+import Portal from "@/app/_components/layouts/Portal";
 
 interface ModalProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  children: React.ReactNode;
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
+    children: React.ReactNode;
 }
 
 export const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
-  const key = useId();
-  const handleClose = () => {
-      setIsOpen(false);
-  }
 
-  return (
-      <PortalOverlay isOpen={isOpen} overlayKey={key} onClickOutside={handleClose}>
-          <div className="modal">
-            <div
-                className="modal-backdrop"
-                onClick={handleClose}
-            />
-            <div className="modal-container">
-              <div>{children}</div>
+    const handleClose = useCallback(() => {
+        setIsOpen(false);
+    }, [setIsOpen]);
+
+    return (
+        <Portal isOpen={isOpen}>
+            <div className="modal">
+                <div
+                    className="modal-backdrop"
+                    onClick={handleClose}
+                />
+                <div className="modal-container">
+                    <div>{children}</div>
+                </div>
             </div>
-          </div>
-      </PortalOverlay>
-  );
+        </Portal>
+    );
 }
 
 export default Modal;

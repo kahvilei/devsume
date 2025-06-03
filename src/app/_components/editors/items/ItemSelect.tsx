@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { Database, ListPlus, Undo, X, Edit3 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { IBaseItem } from "@/server/models/schemas/IBaseItem";
@@ -14,9 +14,9 @@ import { Data, DataFilter, DataQuery } from "@/server/models/schemas/data";
 import { useFetchItems } from "@/app/_hooks/common/useFetchItems";
 import { useConfig } from "@/app/_hooks/common/useConfig";
 import {DataService} from "@/app/_data";
-import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
 import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
 import {ItemList} from "@/app/_components/editors/items/ItemList";
+import Popover from "@/app/_components/layouts/Popover";
 
 type SelectMode = "single" | "multiple";
 
@@ -38,7 +38,6 @@ interface ItemSelectProps<T extends IBaseItem, Mode extends SelectMode = SelectM
     searchPageSize?: number;
     selectMode: Mode;
     enableQuery?: boolean;
-    openInPopover?: boolean;
     onSelect: (value: SelectValue<T, Mode>) => void;
     renderSelection?: (items: RenderSelectionValue<T, Mode>) => React.ReactNode;
 }
@@ -51,7 +50,6 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
         searchPageSize = 10,
         selectMode,
         enableQuery = false,
-        openInPopover = true,
         onSelect,
         renderSelection,
     }: ItemSelectProps<T, Mode>
@@ -73,8 +71,6 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
     });
     const [queryResults, setQueryResults] = useState<Item<T>[]>([]);
     const [isDynamic, setIsDynamic] = useState<boolean>(enableQuery);
-
-    const renderBoxRef = useRef<HTMLDivElement>(null);
 
     const initialQuery = useMemo<DataQuery>(() => {
         if (enableQuery && selectMode === "multiple" && values && typeof values === "object" && !Array.isArray(values)) {
@@ -147,10 +143,9 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
     }, [selectMode, enableQuery, isDynamic, onSelect]);
 
     const displayValue: RenderSelectionValue<T, Mode> = (isDynamic ? queryResults : selectMode === "single" ? selectedItem : selectedItems) as RenderSelectionValue<T, Mode>;
-    const overlayKey = useId();
 
     const controls = (
-        <div className={`selector-controls ${controlsOpen ? "open" : "closed"}`}>
+        <div className={`selector-controls`}>
             <div className="buttons">
                 <div>
                     {enableQuery && (
@@ -214,43 +209,33 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
 
     return (
         <div className="multi-selector">
-            <div
-                className="render-box relative"
-                ref={renderBoxRef}
-                onClick={() => setControlsOpen(!controlsOpen)}
-                aria-label={label}
-                aria-haspopup="listbox"
-            >
-                <ActionIcon
-                    icon={<Edit3 />}
-                    size="sm"
-                    variant="btn-default"
-                    tooltip="Edit Selection"
-                    onClick={() => setControlsOpen(!controlsOpen)}
-                />
-                {!displayValue || (Array.isArray(displayValue) && displayValue.length === 0) ? (
-                    <div className="item-selector-placeholder">
-                        No {selectMode === "single" ? names?.singular : names?.plural} selected. Click here to add.
+            <Popover isOpen={controlsOpen} setIsOpen={setControlsOpen} onClickOutside={() => setControlsOpen(false)}>
+                <Popover.Target>
+                    <div
+                        className="render-box relative"
+                        aria-label={label}
+                        aria-haspopup="listbox"
+                    >
+                        <ActionIcon
+                            icon={<Edit3 />}
+                            size="sm"
+                            variant="btn-default"
+                            tooltip="Edit Selection"
+                            onClick={() => {
+                                setControlsOpen(!controlsOpen)
+                            }}
+                        />
+                        {!displayValue || (Array.isArray(displayValue) && displayValue.length === 0) ? (
+                            <div className="item-selector-placeholder">
+                                No {selectMode === "single" ? names?.singular : names?.plural} selected. Click here to add.
+                            </div>
+                        ) : renderSelection?.(displayValue)}
                     </div>
-                ) : renderSelection?.(displayValue)}
-            </div>
-
-            {/* Conditionally render controls in a popover or in place */}
-            {openInPopover ? (
-                <PortalOverlay
-                    targetRef={renderBoxRef as React.RefObject<HTMLElement>}
-                    isOpen={controlsOpen}
-                    overlayKey={overlayKey}
-                    onClickOutside={() => setControlsOpen(false)}
-                    placement="bottom"
-                    className="popover-controls"
-                    matchWidth={true}
-                >
+                </Popover.Target>
+                <Popover.Content>
                     {controls}
-                </PortalOverlay>
-            ) : controlsOpen ? (
-                <div className={`selector ${controlsOpen ? "open" : "closed"}`}>{controls}</div>
-            ) : null}
+                </Popover.Content>
+            </Popover>
         </div>
     );
 });
@@ -260,7 +245,6 @@ interface CommonItemSelectProps {
     label?: string;
     type: string;
     searchPageSize?: number;
-    openInPopover?: boolean;
 }
 
 interface SingleSelectProps<T extends IBaseItem> extends CommonItemSelectProps {
@@ -286,7 +270,6 @@ export const ItemMultiSelect = observer(<T extends IBaseItem>(
         searchPageSize = 10,
         onSelect,
         renderSelection = (items) => <ItemList items={items as Item<T>[]}/>,
-        openInPopover,
     }: MultiSelectProps<T>) => (
     <ItemSelect<T, "multiple">
         values={values as Item<T>[]}
@@ -297,7 +280,6 @@ export const ItemMultiSelect = observer(<T extends IBaseItem>(
         enableQuery={true}
         onSelect={onSelect}
         renderSelection={renderSelection}
-        openInPopover={openInPopover}
     />
 ));
 
@@ -312,7 +294,6 @@ export const ItemSingleSelect = observer(<T extends IBaseItem>(
         searchPageSize = 10,
         onSelect,
         renderSelection = (item) => <ItemPreview item={item as Item<T>}/>,
-        openInPopover,
     }: SingleSelectProps<T>) => (
     <ItemSelect<T, "single">
         values={value}
@@ -323,7 +304,6 @@ export const ItemSingleSelect = observer(<T extends IBaseItem>(
         enableQuery={false}
         onSelect={onSelect}
         renderSelection={renderSelection}
-        openInPopover={openInPopover}
     />
 ));
 

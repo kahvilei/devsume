@@ -6,23 +6,23 @@ import {Item} from "@/app/_data/Items/Item";
 interface ItemEditProps<T extends IBaseItem> {
     item: Item<T>;
     label: string;
-    onCancel?: () => void;
+    onFinished?: () => void;
 }
 
 export default function ItemEdit<T extends IBaseItem>(
     {
         item,
         label,
-        onCancel = () => {
+        onFinished = () => {
         },
     }: ItemEditProps<T>) {
 
     // Default form component
-    const DefaultEditor: React.FC<EditProps<T>> = ({item, onCancel}) => (
+    const DefaultEditor: React.FC<EditProps<T>> = ({item, onFinished}) => (
         <form aria-label={label}>
             <div>{item.getData().title}</div>
             <button onClick={() => item.save()}>Save</button>
-            <button onClick={onCancel}>Cancel</button>
+            <button onClick={onFinished}>Cancel</button>
         </form>
     );
 
@@ -30,7 +30,7 @@ export default function ItemEdit<T extends IBaseItem>(
 
     return (
         <div>
-            <EditorComponent item={item} label={label} onCancel={onCancel}/>
+            <EditorComponent item={item} label={label} onFinished={onFinished}/>
         </div>
     );
 }

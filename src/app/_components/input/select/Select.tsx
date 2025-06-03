@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useId, useRef} from 'react';
+import React, {useEffect, useId, useRef, useState} from 'react';
 import Tooltip from "@/app/_components/layouts/Tooltip";
-import PortalOverlay from "@/app/_components/layouts/PortalOverlay";
 import {SelectInputProps} from "@/interfaces/components/input";
+import Popover from "@/app/_components/layouts/Popover";
 
 /**
  * Select component - A styled select dropdown with tooltip support
@@ -73,61 +73,60 @@ const Select: React.FC<SelectInputProps> =
                 className={`select ${size} ${className}`}
                 id={id}
             >
-                <div
-                    ref={triggerRef}
-                    className={`select-trigger ${size} ${selectOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
-                    onClick={disabled ? undefined : () => setSelectOpen(!selectOpen)}
-                    onKeyDown={handleKeyDown}
-                    tabIndex={disabled ? -1 : 0}
-                    role="combobox"
-                    aria-label={label}
-                    aria-expanded={selectOpen}
-                    aria-controls="select-options"
-                    aria-required={required}
-                    aria-haspopup="listbox"
-                    data-placeholder={!value && placeholder}
-                >
-                    <span className={`select-value ${!value ? 'placeholder' : ''}`}>
-                        {value ? selectedLabel : placeholder}
-                    </span>
-                    <span className="select-arrow">
-                        <svg
-                            width="10"
-                            height="6"
-                            viewBox="0 0 10 6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className={selectOpen ? 'rotate' : ''}
+                <Popover>
+                    <Popover.Content>
+                        <div
+                            id="select-options"
+                            role="listbox"
                         >
-                            <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </span>
-                </div>
+                            {options.map((option) => (
+                                <div
+                                    key={option.value}
+                                    className={`select-option ${option.value === value ? 'selected' : ''}`}
+                                    onClick={() => handleOptionClick(option.value)}
+                                    role="option"
+                                    aria-selected={option.value === value}
+                                >
+                                    {option.option}
+                                </div>
+                            ))}
+                        </div>
+                    </Popover.Content>
+                    <Popover.Target>
+                        <div
+                            ref={triggerRef}
+                            className={`select-trigger ${size} ${selectOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
+                            onClick={disabled ? undefined : () => setSelectOpen(!selectOpen)}
+                            onKeyDown={handleKeyDown}
+                            tabIndex={disabled ? -1 : 0}
+                            role="combobox"
+                            aria-label={label}
+                            aria-expanded={selectOpen}
+                            aria-controls="select-options"
+                            aria-required={required}
+                            aria-haspopup="listbox"
+                            data-placeholder={!value && placeholder}
+                        >
+                            <span className={`select-value ${!value ? 'placeholder' : ''}`}>
+                                {value ? selectedLabel : placeholder}
+                            </span>
+                            <span className="select-arrow">
+                                <svg
+                                    width="10"
+                                    height="6"
+                                    viewBox="0 0 10 6"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className={selectOpen ? 'rotate' : ''}
+                                >
+                                    <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+                                          strokeLinejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
 
-                <PortalOverlay
-                    targetRef={triggerRef as React.RefObject<HTMLElement>}
-                    isOpen={selectOpen}
-                    overlayKey={overlayKey}
-                    onClickOutside={() => setSelectOpen(false)}
-                    placement="bottom"
-                    className="select-dropdown">
-                    <div
-                        id="select-options"
-                        role="listbox"
-                    >
-                        {options.map((option) => (
-                            <div
-                                key={option.value}
-                                className={`select-option ${option.value === value ? 'selected' : ''}`}
-                                onClick={() => handleOptionClick(option.value)}
-                                role="option"
-                                aria-selected={option.value === value}
-                            >
-                                {option.option}
-                            </div>
-                        ))}
-                    </div>
-                </PortalOverlay>
+                    </Popover.Target>
+                </Popover>
             </div>
         );
 

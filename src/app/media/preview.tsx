@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {PreviewProps} from "@/interfaces/data";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
-import {Download, Maximize2, Pencil, Trash} from "lucide-react";
+import {Download, Maximize2} from "lucide-react";
 import Modal from "@/app/_components/layouts/Modal";
 import {IMedia} from "@/server/models/Media";
 import {MediaViewer} from "@/app/_components/display/media/MediaViewer";
@@ -13,7 +13,6 @@ export default function PreviewMedia(
         },
         className = '',
         disabled = false,
-        setIsEditing,
     }: PreviewProps<IMedia>) {
     const media = item.getData();
     const [showFullsize, setShowFullsize] = useState(false);
@@ -35,11 +34,6 @@ export default function PreviewMedia(
         }
     };
 
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this media?')) {
-            await item.delete();
-        }
-    };
 
     const formatFileSize = (bytes: number) => {
         if (bytes < 1024) return bytes + ' B';
@@ -96,30 +90,7 @@ export default function PreviewMedia(
                             radius="rounded"
                         />
 
-                        {setIsEditing && (
-                            <ActionIcon
-                                onClick={() => {
-                                    setIsEditing(true);
-                                }}
-                                icon={<Pencil/>}
-                                tooltip="Edit image"
-                                size="xs"
-                                variant="btn-light"
-                                color="background"
-                                radius="rounded"
-                            />
-                        )}
-                        <ActionIcon
-                            onClick={() => {
-                                handleDelete();
-                            }}
-                            icon={<Trash/>}
-                            tooltip="Delete image"
-                            size="xs"
-                            variant="btn-light"
-                            color="danger"
-                            radius="rounded"
-                        />
+
                     </div>
                 </div>
 
@@ -157,19 +128,6 @@ export default function PreviewMedia(
                             variant="btn-shadow-filled"
                             color="primary"
                         />
-                        {setIsEditing && (
-                            <ActionIcon
-                                onClick={() => {
-                                    setShowFullsize(false);
-                                    setIsEditing(true);
-                                }}
-                                icon={<Pencil/>}
-                                tooltip="Edit"
-                                size="sm"
-                                variant="btn-light"
-                                color="foreground"
-                            />
-                        )}
                     </div>
                 </div>
             </Modal>

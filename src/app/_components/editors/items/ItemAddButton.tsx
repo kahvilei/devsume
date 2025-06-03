@@ -47,7 +47,7 @@ export const ItemAddButton = (
                 <ItemEdit
                     item={new Item({ title: "" }, type)}
                     label="Add a new item"
-                    onCancel={() => setIsAdding(false)}
+                    onFinished={() => setIsAdding(false)}
                 />
             </Modal>
         </>

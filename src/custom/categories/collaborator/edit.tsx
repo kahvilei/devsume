@@ -11,7 +11,7 @@ import {ICollaborator} from "@/custom/categories/collaborator/model";
 import {IImage} from "@/custom/media/image/model";
 import {MediaSelect} from "@/app/_components/input/select/MediaSelect";
 
-export default function EditCollaborator({item, onCancel}: EditProps<ICollaborator>) {
+export default function EditCollaborator({item, onFinished}: EditProps<ICollaborator>) {
     const collaborator = item.getData();
     const [title, setTitle] = React.useState(collaborator.title);
     const [description, setDescription] = React.useState(collaborator.description);
@@ -23,14 +23,14 @@ export default function EditCollaborator({item, onCancel}: EditProps<ICollaborat
     //if value has an _id, it's an existing collaborator
     const handleSaveCollaborator = () => {
         item.setDataAndSave({...collaborator, title, description, tags, img:image}).then(
-            onCancel
+            onFinished
         );
     };
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this collaborator?')) {
             item.delete().then(
-                onCancel
+                onFinished
             );
         }
     }
@@ -47,7 +47,7 @@ export default function EditCollaborator({item, onCancel}: EditProps<ICollaborat
             >
                 <div className="flex flex-row gap-xs justify-between items-end">
                     <h3>{mode === 'edit' ? "Edit collaborator" : "Add a new collaborator"}</h3>
-                    <ActionIcon icon={<X/>} onClick={onCancel} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
+                    <ActionIcon icon={<X/>} onClick={onFinished} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
                 </div>
 
                 <Separator/>

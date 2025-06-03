@@ -119,7 +119,7 @@ export const Paginator: React.FC<PaginatorProps> = (
                                 transition-colors duration-150 ease-in-out
                                 ${isCurrentPage
                                 ? 'bg-blue-500 text-white shadow-sm'
-                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                : 'text-gray-700 useHover:bg-gray-100 useHover:text-gray-900'
                             }
                                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
                             `}
