@@ -189,6 +189,10 @@ body {
     --devsume-colors-foreground: light-dark(var(--devsume-colors-light), var(--devsume-colors-dark));
 }
 
+#page-top {
+    @apply flex flex-col items-center;
+}
+
 main {
     @apply max-w-content w-full p-sm;
 }
