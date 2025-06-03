@@ -15,7 +15,7 @@ interface ServiceMap {
 }
 
 class ServiceStore {
-    private readonly services: ServiceMap;
+    readonly services: ServiceMap;
     private readonly items: ItemManifestList;
 
 

@@ -123,7 +123,7 @@ export const LinkEditor: React.FC<LinkEditorProps> = (
 };
 
 interface LinksEditorProps {
-    links: Link[];
+    links?: Link[];
     onChange: (links: Link[]) => void;
     label?: string;
     maxLinks?: number;

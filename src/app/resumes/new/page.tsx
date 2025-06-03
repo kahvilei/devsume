@@ -1,14 +1,12 @@
 "use client";
 
-import EditResume from "@/app/resumes/edit";
-import {IResume} from "@/server/models/Resume";
-import {createSuccessResponse} from "@/lib/db/utils";
+import {DataService} from "@/app/_data";
+import AddNewItemPage from "@/app/_components/items/AddNewItemPage";
 
 export default function AddResume() {
-    const onSave = (resume: IResume) => {
-        return createSuccessResponse(resume)
-    }
+    const service = DataService.services.Resume;
+
     return (
-        <EditResume onSave={onSave}/>
+        <AddNewItemPage service={service}></AddNewItemPage>
     );
 };

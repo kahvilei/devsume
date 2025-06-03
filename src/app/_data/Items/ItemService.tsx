@@ -31,7 +31,7 @@ export interface ClientServiceResponse<T extends IBaseItem> {
 export class ItemService<T extends ItemInterface> {
 
     private readonly parentConfig: ItemConfig<T>;
-    private readonly parentType: string;
+    readonly parentType: string;
 
     // Cache for query results (stores only IDs)
     private queryCache = new Map<string, QueryCacheEntry>();
@@ -87,7 +87,17 @@ export class ItemService<T extends ItemInterface> {
         return types;
     }
 
-    getConfig = (key: string) : ItemConfig<T>=> {
+    getAllKeys() {
+        const keys = [];
+        console.log(this.parentConfig.discriminators);
+        for (const discriminator of this.parentConfig.discriminators as ItemConfig<T>[]) {
+            keys.push(discriminator.key)
+
+        }
+        return keys;
+    }
+
+    getConfig = (key?: string) : ItemConfig<T>=> {
         if (this.parentConfig.discriminators) {
             for (const discriminator of this.parentConfig.discriminators) {
                 if (discriminator.key === key) {
@@ -113,9 +123,9 @@ export class ItemService<T extends ItemInterface> {
         return config.preview;
     }
 
-    getSingularName(key: string) {
+    getSingularName(key?: string) {
         const config = this.getConfig(key);
-        return config.names?.singular ?? 'Item';
+        return config.names?.singular ?? this.parentType;
     }
     getQueryFields(key: string): { [key: string]: string; } {
         const config = this.getConfig(key);

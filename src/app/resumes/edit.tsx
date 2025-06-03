@@ -1,21 +1,28 @@
 import {IResume} from "@/server/models/Resume";
-import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import WysiwygText from "@/app/_components/input/WysiwygText";
-import {ItemMultiSelect, ItemSingleSelect} from "@/app/_components/items/ItemSelect";
+import {ItemSingleSelect} from "@/app/_components/items/ItemSelect";
 import RichTextEditor from "@/app/_components/editors/RichTextEditor";
+import {LinksEditor} from "@/app/_components/editors/LinkEditor";
+import {Link} from "@/server/models/schemas/link";
+import {EditProps} from "@/interfaces/data";
+import {Button} from "@/app/_components/buttons/Button";
 
-interface EditResumeProps {
-    resume?: IResume;
-    onSave?: (resume: IResume) => ResponseObject;
-}
-
-export default function EditResume({resume}: EditResumeProps) {
-
+export default function EditResume({item}: EditProps<IResume>) {
+    const resume = item.getData();
     const [resumeData, setResumeData] = useState<Partial<IResume> | undefined>(resume);
 
+    const handleSave = () => {
+        if (resumeData !== undefined) {
+            item.setDataAndSave(resumeData as IResume).then(() => {})
+        }
+    }
+
     return (
-        <section className="resume">
+        <form className="resume">
+            <div className="form-group">
+                <Button onClick={handleSave}>Save</Button>
+            </div>
             <section className="right">
                 <section className="title-description">
                     <ItemSingleSelect
@@ -43,9 +50,9 @@ export default function EditResume({resume}: EditResumeProps) {
                         placeholder="Write a subtitle/short description"
                         onUpdate={(value: string) => setResumeData({...resumeData, subtitle: (value || "")})}
                     />
-                    <ItemMultiSelect
-                        type={"Skill"}
-                        onSelect={() => {}}
+                    <LinksEditor
+                        links={resumeData?.links}
+                        onChange={(value: Link[]) => setResumeData({...resumeData, links: (value || [])})}
                     />
 
                 </section>
@@ -58,14 +65,8 @@ export default function EditResume({resume}: EditResumeProps) {
                     placeholder="Write a subtitle/short description"
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
                 />
-
-                <ItemMultiSelect
-                    type={"Collaborator"}
-                    onSelect={() => {}}
-                />
             </section>
-
-        </section>
+        </form>
     )
 }
 
