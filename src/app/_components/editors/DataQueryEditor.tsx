@@ -197,7 +197,7 @@ export function DataQueryEditor
                             <NumberInput
                                 label="Limit"
                                 value={localQuery.limit??undefined}
-                                onChange={handleLimitChange}
+                                onChange={(value) => handleLimitChange(`${value}`)}
                                 placeholder="No limit"
                                 size={size}
                                 min={1}
@@ -301,7 +301,7 @@ export function FilterField(
                     <NumberInput
                         label="Value"
                         value={parseInt(value)}
-                        onChange={(value) => handleFilterValueChange(value as string)}
+                        onChange={(value) => handleFilterValueChange(`${value}`)}
                         placeholder="Enter number"
                     />
                 );

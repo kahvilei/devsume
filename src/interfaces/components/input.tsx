@@ -14,7 +14,7 @@ export default interface InputProps {
 }
 
 export interface TextInputProps extends InputProps {
-    value: string;
+    value?: string;
     onChange: (value: string) => void;
     placeholder?: string;
     maxLength?: number;
@@ -25,13 +25,13 @@ export interface SelectInputProps extends TextInputProps {
     options: DropdownOption[];
 }
 export interface DropdownOption {
-    value: string;
+    value?: string;
     label: React.ReactNode;
     option: React.ReactNode;
 }
 
 export interface TagInputProps extends InputProps {
-    value: string[];
+    value?: string[];
     onChange: (value: string[]) => void;
     placeholder?: string;
     maxLength?: number;
@@ -39,7 +39,7 @@ export interface TagInputProps extends InputProps {
 }
 
 export interface NumberInputProps extends InputProps {
-    value: number;
+    value?: number;
     onChange: (value: number) => void;
     placeholder?: string;
     min?: number;
@@ -48,7 +48,7 @@ export interface NumberInputProps extends InputProps {
 }
 
 export interface DateInputProps extends InputProps {
-    value: string;
+    value?: string;
     onChange: (value: string) => void;
     placeholder?: string;
     className?: string;
