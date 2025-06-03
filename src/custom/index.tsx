@@ -55,6 +55,19 @@ export const config = {
                 plural: "images"
             }
         }
+    ],
+    resumes: [
+        {
+            api: "/api/resumes/development/",
+            key: "Development",
+            queryFields: {
+                title: "string",
+            },
+            names: {
+                singular: "developer resume",
+                plural: "developer resumes"
+            }
+        }
     ]
 }
 

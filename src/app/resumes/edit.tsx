@@ -21,7 +21,7 @@ export default function EditResume({item}: EditProps<IResume>) {
     return (
         <form className="resume">
             <div className="form-group">
-                <Button onClick={handleSave}>Save</Button>
+                <Button type={"submit"} onClick={handleSave}>Save</Button>
             </div>
             <section className="right">
                 <section className="title-description">

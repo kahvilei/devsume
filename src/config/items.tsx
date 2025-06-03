@@ -1,7 +1,7 @@
 import {EditProps, PreviewProps} from "@/interfaces/data";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import React from "react";
-import {Tag, Image} from "lucide-react";
+import {Tag, Image, FileIcon} from "lucide-react";
 
 import PreviewCategory from "@/app/(posts)/categories/preview";
 import EditCategory from "@/app/(posts)/categories/edit";
@@ -14,6 +14,8 @@ import {ICategory} from "@/server/models/Category";
 import {IImage} from "@/custom/media/image/model";
 import PreviewImage from "@/app/media/preview";
 import EditImage from "@/app/media/edit";
+import EditResume from "@/app/resumes/edit";
+import PreviewResume from "@/app/resumes/preview";
 
 export interface ItemConfig<T extends IBaseItem> {
   api: string;
@@ -89,6 +91,9 @@ const ITEMS: ItemManifestList = {
   resumes: {
     key: "Resume",
     api: "/api/resumes/",
+    preview: PreviewResume as React.FC<PreviewProps<IResume>>,
+    edit: EditResume as React.FC<EditProps<IResume>>,
+    icon: <FileIcon/>,
     discriminators: (custom as CustomConfigList).resumes??[]
   },
 }
