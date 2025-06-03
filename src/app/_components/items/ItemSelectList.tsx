@@ -1,9 +1,9 @@
-import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
+import {ItemPreview} from "@/app/_components/items/ItemPreview";
 import {Item} from "@/app/_data/Items/Item";
 import {IBaseItem} from "@/server/models/schemas/IBaseItem";
 import {AnimatePresence} from "motion/react";
 import PopInOut from "@/app/_components/animations/PopInOut";
-import {SelectValue} from "@/app/_components/editors/items/ItemSelect";
+import {SelectValue} from "@/app/_components/items/ItemSelect";
 
 // Type definitions for select values
 type SelectMode = "single" | "multiple";

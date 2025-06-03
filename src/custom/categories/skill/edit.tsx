@@ -2,7 +2,7 @@ import React from "react";
 import {EditProps} from "@/interfaces/data";
 import {ISkill} from "@/custom/categories/skill/model";
 import TextInput from "@/app/_components/input/TextInput";
-import TextAreaInput from "@/app/_components/input/select/TextAreaInput";
+import TextAreaInput from "@/app/_components/input/TextAreaInput";
 import TagInput from "@/app/_components/input/TagInput";
 import {Button} from "@/app/_components/buttons/Button";
 import {Separator} from "@/app/_components/display/Seperator";

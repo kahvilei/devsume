@@ -1,30 +1,46 @@
 import React from 'react';
+import Popover from './Popover';
+import {AnimatePresence} from "motion/react";
+import PopInOut from "@/app/_components/animations/PopInOut"; // Adjust import path as needed
 
-export type TooltipPosition = 'above' | 'right' | 'left' | 'below';
+export type TooltipPosition = 'top' | 'right' | 'left' | 'bottom';
 
 interface TooltipProps {
     text: string;
     position?: TooltipPosition;
     children: React.ReactNode;
-    className?: string;
+    hoverDelay?: number;
 }
 
 export const Tooltip: React.FC<TooltipProps> = (
     {
         text,
-        position = 'below',
+        position = 'top',
         children,
-        className = ''
+        hoverDelay = 1000
     }) => {
     if (!text) return <>{children}</>;
 
     return (
-        <div className={`tooltip ${className}`}>
-            {children}
-            <span className={`tooltip tooltip-${position}`}>
-        {text}
-      </span>
-        </div>
+        <Popover
+            useHover={true}
+            hoverDelay={hoverDelay}
+            placement={position}
+            usePortal={true}
+        >
+            <Popover.Target>
+                {children}
+            </Popover.Target>
+            <Popover.Content>
+                <AnimatePresence>
+                    <PopInOut>
+                        <div className="tooltip">
+                            {text}
+                        </div>
+                    </PopInOut>
+                </AnimatePresence>
+            </Popover.Content>
+        </Popover>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useId, useRef, useState} from 'react';
-import Tooltip from "@/app/_components/layouts/Tooltip";
+import Tooltip, {TooltipPosition} from "@/app/_components/layouts/Tooltip";
 import {SelectInputProps} from "@/interfaces/components/input";
 import Popover from "@/app/_components/layouts/Popover";
 
@@ -61,8 +61,6 @@ const Select: React.FC<SelectInputProps> =
             }
         };
 
-        const overlayKey = useId();
-
         const handleOptionClick = (optionValue: string) => {
             onChange(optionValue);
             setSelectOpen(false);
@@ -73,10 +71,10 @@ const Select: React.FC<SelectInputProps> =
                 className={`select ${size} ${className}`}
                 id={id}
             >
-                <Popover>
+                <Popover closeOnClickOutside>
                     <Popover.Content>
                         <div
-                            id="select-options"
+                            className="select-options"
                             role="listbox"
                         >
                             {options.map((option) => (
@@ -132,7 +130,7 @@ const Select: React.FC<SelectInputProps> =
 
         if (showTooltip && label) {
             return (
-                <Tooltip text={label} position={tooltipPosition}>
+                <Tooltip text={label} position={tooltipPosition as TooltipPosition}>
                     {selectContent}
                 </Tooltip>
             );

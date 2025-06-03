@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import {Plus, X} from "lucide-react";
 import {ActionIcon} from "@/app/_components/buttons/ActionIcon";
-import Select, {DropdownOption} from "@/app/_components/input/select/Select";
+import Select from "@/app/_components/input/select/Select";
 import NumberInput from "@/app/_components/input/NumberInput";
 import DateInput from "@/app/_components/input/DateInput";
 import TextInput from "@/app/_components/input/TextInput";
@@ -12,6 +12,7 @@ import {MongoOperator} from "@/types/dataTypes";
 import {Button} from "@/app/_components/buttons/Button";
 import PopInOut from "@/app/_components/animations/PopInOut";
 import {DataFilter, DataQuery} from "@/server/models/schemas/data";
+import {DropdownOption} from "@/interfaces/components/input";
 
 // Field types for specialized inputs
 type FieldType = 'text' | 'number' | 'date' | 'select';
@@ -195,7 +196,7 @@ export function DataQueryEditor
                         <div className="limit-input-group">
                             <NumberInput
                                 label="Limit"
-                                value={localQuery.limit?.toString() || ''}
+                                value={localQuery.limit??undefined}
                                 onChange={handleLimitChange}
                                 placeholder="No limit"
                                 size={size}
@@ -226,10 +227,10 @@ export function DataQueryEditor
                             onClick={() => addFilterField()}
                             color="foreground"
                             icon={<Plus/>}
-                            text="Add filter"
                             variant="btn-discreet"
                             radius={"rounded"}
                         >
+                            Add New Filter
                         </Button>
                     </div>
                 </div>
@@ -299,8 +300,8 @@ export function FilterField(
                 return (
                     <NumberInput
                         label="Value"
-                        value={value}
-                        onChange={(value) => handleFilterValueChange(value)}
+                        value={parseInt(value)}
+                        onChange={(value) => handleFilterValueChange(value as string)}
                         placeholder="Enter number"
                     />
                 );

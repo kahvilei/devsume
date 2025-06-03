@@ -23,7 +23,7 @@ export default function WysiwygText(
         onUpdate,
         required,
         showTooltip = true,
-        toolTipPosition = "above",
+        toolTipPosition = "top",
         variant = "content-style-1"
     }: EditableTextProps) {
     const content = (

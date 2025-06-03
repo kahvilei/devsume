@@ -2,7 +2,8 @@ import {IResume} from "@/server/models/Resume";
 import {ResponseObject} from "@/lib/db/utils";
 import {useState} from "react";
 import WysiwygText from "@/app/_components/input/WysiwygText";
-import {ItemMultiSelect, ItemSingleSelect} from "@/app/_components/editors/items/ItemSelect";
+import {ItemMultiSelect, ItemSingleSelect} from "@/app/_components/items/ItemSelect";
+import RichTextEditor from "@/app/_components/editors/RichTextEditor";
 
 interface EditResumeProps {
     resume?: IResume;
@@ -50,13 +51,12 @@ export default function EditResume({resume}: EditResumeProps) {
                 </section>
             </section>
             <section className="left">
-                <WysiwygText
+                <RichTextEditor
                     order="body"
                     label="About you"
                     value={resumeData?.about}
                     placeholder="Write a subtitle/short description"
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
-                    toolTipPosition={"right"}
                 />
 
                 <ItemMultiSelect

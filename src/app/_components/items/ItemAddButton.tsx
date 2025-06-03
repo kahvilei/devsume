@@ -1,5 +1,5 @@
 import Modal from "@/app/_components/layouts/Modal";
-import ItemEdit from "@/app/_components/editors/items/ItemEdit";
+import ItemEdit from "@/app/_components/items/ItemEdit";
 import {Item} from "@/app/_data/Items/Item";
 import React, {useState} from "react";
 import {DataService} from "@/app/_data";

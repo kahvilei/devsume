@@ -12,7 +12,6 @@ export default function Portal({children, target, isOpen = false}: PortalProps) 
 
 
     if (isOpen){
-        console.log(targetElement, isOpen, children);
         return createPortal(
             children, targetElement
         )

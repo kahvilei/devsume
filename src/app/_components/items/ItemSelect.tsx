@@ -3,10 +3,10 @@ import { Database, ListPlus, Undo, X, Edit3 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { IBaseItem } from "@/server/models/schemas/IBaseItem";
 import { Item } from "@/app/_data/Items/Item";
-import { ItemSelectList } from "@/app/_components/editors/items/ItemSelectList";
+import { ItemSelectList } from "@/app/_components/items/ItemSelectList";
 import TextInput from "@/app/_components/input/TextInput";
 import Paginator from "@/app/_components/navigation/Paginator";
-import { ItemAddAnyOfTypeButton } from "@/app/_components/editors/items/ItemAddButton";
+import { ItemAddAnyOfTypeButton } from "@/app/_components/items/ItemAddButton";
 import { ActionIcon } from "@/app/_components/buttons/ActionIcon";
 import BinaryToggle from "@/app/_components/buttons/BinaryToggle";
 import { DataQueryEditor } from "@/app/_components/editors/DataQueryEditor";
@@ -14,8 +14,8 @@ import { Data, DataFilter, DataQuery } from "@/server/models/schemas/data";
 import { useFetchItems } from "@/app/_hooks/common/useFetchItems";
 import { useConfig } from "@/app/_hooks/common/useConfig";
 import {DataService} from "@/app/_data";
-import {ItemPreview} from "@/app/_components/editors/items/ItemPreview";
-import {ItemList} from "@/app/_components/editors/items/ItemList";
+import {ItemPreview} from "@/app/_components/items/ItemPreview";
+import {ItemList} from "@/app/_components/items/ItemList";
 import Popover from "@/app/_components/layouts/Popover";
 
 type SelectMode = "single" | "multiple";
@@ -222,7 +222,7 @@ export const ItemSelect = observer(<T extends IBaseItem, Mode extends SelectMode
                             variant="btn-default"
                             tooltip="Edit Selection"
                             onClick={() => {
-                                setControlsOpen(!controlsOpen)
+                                setControlsOpen(!controlsOpen);
                             }}
                         />
                         {!displayValue || (Array.isArray(displayValue) && displayValue.length === 0) ? (

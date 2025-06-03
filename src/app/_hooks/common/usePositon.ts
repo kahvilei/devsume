@@ -32,8 +32,8 @@ export function usePosition(
         placement = 'bottom',
         offset = "0.25rem",
         matchWidth = false,
-        minHeight = 300,
-        minWidth = "10rem",
+        minHeight = 0,
+        minWidth = "0rem",
     } = options || {};
 
     const [styles, setStyles] = useState<React.CSSProperties>({
@@ -143,9 +143,9 @@ export function usePosition(
             width: matchWidth ? targetRect.width : undefined,
             overflowX: "hidden",
             opacity: 1,
-            zIndex: 10,
+            zIndex: 50,
         });
-    }, [targetRef, contentRef, children, placement, offset, matchWidth, minHeight, minWidth]);
+    }, [targetRef, contentRef, placement, offset, matchWidth, minHeight, minWidth]);
 
     useEffect(() => {
         updatePosition();

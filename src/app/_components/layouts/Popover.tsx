@@ -1,4 +1,4 @@
-import React, {JSXElementConstructor, useEffect, useRef, useState} from "react";
+import React, {JSXElementConstructor, RefObject, useEffect, useRef, useState} from "react";
 import Portal from "@/app/_components/layouts/Portal";
 import {usePosition} from "@/app/_hooks/common/usePositon";
 import {useClickOutside} from "@/app/_hooks/common/useClickOutside";
@@ -10,6 +10,7 @@ export interface PopoverProps {
     placement?: 'bottom' | 'top' | 'left' | 'right';
     offset?: number | string;
     onClickOutside?: () => void;
+    closeOnClickOutside?: boolean;
     matchWidth?: boolean;
     height?: number | string;
     minWidth?: number | string;
@@ -19,18 +20,25 @@ export interface PopoverProps {
     trapFocus?: boolean;
 }
 
-function Popover({
-    children,
-    usePortal = false,
-    isOpen = false,
-    setIsOpen,
-    onClickOutside,
-    trapFocus = false,
-    useHover = false,
-    hoverDelay = 10,
-    ...props
-}: PopoverProps) {
+function Popover(
+    {
+        children,
+        usePortal = false,
+        isOpen = false,
+        setIsOpen,
+        onClickOutside,
+        closeOnClickOutside,
+        trapFocus = false,
+        useHover = false,
+        hoverDelay = 10,
+        ...props
+    }: PopoverProps) {
     const [internalIsOpen, setInternalIsOpen] = useState(isOpen);
+    const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setInternalIsOpen(isOpen);
+    }, [isOpen]);
 
     const getChildrenByType = (children: React.ReactNode, type: string) => {
         if (!children) return;
@@ -41,13 +49,20 @@ function Popover({
             }
         }
     }
-    
+
     const handleChangeIsOpen = (open: boolean) => {
         setInternalIsOpen(open);
         if (typeof setIsOpen === 'function') {
             setIsOpen(open);
         }
     }
+
+    const clearHoverTimeout = () => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+            hoverTimeoutRef.current = null;
+        }
+    };
 
     const target = getChildrenByType(children, Popover.Target.name);
     const targetRef = useRef<HTMLDivElement>(null)
@@ -56,91 +71,121 @@ function Popover({
 
     const position = usePosition(targetRef, contentRef, internalIsOpen, children, props);
 
-    useClickOutside(contentRef, onClickOutside);
+    // Handle click outside to close popover
+    useClickOutside(contentRef, () => {
+        if (internalIsOpen) {
+            if (closeOnClickOutside) {
+                setInternalIsOpen(false);
+            }
+            onClickOutside?.();
+        }
+    }, targetRef);
 
-    const coreEvents = {
-        onMouseEnter: (e: { preventDefault: () => void; }) => {
-            e.preventDefault();
-            if (useHover) {
-                setTimeout(() => {
-                    handleChangeIsOpen(true);
+    const handleMouseEnter = () => {
+        if (useHover) {
+            clearHoverTimeout();
+            hoverTimeoutRef.current = setTimeout(() => {
+                handleChangeIsOpen(true);
+            }, hoverDelay);
+        }
+    };
 
-                }, hoverDelay);
-            }
-        },
-        onMouseLeave: (e: { preventDefault: () => void; }) => {
-            e.preventDefault();
-            if (useHover) {
-                setTimeout(() => {
-                    handleChangeIsOpen(false);
-                }, hoverDelay);
-            }
-        },
-        onFocus: (e: { preventDefault: () => void; }) => {
-            e.preventDefault();
-            if (useHover) {
-                setTimeout(() => {
-                    handleChangeIsOpen(true);
-                })
-            }
-        },
-        onBlur: (e: { preventDefault: () => void; }) => {
-            e.preventDefault();
-            if (useHover) {
-                setTimeout(() => {
-                    handleChangeIsOpen(false);
-                })
+    const handleMouseLeave = () => {
+        if (useHover) {
+            clearHoverTimeout();
+            handleChangeIsOpen(false);
+        }
+    };
+
+    const handleFocus = () => {
+        if (useHover) {
+            clearHoverTimeout();
+            handleChangeIsOpen(true);
+        }
+    };
+
+    const handleBlur = () => {
+        if (useHover) {
+            clearHoverTimeout();
+            hoverTimeoutRef.current = setTimeout(() => {
+                handleChangeIsOpen(false);
+            }, hoverDelay);
+        }
+    };
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent event bubbling
+        clearHoverTimeout();
+        if (!useHover) {
+            handleChangeIsOpen(!internalIsOpen);
+        }
+    };
+
+    const targetEvents = {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+        onFocus: handleFocus,
+        onBlur: handleBlur,
+        onClick: handleClick,
+    };
+
+    const contentEvents = {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+    };
+
+    // Focus management for accessibility
+    useEffect(() => {
+        if (internalIsOpen && trapFocus && contentRef.current) {
+            const focusableElements = contentRef.current.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0] as HTMLElement;
+            if (firstElement) {
+                firstElement.focus();
             }
         }
-    }
+    }, [internalIsOpen, trapFocus]);
 
-    const events = {
-        ...coreEvents,
-        onClick: (e: { preventDefault: () => void; }) => {
-            e.preventDefault();
-            if (!useHover) {
-                handleChangeIsOpen(!internalIsOpen);
-            }
-        },
-    }
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            clearHoverTimeout();
+        };
+    }, []);
 
     return (
-        <div style={{
-            position: 'relative',
-        }}>
-            <div ref={targetRef}
-                 {...events}
-            >
+        <div style={{position: 'relative'}}>
+            <div ref={targetRef} {...targetEvents}>
                 {target}
             </div>
 
-            {usePortal ?
-                internalIsOpen &&
-                <Portal>
+            {internalIsOpen && (
+                usePortal ? (
+                    <Portal isOpen={internalIsOpen}>
+                        <div
+                            ref={contentRef}
+                            style={{...position}}
+                            {...contentEvents}
+                        >
+                            {content}
+                        </div>
+                    </Portal>
+                ) : (
                     <div
                         ref={contentRef}
                         style={{...position}}
-                        {...coreEvents}
-                        autoFocus={trapFocus}
+                        {...contentEvents}
                     >
                         {content}
                     </div>
-                </Portal>
-            : internalIsOpen &&
-                <div
-                    ref={contentRef}
-                    style={{...position}}
-                    {...coreEvents}
-                    autoFocus={trapFocus}
-                >
-                    {content}
-                </div>
-            }
+                )
+            )}
         </div>
     )
 }
 
-const Target = ({children}: {children: React.ReactNode}) => {
+const Target = ({children}: { children: React.ReactNode }) => {
     return (
         children
     )
@@ -148,14 +193,12 @@ const Target = ({children}: {children: React.ReactNode}) => {
 
 Popover.Target = Target;
 
-
-const Content = ({children}: {children: React.ReactNode}) => {
+const Content = ({children}: { children: React.ReactNode }) => {
     return (
         children
     )
 }
 
 Popover.Content = Content;
-
 
 export default Popover;

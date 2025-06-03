@@ -1,5 +1,5 @@
 import React, {useState, useRef} from "react";
-import ItemEdit from "@/app/_components/editors/items/ItemEdit";
+import ItemEdit from "@/app/_components/items/ItemEdit";
 import Modal from "@/app/_components/layouts/Modal";
 import ActionIcon from "@/app/_components/buttons/ActionIcon";
 import {PreviewProps} from "@/interfaces/data";

@@ -959,65 +959,12 @@ main {
         Tooltip Component
     */
     .tooltip {
-        position: relative;
-        overflow: visible;
+        @apply content-style-4 p-xs py-xxs px-xs rounded transition-all text-sm;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 80;
+        transition-duration: var(--transition-duration-normal);
 
-        .tooltip {
-            position: absolute;
-            @apply content-style-4 p-xs py-xxs px-xs rounded opacity-0 transition-all text-sm;
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 80;
-            transition-duration: var(--transition-duration-normal);
-        }
-
-        /* Tooltip position variants */
-
-        .tooltip-below {
-            bottom: -2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(0.5rem);
-        }
-
-        .tooltip-above {
-            top: -2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(-0.5rem);
-        }
-
-        .tooltip-left {
-            top: 50%;
-            right: calc(100% + 0.5rem);
-            transform: translateY(-50%) translateX(-0.5rem);
-        }
-
-        .tooltip-right {
-            top: 50%;
-            left: calc(100% + 0.5rem);
-            transform: translateY(-50%) translateX(0.5rem);
-        }
-
-        /* Tooltip useHover effects */
-
-        &:hover > .tooltip {
-            @apply opacity-100;
-        }
-
-        &:hover > .tooltip-below {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        &:hover > .tooltip-above {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        &:hover > .tooltip-left {
-            transform: translateY(-50%) translateX(0);
-        }
-
-        &:hover > .tooltip-right {
-            transform: translateY(-50%) translateX(0);
-        }
     }
 
     /*
@@ -1218,15 +1165,11 @@ main {
             transform: rotate(180deg);
         }
     }
-    .select-dropdown {
-        @apply content-style-4 p-xs flex flex-col gap-xxs rounded max-h-30 min-w-max;
-        position: absolute;
-        top: calc(100% + 0.25rem);
-        left: 0;
-        overflow-y: auto;
+    .select-options {
+        @apply content-style-4 p-xs flex flex-col gap-xxs rounded min-w-max;
 
         .select-option {
-            @apply interactive p-xs grow-on-hover rounded;
+            @apply interactive p-xxs grow-on-hover rounded;
         }
 
         .select-option.selected {
@@ -1339,6 +1282,58 @@ main {
     .item-list {
         @apply flex flex-row flex-wrap gap-xs;
     }
+
+    /*
+        Rich text
+     */
+
+    .wysiwyg-rich-text {
+        @apply w-full flex flex-col gap-xs;
+
+        .editor-container {
+            @apply w-full flex flex-col gap-xs;
+        }
+
+        .lexical-toolbar {
+            @apply flex flex-wrap flex-row items-center gap-xs p-xs rounded background-fg;
+        }
+
+        .toolbar-button {
+            @apply p-xs rounded cursor-pointer;
+
+            &:hover {
+                @apply outline;
+            }
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 1.5rem;
+            background-color: #e5e7eb;
+        }
+
+        .editor-inner {
+            position: relative;
+            min-height: 300px;
+        }
+
+        .editor-input {
+            padding: 1rem;
+            min-height: 300px;
+            outline: none;
+            width: 100%;
+        }
+
+        .editor-placeholder {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+    }
+
+
 }
 
 

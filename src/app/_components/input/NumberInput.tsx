@@ -20,7 +20,7 @@ const NumberInput: React.FC<NumberInputProps> =
          max,
          step = 1,
          showTooltip = true,
-         tooltipPosition = "above",
+         tooltipPosition = "top",
          disabled = false,
         required = false,
          className = "",

@@ -27,7 +27,9 @@ export default function BinaryToggle(
     }: BinaryToggleProps
 ) {
 
-    const handleOptionClick = (newState: boolean): void => {
+    const handleOptionClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent> | React.KeyboardEvent<HTMLSpanElement>, newState: boolean): void => {
+        e.preventDefault();
+        e.stopPropagation();
         if (newState === state) return;
         onToggle(newState);
     };
@@ -39,34 +41,32 @@ export default function BinaryToggle(
                     <span
                         aria-checked={!state}
                         className="toggle-1 toggle-option"
-                        onClick={() => handleOptionClick(false)}
+                        onClick={(e) => handleOptionClick(e, false)}
                         role="radio"
                         tabIndex={0}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                                handleOptionClick(false);
-                                e.preventDefault();
+                                handleOptionClick(e, false);
                             }
                         }}
                     >
-                        <Tooltip text={label[0]} position={"above"}>
+                        <Tooltip text={label[0]}>
                             <span className="toggle-inner">{elements[0]}</span>
                         </Tooltip>
                     </span>
                     <span
                         aria-checked={state}
                         className="toggle-2 toggle-option"
-                        onClick={() => handleOptionClick(true)}
+                        onClick={(e) => handleOptionClick(e, true)}
                         role="radio"
                         tabIndex={0}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                                handleOptionClick(true);
-                                e.preventDefault();
+                                handleOptionClick(e, true);
                             }
                         }}
                     >
-                        <Tooltip text={label[1]} position={"above"}>
+                        <Tooltip text={label[1]}>
                             <span className="toggle-inner">{elements[1]}</span>
                         </Tooltip>
                     </span>

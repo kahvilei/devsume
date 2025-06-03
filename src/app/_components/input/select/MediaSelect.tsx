@@ -1,4 +1,4 @@
-import {ItemSingleSelect} from "@/app/_components/editors/items/ItemSelect";
+import {ItemSingleSelect} from "@/app/_components/items/ItemSelect";
 import {IMedia} from "@/server/models/Media";
 import {Item} from "@/app/_data/Items/Item";
 

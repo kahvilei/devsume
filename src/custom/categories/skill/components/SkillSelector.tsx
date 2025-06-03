@@ -1,6 +1,6 @@
 import {ISkill} from "@/custom/categories/skill/model";
 import {Data} from "@/server/models/schemas/data";
-import {ItemMultiSelect} from "@/app/_components/editors/items/ItemSelect";
+import {ItemMultiSelect} from "@/app/_components/items/ItemSelect";
 
 interface SkillSelectProps {
     values?: Data<ISkill>;

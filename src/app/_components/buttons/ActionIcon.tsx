@@ -29,7 +29,7 @@ export const ActionIcon: React.FC<ActionIconProps> =
          onClick,
          type,
          tooltip,
-         tooltipPosition = "above",
+         tooltipPosition = "bottom",
          className = "",
          disabled = false,
          ariaLabel,
