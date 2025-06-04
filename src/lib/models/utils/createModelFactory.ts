@@ -27,7 +27,7 @@ export const createModelFactory = <T = mongoose.Document>(
             return mongoose.models[typeName];
         }
 
-        // Create new schema with discriminator fields
+        // Create _new schema with discriminator fields
         const mongooseSchema = new mongoose.Schema(schema);
 
         // Apply custom behaviors

@@ -145,7 +145,7 @@ export const createServiceFactory = async <T>(
             });
         },
 
-        // Add new entity (return updated total count)
+        // Add _new entity (return updated total count)
         add: (values: T, type?: string) => {
             return dbOperation(true, async () => {
                 if (!values || typeof values !== 'object') {

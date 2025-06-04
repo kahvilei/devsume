@@ -1221,7 +1221,7 @@ main {
     }
 
     /*
-      'add new' block
+      'add _new' block
      */
     .add-new {
         @apply flex items-center justify-center gap-xs p-xs;

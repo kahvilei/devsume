@@ -52,7 +52,7 @@ export default function EditCollaborator({item, onFinished}: EditProps<ICollabor
             className="flex flex-col gap-sm max-w-content w-60"
         >
             <div className="flex-between">
-                <h3 className="h3">{mode === 'edit' ? "Edit collaborator" : "Add new collaborator"}</h3>
+                <h3 className="h3">{mode === 'edit' ? "Edit collaborator" : "Add _new collaborator"}</h3>
                 <ActionIcon
                     icon={<X/>}
                     onClick={onFinished}

@@ -11,7 +11,7 @@ export { DataService };
 // Fetch only skills using the discriminator key
 // const skills = await DataService.fetchByType('skill', { title: 'JavaScript' });
 
-// Create a new skill
+// Create a _new skill
 // const newSkill = await DataService.createByType('skill', {
 //     title: 'React',
 //     description: 'Frontend framework',

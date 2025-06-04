@@ -12,7 +12,7 @@ const AddNewItemPage = <T extends IBaseItem>(
     }: AddNewItemPageProps<T>) => {
     const types = service.getAllKeys();
     return (
-        <div className={"add-new-item-page"}>
+        <div className={"add-_new-item-page"}>
             {types.length !== 0 ?
                 <>
                 <h2>Add a new ...</h2>

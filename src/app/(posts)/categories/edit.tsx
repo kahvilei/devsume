@@ -43,7 +43,7 @@ export default function EditCategory({item, onCancel}: EditProps<ICategory>) {
             className="flex flex-col gap-sm max-w-full w-50"
         >
             <div className="flex flex-row gap-xs justify-between items-end">
-                <h3>{mode === 'edit' ? "Edit skill" : "Add a new skill"}</h3>
+                <h3>{mode === 'edit' ? "Edit skill" : "Add a _new skill"}</h3>
                 <ActionIcon icon={<X/>} onClick={onCancel} variant="btn-shadow-spread" size="sm" tooltip={"Cancel"}/>
             </div>
 

@@ -35,7 +35,7 @@ const TagInput: React.FC<TagInputProps> = (
     const updateValue = () => {
         const newTag = inputValue.trim();
         if (newTag && !value.includes(newTag)) {
-            // Add a new tag if it's not already present in the value
+            // Add a _new tag if it's not already present in the value
             onChange([...value, newTag]);
         }
         setInputValue(""); // Clear the input field

@@ -165,7 +165,7 @@ export class ItemService<T extends ItemInterface> {
                     // Update existing item
                     existingItem.setData(itemData);
                 } else {
-                    // Create new item
+                    // Create _new item
                     const newItem = new Item<T>(itemData);
                     this.itemsMap.set(itemData._id, newItem);
                 }
@@ -355,7 +355,7 @@ export class ItemService<T extends ItemInterface> {
         return this.buildClientResponse(serverResponsePromise);
     }
 
-    // Create a new item
+    // Create a _new item
     async createItem(item: T, type?: string): Promise<ClientServiceResponse<T>> {
         const apiPath = type ? this.getApiPath(type) : this.parentConfig.api;
         const serverResponsePromise = this.executeOperation(async () => {
