@@ -11,6 +11,6 @@ export interface PreviewProps<T extends IBaseItem> {
 export interface EditProps<T extends IBaseItem> {
     item: Item<T>;
     onFinished: () => void;
-    label: string;
+    label?: string;
 }
 

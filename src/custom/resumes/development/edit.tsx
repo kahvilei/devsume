@@ -15,7 +15,7 @@ export default function EditResume({resume}: EditResumeProps) {
 
     const [resumeData, setResumeData] = useState<Partial<IDevelopmentResume> | undefined>(resume);
     return (
-        <section className="resume">
+        <form className="resume">
             <section className="right">
                 <section className="title-description">
                     <WysiwygText
@@ -58,7 +58,7 @@ export default function EditResume({resume}: EditResumeProps) {
                 </section>
             </section>
 
-        </section>
+        </form>
     )
 }
 

@@ -22,6 +22,7 @@ export interface ServiceFactory<TInterface> {
     exists: (query: URLSearchParams, type?: string) => Promise<ResponseObject>;
     getTotalCount: (type?: string) => Promise<ResponseObject>;
     clearCache: () => void;
+    getTypes(): string[];
 }
 
 export const createServiceFactory = async <T>(
@@ -65,6 +66,14 @@ export const createServiceFactory = async <T>(
     };
 
     return {
+        getTypes(): string[] {
+            const types: string[] = [];
+            for (const [key, _] of Array.from(modelCache)){
+                types.push(key);
+            }
+            return types;
+        },
+
         // Get all entities with pagination info
         getAll: (type?: string) => {
             return dbOperation(false, async () => {

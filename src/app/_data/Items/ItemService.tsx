@@ -89,7 +89,6 @@ export class ItemService<T extends ItemInterface> {
 
     getAllKeys() {
         const keys = [];
-        console.log(this.parentConfig.discriminators);
         for (const discriminator of this.parentConfig.discriminators as ItemConfig<T>[]) {
             keys.push(discriminator.key)
 

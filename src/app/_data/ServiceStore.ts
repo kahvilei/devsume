@@ -41,7 +41,7 @@ class ServiceStore {
         for (const [parentKey, service] of Object.entries(this.services)) {
             if (service.parentConfig.discriminators) {
                 for (const discriminator of service.parentConfig.discriminators) {
-                    if (discriminator.key === key) {
+                    if (discriminator.key.toLowerCase() === key.toLowerCase()) {
                         return parentKey as keyof ServiceMap;
                     }
                 }
@@ -62,7 +62,7 @@ class ServiceStore {
         for (const config of Object.values(this.items)) {
             if (config.discriminators) {
                 for (const discriminator of config.discriminators) {
-                    if (discriminator.key === key && discriminator.api) {
+                    if (discriminator.key.toLowerCase() === key.toLowerCase() && discriminator.api) {
                         return discriminator.api;
                     }
                 }

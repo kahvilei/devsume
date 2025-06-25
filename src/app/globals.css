@@ -478,7 +478,10 @@ main {
         Header
      */
     .site-header {
-        @apply w-full h-8 flex items-center justify-center;
+       
+        nav {
+             @apply w-full h-8 flex items-center justify-center;
+        }
     }
     /*
         Button Component + button-type components

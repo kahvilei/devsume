@@ -10,7 +10,9 @@ const TypeMetaCard = <T extends IBaseItem>(
         config,
     }: TypeMetaCardProps<T>,) => {
     return(
-        <div>{config.key}</div>
+        <div>
+            {config.icon}{config.key}
+        </div>
     )
 }
 

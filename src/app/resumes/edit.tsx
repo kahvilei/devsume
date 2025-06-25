@@ -14,15 +14,12 @@ export default function EditResume({item}: EditProps<IResume>) {
 
     const handleSave = () => {
         if (resumeData !== undefined) {
-            item.setDataAndSave(resumeData as IResume).then(() => {})
+           item.setDataAndSave(resumeData as IResume)
         }
     }
 
     return (
         <form className="resume">
-            <div className="form-group">
-                <Button type={"submit"} onClick={handleSave}>Save</Button>
-            </div>
             <section className="right">
                 <section className="title-description">
                     <ItemSingleSelect
@@ -66,6 +63,9 @@ export default function EditResume({item}: EditProps<IResume>) {
                     onUpdate={(value: string) => setResumeData({...resumeData, about: (value || "")})}
                 />
             </section>
+            <div className="form-group">
+                <Button onClick={handleSave}>Save</Button>
+            </div>
         </form>
     )
 }
